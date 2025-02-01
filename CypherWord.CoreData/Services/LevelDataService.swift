@@ -23,7 +23,9 @@ class LevelDataService {
         do {
             let savedEntities = try container.viewContext.fetch(request)
             
-            levels = savedEntities.map( { entity in Level(id: entity.id!)})
+            levels = savedEntities.map( {
+                entity in Level(id: entity.id!, number: Int(entity.number), gridText: entity.gridText ?? "", letterMap: entity.letterMap ?? "")
+            })
         } catch let error {
             print("Error fetching Portfolio Entities. \(error)")
         }
@@ -32,6 +34,9 @@ class LevelDataService {
     func addLevel() {
         let entity = LevelMO(context: container.viewContext)
         entity.id = UUID()
+        entity.number = Int64(getMaxLevelNumber()+1)
+        entity.gridText = ""
+        entity.letterMap = ""
         applyChanges()
     }
     
@@ -59,5 +64,14 @@ class LevelDataService {
     private func applyChanges() {
         save()
         loadLevels()
+    }
+    
+    private func getMaxLevelNumber() -> Int {
+//        return levels.max(by: { $0.number < $1.number })?.number ?? 0 + 1
+        let max = levels.max(by: { $0.number < $1.number })?.number ?? 0
+        
+        print(max)
+        
+        return max
     }
 }
