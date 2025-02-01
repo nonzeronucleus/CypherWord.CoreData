@@ -16,6 +16,8 @@ class LevelDataService {
             }
             self.loadLevels()
         }
+        
+        importLevel()
     }
     
     func loadLevels() {
@@ -24,7 +26,7 @@ class LevelDataService {
             let savedEntities = try container.viewContext.fetch(request)
             
             levels = savedEntities.map( {
-                entity in Level(id: entity.id!, number: Int(entity.number), gridText: entity.gridText ?? "", letterMap: entity.letterMap ?? "")
+                entity in Level(id: entity.id ?? UUID(), number: Int(entity.number), gridText: entity.gridText ?? "", letterMap: entity.letterMap ?? "")
             })
         } catch let error {
             print("Error fetching Portfolio Entities. \(error)")
@@ -39,6 +41,16 @@ class LevelDataService {
         entity.letterMap = ""
         applyChanges()
     }
+    
+    func addLevelFromData(level:Level) {
+        let entity = LevelMO(context: container.viewContext)
+        entity.id = level.id
+        entity.number = Int64(level.number)
+        entity.gridText = level.gridText
+        entity.letterMap = level.letterMap
+        applyChanges()
+    }
+
     
     func deleteAll() {
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
@@ -67,11 +79,33 @@ class LevelDataService {
     }
     
     private func getMaxLevelNumber() -> Int {
-//        return levels.max(by: { $0.number < $1.number })?.number ?? 0 + 1
-        let max = levels.max(by: { $0.number < $1.number })?.number ?? 0
+        return levels.max(by: { $0.number < $1.number })?.number ?? 0
+    }
+    
+    private func importLevel() {
+//        let docDir = URL.documentsDirectory
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
         
-        print(max)
-        
-        return max
+        do {
+            if let path = Bundle.main.url(forResource: "Level", withExtension: "json") {
+                
+                let jsonData = try Data(contentsOf: path)
+                let newLevels = try decoder.decode([Level].self, from: jsonData)
+                
+                for newLevel in newLevels {
+                    if (levels.first { $0.id == newLevel.id } == nil) {
+                        addLevelFromData(level: newLevel)
+                    }
+                }
+                applyChanges()
+            }
+            else {
+                print("No file found")
+            }
+        }
+        catch {
+            print("Error reading JSON file: \(error)")
+        }
     }
 }

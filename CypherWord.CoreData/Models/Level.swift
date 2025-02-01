@@ -1,6 +1,6 @@
 import Foundation
 
-struct Level: Identifiable {
+struct Level: Identifiable, Codable {
     var id: UUID
     var number:Int
     var gridText:String?
@@ -15,5 +15,14 @@ struct Level: Identifiable {
     
     var name: String {
         return "Level \(number)"
+    }
+    
+    func toLevelMO() -> LevelMO {
+        let model = LevelMO()
+        model.id = id
+        model.number = Int64(number)
+        model.gridText = gridText ?? ""
+        model.letterMap = letterMap ?? ""
+        return model
     }
 }
