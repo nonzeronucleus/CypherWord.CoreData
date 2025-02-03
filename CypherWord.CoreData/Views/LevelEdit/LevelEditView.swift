@@ -111,11 +111,8 @@ public struct LevelEditView: View {
 //
 //
 #Preview {
+    let level = Level(id: UUID(), number: 1, gridText: " ...|.. .|. ..|. ..|", letterMap: nil)
+    let viewModel = LevelEditViewModel(level: level)
     
-//    @Dependency(\.uuid) var uuid
-//
-//    let id = uuid()
-//    
-//    let level = LevelDefinition(id: id, fileType: .layout, levelNumber: 1)
-//    LevelEditView(level: level)
+    LevelEditView(viewModel)
 }

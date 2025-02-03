@@ -16,7 +16,7 @@ struct Level: Identifiable, Codable {
         case playable = "playable"
     }
 
-    init(id: UUID, number: Int, gridText: String?, letterMap: String?) {
+    init(id: UUID, number: Int, gridText: String? =  nil, letterMap: String? =  nil) {
         self.id = id
         self.number = number
         self.gridText = gridText

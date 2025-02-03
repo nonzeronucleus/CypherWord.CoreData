@@ -1,8 +1,9 @@
 import Foundation
 import Combine
 
+
 class LevelListViewModel: ObservableObject {
-    @Published private(set) var levels: [Level]
+    @Published private(set) var levels: [Level] = []
     @Published private(set) var layouts: [Level] = []
 
     @Published private(set) var selectedLevel: Level?
@@ -19,21 +20,30 @@ class LevelListViewModel: ObservableObject {
 
     
     init() {
-        levels = levelService.levels
+        levels = fetchLevels()
+        layouts = fetchLayouts()
+    }
+    
+    func fetchLevels() -> [Level] {
+        let levels = levelService.levels
         levelService.$levels
             .sink { newLevels in
                 self.levels = newLevels
                 self.updateSelectedLevel()
             }
             .store(in: &cancellables)
+        return levels
+    }
         
-        layouts = levelService.layouts
+    func fetchLayouts() -> [Level] {
+        let layouts = levelService.layouts
         levelService.$layouts
             .sink { newLevels in
                 self.layouts = newLevels
                 self.updateSelectedLevel()
             }
             .store(in: &cancellables)
+        return layouts
     }
     
     func addLevel(levelType: Level.LevelType) {

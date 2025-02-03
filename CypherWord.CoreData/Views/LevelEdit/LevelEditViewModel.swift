@@ -13,7 +13,6 @@ class LevelEditViewModel: ObservableObject {
     @Published var letterValues: CharacterIntMap?
     @Published var isPopulated: Bool = false
     
-    
     init(level:Level) {
         self.level = level
         var newCrossword:Crossword?

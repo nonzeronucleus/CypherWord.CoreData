@@ -1,17 +1,42 @@
 import CoreData
 
 class LevelDataService {
-    private let container: NSPersistentContainer
-    private let containerName: String = "LevelsContainer"
-    private let entityName: String = "LevelMO"
+    @Published fileprivate(set) var levels: [Level] = []
+    @Published fileprivate(set) var layouts: [Level] = []
     
-    @Published private(set) var levels: [Level] = []
-    @Published private(set) var layouts: [Level] = []
+    static var shared:LevelDataService = LevelDataServiceImpl()
     
-    static var shared:LevelDataService = LevelDataService()
+    init() {
+    }
+    
+    func addPlayableLevel() {
+        fatalError("This method must be overridden")
+    }
+    
+    func addLayout() {
+        fatalError("This method must be overridden")
+    }
+    
+    func addLevelFromData(level:Level) {
+        fatalError("This method must be overridden")
+    }
 
-    private init() {
+    func deleteAll(levelType: Level.LevelType) {
+        fatalError("This method must be overridden")
+    }
+    
+    func updateLevel(level:Level) {
+        fatalError("This method must be overridden")
+    }
+}
+
+class LevelDataServiceImpl : LevelDataService {
+
+    override init() {
         container = NSPersistentContainer(name: containerName)
+        
+        super.init( )
+        
         container.loadPersistentStores { (_, error) in
             if let error = error {
                 print("Error loading Core Data! \(error)")
@@ -27,7 +52,7 @@ class LevelDataService {
     
     // MARK - Public
     
-    func addPlayableLevel() {
+    override func addPlayableLevel() {
         let entity = LevelMO(context: container.viewContext)
         entity.id = UUID()
         entity.number = Int64(getMaxLevelNumber(levelType: .playable)+1)
@@ -36,7 +61,7 @@ class LevelDataService {
         applyChanges(levelType: .playable)
     }
     
-    func addLayout() {
+    override func addLayout() {
         let entity = LevelMO(context: container.viewContext)
         entity.id = UUID()
         entity.number = Int64(getMaxLevelNumber(levelType: .layout)+1)
@@ -46,7 +71,7 @@ class LevelDataService {
     }
 
     
-    func addLevelFromData(level:Level) {
+    override func addLevelFromData(level:Level) {
         let entity = LevelMO(context: container.viewContext)
         entity.id = level.id
         entity.number = Int64(level.number)
@@ -55,7 +80,7 @@ class LevelDataService {
         applyChanges(levelType: .playable)
     }
     
-    func deleteAll(levelType: Level.LevelType) {
+    override func deleteAll(levelType: Level.LevelType) {
         let request: NSFetchRequest<NSFetchRequestResult> = createFetchRequest(resultType: NSFetchRequestResult.self, levelType: levelType)
         
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
@@ -70,7 +95,7 @@ class LevelDataService {
         }
     }
     
-    func updateLevel(level:Level) {
+    override func updateLevel(level:Level) {
         guard let entity = getLevelMO(id: level.id) else { return }
         entity.number = Int64(level.number)
         entity.gridText = level.gridText
@@ -78,15 +103,17 @@ class LevelDataService {
         applyChanges(levelType: level.levelType)
     }
     
-    func getLevelMO(id: UUID) -> LevelMO? {
+    // MARK - Private
+    
+    private let container: NSPersistentContainer
+    private let containerName: String = "LevelsContainer"
+    private let entityName: String = "LevelMO"
+    
+    private func getLevelMO(id: UUID) -> LevelMO? {
         let request: NSFetchRequest<LevelMO> = createFetchRequest(resultType: LevelMO.self, levelType: .playable)
         request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
         return try? container.viewContext.fetch(request).first
     }
-    
-
-
-    // MARK - Private
     
     private func createFetchRequest<T>(resultType: T.Type, levelType: Level.LevelType) -> NSFetchRequest<T> where T: NSFetchRequestResult {
         let request = NSFetchRequest<T>(entityName: entityName)

@@ -29,4 +29,10 @@ struct TabsView: View {
     }
 }
 
+#Preview {
+    let viewModel:LevelListViewModel = PreviewLevelListViewModel()
+    
+    TabsView()
+        .environmentObject(viewModel)
+}
 

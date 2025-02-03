@@ -19,3 +19,10 @@ struct LevelListRootView : View {
         }
     }
 }
+
+#Preview {
+    let viewModel:LevelListViewModel = PreviewLevelListViewModel()
+    
+    LevelListRootView(viewModel)
+//        .environmentObject(viewModel)
+}

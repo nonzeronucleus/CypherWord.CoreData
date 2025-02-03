@@ -51,7 +51,7 @@ struct LevelListView : View {
 }
 
 #Preview {
-    let viewModel = LevelListViewModel()
+    let viewModel:LevelListViewModel = PreviewLevelListViewModel()
     
     LevelListView(levelType: .layout)
         .environmentObject(viewModel)
