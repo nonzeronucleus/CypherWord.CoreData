@@ -11,9 +11,7 @@ struct ContentView: View {
     @State var selection:Tab = .level
     
     var body: some View {
-        LevelListRootView()
-//        TabsView(/*selectedLevel: $selectedLevel, */selection: $selection)
-//             .transition(.move(edge: .leading)) // Slide in from the left
+        LevelListRootView(.init())
     }
 }
 
@@ -23,31 +21,6 @@ struct FirstView: View {
         Text("Hello, World!")
     }
 }
-
-
-//struct ContentView: View {
-//
-//    @State private var showThoughtsView = false
-//    var body: some View {
-//        NavigationStack {
-//
-//                    Form {
-//
-//                        Section("Add Data") {
-//                            Button("Add") {
-//                                showThoughtsView = true
-//                            }
-//                            .buttonStyle(.borderedProminent)
-//                        }
-//                    }
-//                    .scrollContentBackground(.hidden)
-//                    .navigationDestination(isPresented: $showThoughtsView) {
-//                        FirstView()
-//                    }
-//                }
-//
-//        }
-//    }
 
 #Preview {
     ContentView()

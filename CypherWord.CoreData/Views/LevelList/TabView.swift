@@ -9,22 +9,17 @@ enum Tab: String, CaseIterable, Identifiable {
 }
 
 struct TabsView: View {
-    @ObservedObject var model : LevelListViewModel
     @State var selection: Tab = .level
 
-    init(model : LevelListViewModel) {
-        self.model = model
-    }
-    
     var body: some View {
         TabView(selection: $selection) {
-            LevelListView(model: model, levelType: .playable) //isLevel: true)
+            LevelListView(levelType: .playable)
                 .tabItem {
                     Image(systemName: "books.vertical")
                      Text("Levels")
                  }
                 .tag(Tab.level)
-            LevelListView(model: model, levelType: .layout) //isLevel: false)
+            LevelListView(levelType: .layout)
                 .tabItem {
                     Image(systemName: "person")
                      Text("Layout")
@@ -33,3 +28,5 @@ struct TabsView: View {
         }
     }
 }
+
+

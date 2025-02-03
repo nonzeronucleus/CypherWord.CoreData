@@ -5,8 +5,8 @@ import Foundation
 public struct LevelEditView: View {
     @ObservedObject  var model: LevelEditViewModel
     
-    init(level:Level) {
-        model = LevelEditViewModel(level: level)
+    init(_ model: LevelEditViewModel) {
+        self.model = model
     }
     
     
@@ -110,11 +110,12 @@ public struct LevelEditView: View {
 //
 //
 //
-//#Preview {
+#Preview {
+    
 //    @Dependency(\.uuid) var uuid
 //
 //    let id = uuid()
 //    
 //    let level = LevelDefinition(id: id, fileType: .layout, levelNumber: 1)
 //    LevelEditView(level: level)
-//}
+}

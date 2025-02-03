@@ -3,6 +3,7 @@ import Foundation
 
 
 
+
 class LevelEditViewModel: ObservableObject {
     static let defaultSize = 11
     @Published private(set) var level: Level
@@ -10,12 +11,13 @@ class LevelEditViewModel: ObservableObject {
     @Published var crossword: Crossword
     @Published private(set) var error:String?
     @Published var letterValues: CharacterIntMap?
+    @Published var isPopulated: Bool = false
     
     
     init(level:Level) {
         self.level = level
         var newCrossword:Crossword?
-    
+        
         let transformer = CrosswordTransformer()
         
         if let gridText = level.gridText {
@@ -26,7 +28,7 @@ class LevelEditViewModel: ObservableObject {
         }
         
         crossword = newCrossword!
-
+        
         size = newCrossword!.columns
     }
     
@@ -36,7 +38,7 @@ class LevelEditViewModel: ObservableObject {
                 cell.toggle()
             }
             let opposite = Pos(row: crossword.columns - 1 - location.row, column: crossword.rows - 1 - location.column)
-
+            
             if opposite != location {
                 crossword.updateElement(byPos: opposite) { cell in
                     cell.toggle()
@@ -55,13 +57,19 @@ class LevelEditViewModel: ObservableObject {
             level.gridText = gridText
             levelDataService.updateLevel(level:level)
         }
-
-//            do {
-//                try levelDataMgr.save(levelData: levelData)
-//            } catch {
-//                self.error = error.localizedDescription
-//            }
     }
+    
+    func generate() {
+        let populator = CrosswordPopulator(crossword: crossword)
+        
+        let populated = populator.populateCrossword()
+        
+        crossword = populated.crossword
+        
+        letterValues = populated.characterIntMap
+        isPopulated = true
+    }
+}
 
     
     // Create new level
@@ -155,4 +163,4 @@ class LevelEditViewModel: ObservableObject {
 //        return crossword[pos.row, pos.column].id
 //    }
 //    
-}
+//}

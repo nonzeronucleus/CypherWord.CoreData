@@ -1,13 +1,14 @@
 import SwiftUI
 
 struct LevelListView : View {
-    @ObservedObject var model : LevelListViewModel
+    @EnvironmentObject var viewModel: LevelListViewModel
+    
+//    @ObservedObject var viewModel : LevelListViewModel
     private var gridItemLayout = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
     @State private var showThoughtsView = false
     var levelType: Level.LevelType
     
-    init(model : LevelListViewModel, levelType: Level.LevelType) {
-        self.model = model
+    init(levelType: Level.LevelType) {
         self.levelType = levelType
     }
     
@@ -29,23 +30,30 @@ struct LevelListView : View {
             
             ScrollView {
                 LazyVGrid(columns: gridItemLayout, spacing: 20) {
-                    let levels = levelType == .layout ? model.layouts : model.levels
+                    let levels = levelType == .layout ? viewModel.layouts : viewModel.levels
                     ForEach(levels) { level in
                         CartoonButton(levelNumber:level.number, gradient:Gradient(colors: [primaryColor, secondaryColor])) {
-                            model.selectedLevelID = level.id
+                            viewModel.selectedLevelID = level.id
                         }
                     }
                 }
             }
             
             Button("Add") {
-                model.addLevel(levelType: levelType)
+                viewModel.addLevel(levelType: levelType)
             }
             Button("Delete all") {
-                model.deleteAll(levelType: levelType)
+                viewModel.deleteAll(levelType: levelType)
             }
             Spacer()
         }
     }
+}
+
+#Preview {
+    let viewModel = LevelListViewModel()
+    
+    LevelListView(levelType: .layout)
+        .environmentObject(viewModel)
 }
 
