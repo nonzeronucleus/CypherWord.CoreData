@@ -7,8 +7,10 @@ class LevelDataService {
     
     @Published private(set) var levels: [Level] = []
     @Published private(set) var layouts: [Level] = []
+    
+    static var shared:LevelDataService = LevelDataService()
 
-    init() {
+    private init() {
         container = NSPersistentContainer(name: containerName)
         container.loadPersistentStores { (_, error) in
             if let error = error {
@@ -18,7 +20,7 @@ class LevelDataService {
             self.populateLevels(levelType:.playable)
         }
         
-//        importLevels(levelType:.layout)
+        importLevels(levelType:.layout)
         importLevels(levelType:.playable)
     }
     
@@ -34,6 +36,16 @@ class LevelDataService {
         applyChanges(levelType: .playable)
     }
     
+    func addLayout() {
+        let entity = LevelMO(context: container.viewContext)
+        entity.id = UUID()
+        entity.number = Int64(getMaxLevelNumber(levelType: .layout)+1)
+        entity.gridText = nil
+        entity.letterMap = nil
+        applyChanges(levelType: .layout)
+    }
+
+    
     func addLevelFromData(level:Level) {
         let entity = LevelMO(context: container.viewContext)
         entity.id = level.id
@@ -43,38 +55,57 @@ class LevelDataService {
         applyChanges(levelType: .playable)
     }
     
-    func deleteAll() {
-        let request: NSFetchRequest<NSFetchRequestResult> = createFetchRequest(resultType: NSFetchRequestResult.self)
+    func deleteAll(levelType: Level.LevelType) {
+        let request: NSFetchRequest<NSFetchRequestResult> = createFetchRequest(resultType: NSFetchRequestResult.self, levelType: levelType)
         
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
 
         do {
             try container.viewContext.execute(deleteRequest)
             try container.viewContext.save()
-            levels.removeAll() // Clear the in-memory levels array
+            self.populateLevels(levelType:.layout)
+            self.populateLevels(levelType:.playable)
         } catch let error {
             print("Error deleting all levels. \(error)")
         }
+    }
+    
+    func updateLevel(level:Level) {
+        guard let entity = getLevelMO(id: level.id) else { return }
+        entity.number = Int64(level.number)
+        entity.gridText = level.gridText
+        entity.letterMap = level.letterMap
+        applyChanges(levelType: level.levelType)
+    }
+    
+    func getLevelMO(id: UUID) -> LevelMO? {
+        let request: NSFetchRequest<LevelMO> = createFetchRequest(resultType: LevelMO.self, levelType: .playable)
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        return try? container.viewContext.fetch(request).first
     }
     
 
 
     // MARK - Private
     
-    private func createFetchRequest<T>(resultType: T.Type) -> NSFetchRequest<T> where T: NSFetchRequestResult {
+    private func createFetchRequest<T>(resultType: T.Type, levelType: Level.LevelType) -> NSFetchRequest<T> where T: NSFetchRequestResult {
         let request = NSFetchRequest<T>(entityName: entityName)
-        request.predicate = NSPredicate(format: "letterMap != nil")
+        if levelType == .playable {
+            request.predicate = NSPredicate(format: "letterMap != nil")
+        } else {
+            request.predicate = NSPredicate(format: "letterMap == nil")
+        }
         request.sortDescriptors = [NSSortDescriptor(key: "number", ascending: true)]
         return request
     }
     
     private func loadLevels(levelType:Level.LevelType) -> [Level] {
         do {
-            let fetchRequest: NSFetchRequest<LevelMO> = createFetchRequest(resultType: LevelMO.self)
+            let fetchRequest: NSFetchRequest<LevelMO> = createFetchRequest(resultType: LevelMO.self, levelType: levelType)
             let savedEntities = try container.viewContext.fetch(fetchRequest)
             
             let levels = savedEntities.map( {
-                entity in Level(id: entity.id ?? UUID(), number: Int(entity.number), gridText: entity.gridText ?? "", letterMap: entity.letterMap ?? "")
+                entity in Level(id: entity.id ?? UUID(), number: Int(entity.number), gridText: entity.gridText, letterMap: entity.letterMap)
             })
             return levels
         } catch let error {
@@ -111,7 +142,12 @@ class LevelDataService {
     }
     
     private func getMaxLevelNumber(levelType:Level.LevelType) -> Int {
-        return levels.max(by: { $0.number < $1.number })?.number ?? 0
+        if levelType == .layout {
+            return layouts.max(by: { $0.number < $1.number })?.number ?? 0
+        }
+        else {
+            return levels.max(by: { $0.number < $1.number })?.number ?? 0
+        }
     }
     
     private func importLevels(levelType:Level.LevelType) {

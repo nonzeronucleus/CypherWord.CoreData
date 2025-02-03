@@ -2,8 +2,9 @@ import SwiftUI
 
 struct CartoonButton: View {
     var levelNumber: Int
+    var gradient: Gradient
     var action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             Text("\(levelNumber)")
@@ -14,7 +15,7 @@ struct CartoonButton: View {
                     ZStack {
                         RoundedRectangle(cornerRadius: 20)
                             .fill(LinearGradient(
-                                gradient: Gradient(colors: [Color.blue, Color.cyan]),
+                                gradient: gradient,
                                 startPoint: .top,
                                 endPoint: .bottom
                             ))
@@ -43,7 +44,7 @@ struct CartoonButton: View {
 
 struct CartoonButton_Previews: PreviewProvider {
     static var previews: some View {
-        CartoonButton(levelNumber: 1) {
+        CartoonButton(levelNumber: 1, gradient:Gradient(colors: [Color.blue, Color.cyan])) {
             print("Level 1 Selected")
         }
         .padding()

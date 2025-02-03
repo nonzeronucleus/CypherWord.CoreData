@@ -3,17 +3,18 @@ import Combine
 
 class LevelListViewModel: ObservableObject {
     @Published private(set) var levels: [Level]
-    @Published var selectedLevelID:UUID? = nil {
+    @Published private(set) var layouts: [Level] = []
+
+    @Published private(set) var selectedLevel: Level?
+    
+    @Published var selectedLevelID: UUID? {
         didSet {
-            showDetail = selectedLevelID != nil
+            updateSelectedLevel()
         }
     }
-    var selectedLevel: Level? {
-        guard let id = selectedLevelID else { return nil }
-        return levels.first(where: { $0.id == id })
-    }
+    
     @Published var showDetail: Bool = false
-    var levelService = LevelDataService()
+    var levelService = LevelDataService.shared
     private var cancellables = Set<AnyCancellable>()
 
     
@@ -22,16 +23,30 @@ class LevelListViewModel: ObservableObject {
         levelService.$levels
             .sink { newLevels in
                 self.levels = newLevels
+                self.updateSelectedLevel()
+            }
+            .store(in: &cancellables)
+        
+        layouts = levelService.layouts
+        levelService.$layouts
+            .sink { newLevels in
+                self.layouts = newLevels
+                self.updateSelectedLevel()
             }
             .store(in: &cancellables)
     }
     
-    func addLevel() {
-        levelService.addPlayableLevel()
+    func addLevel(levelType: Level.LevelType) {
+        if levelType == .layout {
+            levelService.addLayout()
+        }
+        else {
+            levelService.addPlayableLevel()
+        }
     }
     
-    func deleteAll() {
-        levelService.deleteAll()
+    func deleteAll(levelType: Level.LevelType) {
+        levelService.deleteAll(levelType: levelType)
     }
     
     func onCellClick(uuid:UUID) {
@@ -51,5 +66,10 @@ class LevelListViewModel: ObservableObject {
 //                }
 //            }
 //        }
+    }
+    
+    private func updateSelectedLevel() {
+        selectedLevel = layouts.first(where: { $0.id == selectedLevelID })
+        showDetail = selectedLevel != nil
     }
 }

@@ -18,13 +18,13 @@ struct TabsView: View {
     
     var body: some View {
         TabView(selection: $selection) {
-            LevelListView(model: model) //isLevel: true, selectedLevel:$selectedLevel)
+            LevelListView(model: model, levelType: .playable) //isLevel: true)
                 .tabItem {
                     Image(systemName: "books.vertical")
                      Text("Levels")
                  }
                 .tag(Tab.level)
-            LevelListView(model: model) //isLevel: false, selectedLevel:$selectedLevel)
+            LevelListView(model: model, levelType: .layout) //isLevel: false)
                 .tabItem {
                     Image(systemName: "person")
                      Text("Layout")
