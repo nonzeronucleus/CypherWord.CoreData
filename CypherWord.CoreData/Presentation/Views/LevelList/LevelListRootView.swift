@@ -24,5 +24,4 @@ struct LevelListRootView : View {
     let viewModel:LevelListViewModel = PreviewLevelListViewModel()
     
     LevelListRootView(viewModel)
-//        .environmentObject(viewModel)
 }

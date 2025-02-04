@@ -1,8 +1,8 @@
 import Foundation
 
-class CrosswordPopulator {
+class CrosswordPopulatorService {
     let wordlist = WordListService()
-//    
+//
     private(set) var entries: [Entry] = []
     private var crossword:Crossword
     

@@ -12,20 +12,20 @@ public struct LevelEditView: View {
     
     public var body: some View {
         VStack {
-//            Slider(
-//                value: Binding(
-//                    get: {
-//                        Double(model.size)
-//                    },
-//                    set: {(newValue) in
-//                        let intValue = Int(newValue)
-//                        if intValue != model.size {
-//                            model.resize(newSize: intValue)
-//                        }
-//                    }),
-//                in: 5...23,
-//                step: 2.0
-//            )
+            Slider(
+                value: Binding(
+                    get: {
+                        Double(exactly: model.size)!
+                    },
+                    set: {(newValue) in
+                        let intValue = Int(newValue)
+                        if intValue != model.size {
+                            model.resize(newSize: intValue)
+                        }
+                    }),
+                in: 5...19,
+                step: 2.0
+            )
             Text("\(model.size)")
             CrosswordView(grid: model.crossword,
                           viewMode: .actualValue,

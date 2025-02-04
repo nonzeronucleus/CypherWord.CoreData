@@ -59,7 +59,7 @@ class LevelEditViewModel: ObservableObject {
     }
     
     func generate() {
-        let populator = CrosswordPopulator(crossword: crossword)
+        let populator = CrosswordPopulatorService(crossword: crossword)
         
         let populated = populator.populateCrossword()
         
@@ -67,6 +67,15 @@ class LevelEditViewModel: ObservableObject {
         
         letterValues = populated.characterIntMap
         isPopulated = true
+    }
+    
+    func resize(newSize: Int) {
+        guard size != newSize else { return }
+
+//        let resizer = Resizer(newSize: newSize)
+
+        size = newSize
+//        crossword = resizer.perform(inputGrid: crossword)
     }
 }
 
