@@ -129,6 +129,7 @@ class LevelDataServiceImpl : LevelDataService {
     private func loadLevels(levelType:Level.LevelType) -> [Level] {
         do {
             let fetchRequest: NSFetchRequest<LevelMO> = createFetchRequest(resultType: LevelMO.self, levelType: levelType)
+            print("Fetch Request \(fetchRequest)")
             let savedEntities = try container.viewContext.fetch(fetchRequest)
             
             let levels = savedEntities.map( {

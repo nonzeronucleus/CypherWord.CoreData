@@ -1,27 +1,40 @@
 import SwiftUI
 
 struct LevelListRootView : View {
-    @ObservedObject var viewModel: LevelListViewModel
+    @ObservedObject var viewModel: LevelListViewModelProtocol
     
-    init(_ viewModel: LevelListViewModel) {
+    init(_ viewModel: LevelListViewModelProtocol) {
         self.viewModel = viewModel
     }
     
     var body: some View {
         NavigationStack {
-            TabsView()
-                .navigationDestination(isPresented: $viewModel.showDetail) {
-                    if let selectedLevel = viewModel.selectedLevel {
-                        LevelEditView(.init(level: selectedLevel))
-                    }
+            VStack {
+                if let error = viewModel.error {
+                    Text("Error: \(error)")
                 }
-                .environmentObject(viewModel)
+                TabsView()
+                    .navigationDestination(isPresented: $viewModel.showDetail) {
+                        if let selectedLevel = viewModel.selectedLevel {
+                            LevelEditView(.init(level: selectedLevel))
+                        }
+                    }
+                    .environmentObject(viewModel)
+            }
         }
     }
 }
 
-#Preview {
-    let viewModel:LevelListViewModel = PreviewLevelListViewModel()
-    
-    LevelListRootView(viewModel)
-}
+//#Preview {
+//    let layoutRepository = LevelStorageCoreData()
+//    let fetchLayoutsUseCase = FetchLayoutssUseCase(repository: layoutRepository)
+//    let fetchPlayableLevelsUseCase = FetchPlayableLevelsUseCase(repository: layoutRepository)
+//    let addLayoutUseCase = AddLayoutUseCase(repository: layoutRepository)
+//    let viewModel:LevelListViewModel = PreviewLevelListViewModel(
+//        fetchLayoutsUseCase: fetchLayoutsUseCase,
+//        fetchPlayableLevelsUseCase:fetchPlayableLevelsUseCase,
+//        addLayoutUseCase: addLayoutUseCase
+//    )
+//    
+//    LevelListRootView(viewModel)
+//}

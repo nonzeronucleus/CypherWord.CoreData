@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LevelListView : View {
-    @EnvironmentObject var viewModel: LevelListViewModel
+    @EnvironmentObject var viewModel: LevelListViewModelProtocol
     
 //    @ObservedObject var viewModel : LevelListViewModel
     private var gridItemLayout = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
@@ -38,9 +38,11 @@ struct LevelListView : View {
                     }
                 }
             }
-            
-            Button("Add") {
-                viewModel.addLevel(levelType: levelType)
+
+            if levelType == .layout {
+                Button("Add") {
+                    viewModel.addLayout()
+                }
             }
             Button("Delete all") {
                 viewModel.deleteAll(levelType: levelType)
@@ -50,10 +52,18 @@ struct LevelListView : View {
     }
 }
 
-#Preview {
-    let viewModel:LevelListViewModel = PreviewLevelListViewModel()
-    
-    LevelListView(levelType: .layout)
-        .environmentObject(viewModel)
-}
+//#Preview {
+//    let layoutRepository = LevelStorageCoreData()
+//    let fetchLayoutsUseCase = FetchLayoutssUseCase(repository: layoutRepository)
+//    let fetchPlayableLevelsUseCase = FetchPlayableLevelsUseCase(repository: layoutRepository)
+//    let addLayoutUseCase = AddLayoutUseCase(repository: layoutRepository)
+//    let viewModel:LevelListViewModel = PreviewLevelListViewModel(
+//        fetchLayoutsUseCase: fetchLayoutsUseCase,
+//        fetchPlayableLevelsUseCase:fetchPlayableLevelsUseCase,
+//        addLayoutUseCase: addLayoutUseCase
+//    )
+//
+//    LevelListView(levelType: .layout)
+//        .environmentObject(viewModel)
+//}
 

@@ -1,6 +1,6 @@
 import Foundation
 
-struct Level: Identifiable, Codable {
+class Level: Identifiable, Codable {
     var id: UUID
     var number: Int
     var gridText: String?

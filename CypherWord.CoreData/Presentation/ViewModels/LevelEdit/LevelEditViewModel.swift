@@ -47,26 +47,26 @@ class LevelEditViewModel: ObservableObject {
     }
     
     func save() {
-        let levelDataService = LevelDataService.shared
-        let transformer = CrosswordTransformer()
-        
-        let gridText = transformer.transformedValue(crossword) as? String
-        
-        if let gridText = gridText {
-            level.gridText = gridText
-            levelDataService.updateLevel(level:level)
-        }
+//        let levelDataService = LevelDataService.shared
+//        let transformer = CrosswordTransformer()
+//        
+//        let gridText = transformer.transformedValue(crossword) as? String
+//        
+//        if let gridText = gridText {
+//            level.gridText = gridText
+//            levelDataService.updateLevel(level:level)
+//        }
     }
     
     func generate() {
-        let populator = CrosswordPopulatorService(crossword: crossword)
-        
-        let populated = populator.populateCrossword()
-        
-        crossword = populated.crossword
-        
-        letterValues = populated.characterIntMap
-        isPopulated = true
+//        let populator = CrosswordPopulatorService(crossword: crossword)
+//        
+//        let populated = populator.populateCrossword()
+//        
+//        crossword = populated.crossword
+//        
+//        letterValues = populated.characterIntMap
+//        isPopulated = true
     }
     
     func resize(newSize: Int) {

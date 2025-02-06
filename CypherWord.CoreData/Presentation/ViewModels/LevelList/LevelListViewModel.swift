@@ -2,61 +2,70 @@ import Foundation
 import Combine
 
 
-class LevelListViewModel: ObservableObject {
-    @Published private(set) var levels: [Level] = []
-    @Published private(set) var layouts: [Level] = []
-
-    @Published private(set) var selectedLevel: Level?
-    
-    @Published var selectedLevelID: UUID? {
-        didSet {
-            updateSelectedLevel()
-        }
-    }
-    
-    @Published var showDetail: Bool = false
-    var levelService = LevelDataService.shared
+class LevelListViewModel: LevelListViewModelProtocol {
     private var cancellables = Set<AnyCancellable>()
+    private let fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
+    private let fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol
+    private let addLayoutUseCase: AddLayoutUseCaseProtocol
+
+    init(fetchLayoutsUseCase: FetchLevelsUseCaseProtocol,
+         fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol,
+         addLayoutUseCase: AddLayoutUseCaseProtocol
+    ) {
+
+        self.fetchLayoutsUseCase = fetchLayoutsUseCase
+        self.fetchPlayableLevelsUseCase = fetchPlayableLevelsUseCase
+        self.addLayoutUseCase = addLayoutUseCase
+        super.init()
+
+        fetchLevels()
+        fetchLayouts()
+    }
+    
+    func fetchLevels() {
+        fetchPlayableLevelsUseCase.execute { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let levels):
+                    self?.levels = levels
+                case .failure(let error):
+                    self?.error = error.localizedDescription
+                }
+            }
+        }
+    }
+
+        
+    func fetchLayouts() {
+        fetchLayoutsUseCase.execute { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let levels):
+                    self?.layouts = levels
+                case .failure(let error):
+                    self?.error = error.localizedDescription
+                }
+            }
+        }
+    }
 
     
-    init() {
-        levels = fetchLevels()
-        layouts = fetchLayouts()
-    }
-    
-    func fetchLevels() -> [Level] {
-        let levels = levelService.levels
-        levelService.$levels
-            .sink { newLevels in
-                self.levels = newLevels
-                self.updateSelectedLevel()
+    override func addLayout() {
+        addLayoutUseCase.execute { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                    case .success(let levels):
+                        self?.layouts = levels
+                    case .failure(let error):
+                        self?.error = error.localizedDescription
+                }
             }
-            .store(in: &cancellables)
-        return levels
-    }
-        
-    func fetchLayouts() -> [Level] {
-        let layouts = levelService.layouts
-        levelService.$layouts
-            .sink { newLevels in
-                self.layouts = newLevels
-                self.updateSelectedLevel()
-            }
-            .store(in: &cancellables)
-        return layouts
-    }
-    
-    func addLevel(levelType: Level.LevelType) {
-        if levelType == .layout {
-            levelService.addLayout()
         }
-        else {
-            levelService.addPlayableLevel()
-        }
+
     }
-    
-    func deleteAll(levelType: Level.LevelType) {
-        levelService.deleteAll(levelType: levelType)
+
+    override func deleteAll(levelType: Level.LevelType) {
+//        levelService.deleteAll(levelType: levelType)
     }
     
     func onCellClick(uuid:UUID) {
@@ -78,8 +87,8 @@ class LevelListViewModel: ObservableObject {
 //        }
     }
     
-    private func updateSelectedLevel() {
-        selectedLevel = layouts.first(where: { $0.id == selectedLevelID })
-        showDetail = selectedLevel != nil
-    }
+//    private func updateSelectedLevel() {
+//        selectedLevel = layouts.first(where: { $0.id == selectedLevelID })
+//        showDetail = selectedLevel != nil
+//    }
 }
