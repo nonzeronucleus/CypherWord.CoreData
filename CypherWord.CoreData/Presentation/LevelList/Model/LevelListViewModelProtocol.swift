@@ -12,9 +12,9 @@ class LevelListViewModelProtocol: ObservableObject {
             updateSelectedLevel()
         }
     }
+    
     @Published var showDetail: Bool = false
 
-    
     func updateSelectedLevel() {
         selectedLevel = layouts.first(where: { $0.id == selectedLevelID })
         showDetail = selectedLevel != nil

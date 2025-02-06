@@ -1,12 +1,11 @@
 import Foundation
 
-class PreviewLevelListViewModel: LevelListViewModel {
+class PreviewLevelListViewModel: LevelListViewModelProtocol {
     
-    override func fetchLevels() {
+    override init() {
+        super.init()
         levels = [Level(id: UUID(), number: 1), Level(id: UUID(), number: 2)]
-    }
-    
-    override func fetchLayouts() {
         layouts = [Level(id: UUID(), number: 1), Level(id: UUID(), number: 2)]
     }
+    
 }

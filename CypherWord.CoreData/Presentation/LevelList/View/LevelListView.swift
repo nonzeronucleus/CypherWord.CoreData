@@ -47,23 +47,18 @@ struct LevelListView : View {
             Button("Delete all") {
                 viewModel.deleteAll(levelType: levelType)
             }
+            Button("Import") {
+//                viewModel.importLayouts()
+            }
             Spacer()
         }
     }
 }
 
-//#Preview {
-//    let layoutRepository = LevelStorageCoreData()
-//    let fetchLayoutsUseCase = FetchLayoutssUseCase(repository: layoutRepository)
-//    let fetchPlayableLevelsUseCase = FetchPlayableLevelsUseCase(repository: layoutRepository)
-//    let addLayoutUseCase = AddLayoutUseCase(repository: layoutRepository)
-//    let viewModel:LevelListViewModel = PreviewLevelListViewModel(
-//        fetchLayoutsUseCase: fetchLayoutsUseCase,
-//        fetchPlayableLevelsUseCase:fetchPlayableLevelsUseCase,
-//        addLayoutUseCase: addLayoutUseCase
-//    )
-//
-//    LevelListView(levelType: .layout)
-//        .environmentObject(viewModel)
-//}
+#Preview {
+    let viewModel:LevelListViewModelProtocol = PreviewLevelListViewModel()
+
+    LevelListView(levelType: .layout)
+        .environmentObject(viewModel)
+}
 

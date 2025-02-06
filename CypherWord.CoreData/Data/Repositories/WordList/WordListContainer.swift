@@ -1,14 +1,14 @@
 import Foundation
 
-class WordListService {
+class WordListContainer : WordListContainerProtocol {
     let words: [String]
     var wordsByLength: [Int:[String]]
     var count:Int { words.count }
     
     init() {
         let name = "ukenglish"
-        self.words = WordListService.loadFile(name)
-        self.wordsByLength = WordListService.groupWordsByLength(words: words)
+        self.words = WordListContainer.loadFile(name)
+        self.wordsByLength = WordListContainer.groupWordsByLength(words: words)
     }
     
     func getWordsByLength(length:Int) -> [String] {

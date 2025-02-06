@@ -25,16 +25,8 @@ struct LevelListRootView : View {
     }
 }
 
-//#Preview {
-//    let layoutRepository = LevelStorageCoreData()
-//    let fetchLayoutsUseCase = FetchLayoutssUseCase(repository: layoutRepository)
-//    let fetchPlayableLevelsUseCase = FetchPlayableLevelsUseCase(repository: layoutRepository)
-//    let addLayoutUseCase = AddLayoutUseCase(repository: layoutRepository)
-//    let viewModel:LevelListViewModel = PreviewLevelListViewModel(
-//        fetchLayoutsUseCase: fetchLayoutsUseCase,
-//        fetchPlayableLevelsUseCase:fetchPlayableLevelsUseCase,
-//        addLayoutUseCase: addLayoutUseCase
-//    )
-//    
-//    LevelListRootView(viewModel)
-//}
+#Preview {
+    let viewModel:LevelListViewModelProtocol = PreviewLevelListViewModel()
+
+    LevelListRootView(viewModel)
+}

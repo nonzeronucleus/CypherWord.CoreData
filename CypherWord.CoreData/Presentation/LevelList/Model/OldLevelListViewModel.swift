@@ -3,18 +3,7 @@ import Combine
 
 
 class OldLevelListViewModel: LevelListViewModelProtocol {
-//    @Published private(set) var levels: [Level] = []
-//    @Published private(set) var layouts: [Level] = []
 
-//    @Published private(set) var selectedLevel: Level?
-//    
-//    @Published var selectedLevelID: UUID? {
-//        didSet {
-//            updateSelectedLevel()
-//        }
-//    }
-//    
-//    @Published var showDetail: Bool = false
     var levelService = LevelDataService.shared
     private var cancellables = Set<AnyCancellable>()
 

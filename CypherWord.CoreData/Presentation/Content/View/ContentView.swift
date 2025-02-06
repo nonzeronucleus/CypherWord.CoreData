@@ -12,7 +12,8 @@ struct ContentView: View {
     let viewModel:LevelListViewModelProtocol
 
     init () {
-        let layoutRepository = LevelStorageCoreData()
+//        let layoutRepository = LevelStorageCoreData()
+        let layoutRepository = LevelRepositoryFile()
         let fetchLayoutsUseCase = FetchLayoutssUseCase(repository: layoutRepository)
         let fetchPlayableLevelsUseCase = FetchPlayableLevelsUseCase(repository: layoutRepository)
         let addLayoutUseCase = AddLayoutUseCase(repository: layoutRepository)
