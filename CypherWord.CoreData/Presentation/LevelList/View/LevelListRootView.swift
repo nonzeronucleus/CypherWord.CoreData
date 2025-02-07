@@ -1,9 +1,9 @@
 import SwiftUI
 
 struct LevelListRootView : View {
-    @ObservedObject var viewModel: LevelListViewModelProtocol
+    @ObservedObject var viewModel: LevelListViewModel
     
-    init(_ viewModel: LevelListViewModelProtocol) {
+    init(_ viewModel: LevelListViewModel) {
         self.viewModel = viewModel
     }
     
@@ -26,7 +26,23 @@ struct LevelListRootView : View {
 }
 
 #Preview {
-    let viewModel:LevelListViewModelProtocol = PreviewLevelListViewModel()
-
+    let fetchLayoutsUseCase = FetchLevelsUseCaseMock(levels:
+        [Level(id: UUID(), number: 1),
+        Level(id: UUID(), number: 2)]
+    )
+    let fetchPlayableLevelsUseCase = FetchLevelsUseCaseMock(levels:
+        [Level(id: UUID(), number: 1),
+        Level(id: UUID(), number: 2),
+         Level(id: UUID(), number: 3)]
+    )
+    let addLayoutUseCase: AddLayoutUseCaseProtocol = AddLayoutUseCaseMock()
+    let deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol = DeleteAllLevelsUseCaseMock()
+    
+    
+    let viewModel = LevelListViewModel(fetchLayoutsUseCase: fetchLayoutsUseCase,
+                                       fetchPlayableLevelsUseCase: fetchPlayableLevelsUseCase,
+                                       addLayoutUseCase: addLayoutUseCase,
+                                       deleteAllLevelstUseCase: deleteAllLevelsUseCase)
+    
     LevelListRootView(viewModel)
 }

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State var selection:Tab = .level
-    let viewModel:LevelListViewModelProtocol
+    let viewModel:LevelListViewModel
 
     init () {
         let layoutRepository = LevelStorageCoreData()

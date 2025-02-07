@@ -2,7 +2,26 @@ import Foundation
 import Combine
 
 
-class LevelListViewModel: LevelListViewModelProtocol {
+class LevelListViewModel: ObservableObject {
+    @Published var levels: [Level] = []
+    @Published var layouts: [Level] = []
+    @Published var error:String?
+    
+    @Published private(set) var selectedLevel: Level?
+    
+    @Published var selectedLevelID: UUID? {
+        didSet {
+            updateSelectedLevel()
+        }
+    }
+    
+    @Published var showDetail: Bool = false
+
+    func updateSelectedLevel() {
+        selectedLevel = layouts.first(where: { $0.id == selectedLevelID })
+        showDetail = selectedLevel != nil
+    }
+    
     private var cancellables = Set<AnyCancellable>()
     private let fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
     private let fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol
@@ -19,7 +38,6 @@ class LevelListViewModel: LevelListViewModelProtocol {
         self.fetchPlayableLevelsUseCase = fetchPlayableLevelsUseCase
         self.addLayoutUseCase = addLayoutUseCase
         self.deleteAllLevelstUseCase = deleteAllLevelstUseCase
-        super.init()
 
         fetchLevels()
         fetchLayouts()
@@ -53,7 +71,7 @@ class LevelListViewModel: LevelListViewModelProtocol {
     }
 
     
-    override func addLayout() {
+    func addLayout() {
         addLayoutUseCase.execute { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
@@ -66,7 +84,7 @@ class LevelListViewModel: LevelListViewModelProtocol {
         }
     }
 
-    override func deleteAll(levelType: Level.LevelType) {
+    func deleteAll(levelType: Level.LevelType) {
         deleteAllLevelstUseCase.execute(levelType: levelType, completion: { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
@@ -78,28 +96,4 @@ class LevelListViewModel: LevelListViewModelProtocol {
             }
         })
     }
-    
-    func onCellClick(uuid:UUID) {
-        print("\(uuid)")
-//        if completed {
-//            return
-//        }
-//        
-//        checking = false
-        
-//        let cell = crossword.findElement(byID: uuid)
-//        
-//        if let cell = cell {
-//            if let letter = cell.letter {
-//                if let number = letterValues?[letter] {
-//                    selectedNumber = number
-//                }
-//            }
-//        }
-    }
-    
-//    private func updateSelectedLevel() {
-//        selectedLevel = layouts.first(where: { $0.id == selectedLevelID })
-//        showDetail = selectedLevel != nil
-//    }
 }
