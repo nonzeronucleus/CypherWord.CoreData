@@ -2,9 +2,11 @@ import SwiftUI
 
 struct LevelListRootView : View {
     @ObservedObject var viewModel: LevelListViewModel
-    
-    init(_ viewModel: LevelListViewModel) {
+    private let repository: LevelRepositoryProtocol
+
+    init(_ viewModel: LevelListViewModel, repository: LevelRepositoryProtocol) {
         self.viewModel = viewModel
+        self.repository = repository
     }
     
     var body: some View {
@@ -44,5 +46,5 @@ struct LevelListRootView : View {
                                        addLayoutUseCase: addLayoutUseCase,
                                        deleteAllLevelstUseCase: deleteAllLevelsUseCase)
     
-    LevelListRootView(viewModel)
+    LevelListRootView(viewModel, repository: <#T##any LevelRepositoryProtocol#>)
 }

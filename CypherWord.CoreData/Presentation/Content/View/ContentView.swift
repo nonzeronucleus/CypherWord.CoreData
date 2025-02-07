@@ -6,7 +6,6 @@ struct ContentView: View {
 
     init () {
         let layoutRepository = LevelStorageCoreData()
-//        let layoutRepository = LevelRepositoryFile()
         let fetchLayoutsUseCase = FetchLayoutssUseCase(repository: layoutRepository)
         let fetchPlayableLevelsUseCase = FetchPlayableLevelsUseCase(repository: layoutRepository)
         let addLayoutUseCase = AddLayoutUseCase(repository: layoutRepository, fetchLayoutsUseCase: fetchLayoutsUseCase)
