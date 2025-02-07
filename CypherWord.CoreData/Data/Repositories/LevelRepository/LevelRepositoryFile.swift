@@ -28,7 +28,15 @@ extension LevelRepositoryFile : LevelRepositoryProtocol {
 
     }
     
-    func addLayout(completion: @escaping (Result<[Level], any Error>) -> Void) {
+    func addLayout(completion: @escaping (Result<Void, any Error>) -> Void) {
+        fatalError("Not implemented")
+    }
+    
+    func save(completion: @escaping (Result<Void, any Error>) -> Void) {
+        fatalError("Not implemented")
+    }
+    
+    func deleteAll(levelType: Level.LevelType, completion: @escaping (Result<Void, any Error>) -> Void) {
         fatalError("Not implemented")
     }
 }

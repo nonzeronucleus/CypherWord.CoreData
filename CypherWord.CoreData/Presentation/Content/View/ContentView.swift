@@ -1,10 +1,3 @@
-//
-//  ContentView.swift
-//  CypherWord.CoreData
-//
-//  Created by Ian Plumb on 01/02/2025.
-//
-
 import SwiftUI
 
 struct ContentView: View {
@@ -12,18 +5,19 @@ struct ContentView: View {
     let viewModel:LevelListViewModelProtocol
 
     init () {
-//        let layoutRepository = LevelStorageCoreData()
-        let layoutRepository = LevelRepositoryFile()
+        let layoutRepository = LevelStorageCoreData()
+//        let layoutRepository = LevelRepositoryFile()
         let fetchLayoutsUseCase = FetchLayoutssUseCase(repository: layoutRepository)
         let fetchPlayableLevelsUseCase = FetchPlayableLevelsUseCase(repository: layoutRepository)
-        let addLayoutUseCase = AddLayoutUseCase(repository: layoutRepository)
+        let addLayoutUseCase = AddLayoutUseCase(repository: layoutRepository, fetchLayoutsUseCase: fetchLayoutsUseCase)
+        let deleteAllLevelsUseCase = DeleteAllLevelsUseCase(repository: layoutRepository, fetchLayoutsUseCase: fetchLayoutsUseCase)
+        
         viewModel = LevelListViewModel(
             fetchLayoutsUseCase: fetchLayoutsUseCase,
             fetchPlayableLevelsUseCase:fetchPlayableLevelsUseCase,
-            addLayoutUseCase: addLayoutUseCase
+            addLayoutUseCase: addLayoutUseCase,
+            deleteAllLevelstUseCase: deleteAllLevelsUseCase
         )
-        
-//        viewModel = OldLevelListViewModel()
     }
 
     var body: some View {

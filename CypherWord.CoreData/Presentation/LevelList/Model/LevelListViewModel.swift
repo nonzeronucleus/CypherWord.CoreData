@@ -6,16 +6,19 @@ class LevelListViewModel: LevelListViewModelProtocol {
     private var cancellables = Set<AnyCancellable>()
     private let fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
     private let fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol
+    private let deleteAllLevelstUseCase: DeleteAllLevelsUseCaseProtocol
     private let addLayoutUseCase: AddLayoutUseCaseProtocol
 
     init(fetchLayoutsUseCase: FetchLevelsUseCaseProtocol,
          fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol,
-         addLayoutUseCase: AddLayoutUseCaseProtocol
+         addLayoutUseCase: AddLayoutUseCaseProtocol,
+         deleteAllLevelstUseCase: DeleteAllLevelsUseCaseProtocol
     ) {
 
         self.fetchLayoutsUseCase = fetchLayoutsUseCase
         self.fetchPlayableLevelsUseCase = fetchPlayableLevelsUseCase
         self.addLayoutUseCase = addLayoutUseCase
+        self.deleteAllLevelstUseCase = deleteAllLevelstUseCase
         super.init()
 
         fetchLevels()
@@ -61,11 +64,19 @@ class LevelListViewModel: LevelListViewModelProtocol {
                 }
             }
         }
-
     }
 
     override func deleteAll(levelType: Level.LevelType) {
-//        levelService.deleteAll(levelType: levelType)
+        deleteAllLevelstUseCase.execute(levelType: levelType, completion: { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                    case .success(let levels):
+                        self?.layouts = levels
+                    case .failure(let error):
+                        self?.error = error.localizedDescription
+                }
+            }
+        })
     }
     
     func onCellClick(uuid:UUID) {
