@@ -11,7 +11,7 @@ extension DependencyValues {
 
 private enum LevelRepositoryKey: DependencyKey {
     static let liveValue: LevelRepositoryProtocol =  LevelStorageCoreData()
-    static let previewValue: LevelRepositoryProtocol =  LevelStorageCoreData()
+    static let previewValue: LevelRepositoryProtocol =  FakeLevelRepository()
 }
 
 
@@ -70,13 +70,3 @@ private enum DeleteAllLevelsUseCaseKey: DependencyKey {
     static let liveValue: DeleteAllLevelsUseCaseProtocol = DeleteAllLevelsUseCase()
 }
 
-
-
-
-
-
-//
-//
-//let deleteAllLevelsUseCase = DeleteAllLevelsUseCase(repository: layoutRepository, fetchLayoutsUseCase: fetchLayoutsUseCase)
-//
-//

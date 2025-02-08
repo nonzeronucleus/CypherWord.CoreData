@@ -30,24 +30,32 @@ struct TabsView: View {
 }
 
 #Preview {
-    let fetchLayoutsUseCase = FetchLevelsUseCaseMock(levels:
-        [Level(id: UUID(), number: 1),
-        Level(id: UUID(), number: 2)]
-    )
-    let fetchPlayableLevelsUseCase = FetchLevelsUseCaseMock(levels:
-        [Level(id: UUID(), number: 1),
-        Level(id: UUID(), number: 2),
-         Level(id: UUID(), number: 3)]
-    )
-    let addLayoutUseCase: AddLayoutUseCaseProtocol = AddLayoutUseCaseMock()
-    let deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol = DeleteAllLevelsUseCaseMock()
+    //    let fetchLayoutsUseCase = FetchLevelsUseCaseMock(levels:
+    //        [Level(id: UUID(), number: 1),
+    //        Level(id: UUID(), number: 2)]
+    //    )
+    //    let fetchPlayableLevelsUseCase = FetchLevelsUseCaseMock(levels:
+    //        [Level(id: UUID(), number: 1),
+    //        Level(id: UUID(), number: 2),
+    //         Level(id: UUID(), number: 3)]
+    //    )
+    //    let addLayoutUseCase: AddLayoutUseCaseProtocol = AddLayoutUseCaseMock()
+    //    let deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol = DeleteAllLevelsUseCaseMock()
     
-    
+//    let testData1 = [
+//        Level(id: UUID(), number: 1),
+//        Level(id: UUID(), number: 2)
+//    ]
+//    
+//    
     let viewModel = LevelListViewModel()
-//        fetchLayoutsUseCase: fetchLayoutsUseCase,
-//                                       fetchPlayableLevelsUseCase: fetchPlayableLevelsUseCase,
-//                                       addLayoutUseCase: addLayoutUseCase,
-//                                       deleteAllLevelstUseCase: deleteAllLevelsUseCase)
+//    
+//    TabsView()
+//        .environmentObject(viewModel)
+//        .withDependencies {
+//            $0.levelRepository = FakeLevelRepository(testLevels: testData1)
+//        }
+    
     TabsView()
         .environmentObject(viewModel)
 }
