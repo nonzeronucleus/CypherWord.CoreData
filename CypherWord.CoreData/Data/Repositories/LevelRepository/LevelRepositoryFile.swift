@@ -38,6 +38,10 @@ extension LevelRepositoryFile : LevelRepositoryProtocol {
     func deleteAll(levelType: Level.LevelType, completion: @escaping (Result<Void, any Error>) -> Void) {
         fatalError("Not implemented")
     }
+    
+    func saveLevel(level: Level, completion: @escaping (Result<Void, any Error>) -> Void) {
+        
+    }
 }
 
 class LevelRepositoryFile {

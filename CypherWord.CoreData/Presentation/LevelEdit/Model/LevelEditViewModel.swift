@@ -1,10 +1,10 @@
 import Foundation
-//import Dependencies
-
-
+import Dependencies
 
 
 class LevelEditViewModel: ObservableObject {
+    @Dependency(\.saveLevelUseCase) private var saveLevelUseCase: SaveLevelUseCaseProtocol
+
     static let defaultSize = 11
     @Published private(set) var level: Level
     @Published var size: Int
@@ -47,15 +47,21 @@ class LevelEditViewModel: ObservableObject {
     }
     
     func save() {
-//        let levelDataService = LevelDataService.shared
-//        let transformer = CrosswordTransformer()
-//        
-//        let gridText = transformer.transformedValue(crossword) as? String
-//        
-//        if let gridText = gridText {
-//            level.gridText = gridText
-//            levelDataService.updateLevel(level:level)
-//        }
+        let crosswordTransformer = CrosswordTransformer()
+        
+        level.gridText = crosswordTransformer.transformedValue(crossword) as? String
+        
+        saveLevelUseCase.execute(level: level, completion: { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success():
+                    break
+//                    self?.levels = levels
+                case .failure(let error):
+                    self?.error = error.localizedDescription
+                }
+            }
+        })
     }
     
     func generate() {

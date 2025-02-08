@@ -1,5 +1,6 @@
 import Foundation
 
+
 class CrosswordTransformer: ValueTransformer {
     override class func transformedValueClass() -> AnyClass {
         return NSString.self
@@ -8,7 +9,8 @@ class CrosswordTransformer: ValueTransformer {
     override class func allowsReverseTransformation() -> Bool {
         return true
     }
-    
+
+    // Transform crossword to string
     override func transformedValue(_ value: Any?) -> Any? {
         let crossword = value as! Crossword
         var result = ""
@@ -22,7 +24,8 @@ class CrosswordTransformer: ValueTransformer {
         
         return result
     }
-    
+
+    // Transform string to crossword
     override func reverseTransformedValue(_ value: Any?) -> Any? {
         if let strValue = value as? String {
             return Crossword(initString: strValue)

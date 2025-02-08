@@ -34,4 +34,8 @@ class FakeLevelRepository: LevelRepositoryProtocol {
     func save(completion: @escaping (Result<Void, Error>) -> Void) {
         completion(.success(()))
     }
+    
+    func saveLevel(level: Level, completion: @escaping (Result<Void, any Error>) -> Void) {
+        fatalError("To Implement - saveLevel")
+    }
 }

@@ -1,10 +1,9 @@
 import CoreData
 
 extension LevelStorageCoreData:LevelRepositoryProtocol {
-    
     func fetchLevels(levelType: Level.LevelType, completion: @escaping (Result<[Level], Error>) -> Void) {
         do {
-            let fetchRequest: NSFetchRequest<LevelMO> = createFetchRequest(resultType: LevelMO.self, levelType: levelType)
+            let fetchRequest: NSFetchRequest<LevelMO> = createFetchLevelsRequest(resultType: LevelMO.self, levelType: levelType)
             let savedEntities = try container.viewContext.fetch(fetchRequest)
             
             let levels = savedEntities.map( {
@@ -50,7 +49,33 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         } catch let error {
             completion(.failure(error))
         }
-        
+    }
+    
+    func saveLevel(level: Level, completion: @escaping (Result<Void, any Error>) -> Void) {
+        do {
+            var levelMO = try findLevel(id: level.id)
+            
+            if levelMO == nil {
+                levelMO = LevelMO(context: container.viewContext)
+                levelMO?.id = UUID()
+                levelMO?.number = try self.fetchHighestNumber() + 1
+
+//                levelMO.id = level.id
+            }
+            
+            if let levelMO = levelMO {
+                levelMO.gridText = level.gridText
+                levelMO.letterMap = level.letterMap
+                save()
+                completion(.success(()))
+            }
+            else {
+                completion(.failure(OptionalUnwrappingError.foundNil("Couldn't create LevelMO")))
+            }
+        }
+        catch let error {
+            completion(.failure(error))
+        }
     }
 }
 
@@ -68,7 +93,7 @@ class LevelStorageCoreData {
 
     private let entityName: String = "LevelMO"
     
-    private func createFetchRequest<T>(resultType: T.Type, levelType: Level.LevelType) -> NSFetchRequest<T> where T: NSFetchRequestResult {
+    private func createFetchLevelsRequest<T>(resultType: T.Type, levelType: Level.LevelType) -> NSFetchRequest<T> where T: NSFetchRequestResult {
         let request = NSFetchRequest<T>(entityName: entityName)
         if levelType == .playable {
             request.predicate = NSPredicate(format: "letterMap != nil")
@@ -79,6 +104,14 @@ class LevelStorageCoreData {
         return request
     }
     
+
+    private func createFetchLevelRequest<T>(resultType: T.Type, levelID: UUID) -> NSFetchRequest<T> where T: NSFetchRequestResult {
+        let request = NSFetchRequest<T>(entityName: entityName)
+        request.predicate = NSPredicate(format: "id == %@", levelID as CVarArg)
+        
+        return request
+    }
+
     
     private func fetchHighestNumber() throws -> Int64 {
         // Create a fetch request for dictionaries (so we get a dictionary result, not full managed objects)
@@ -115,7 +148,7 @@ class LevelStorageCoreData {
     
     
     func deleteAll(levelType: Level.LevelType) throws {
-        let request: NSFetchRequest<NSFetchRequestResult> = createFetchRequest(resultType: NSFetchRequestResult.self, levelType: levelType)
+        let request: NSFetchRequest<NSFetchRequestResult> = createFetchLevelsRequest(resultType: NSFetchRequestResult.self, levelType: levelType)
         
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
 
@@ -123,6 +156,12 @@ class LevelStorageCoreData {
             try container.viewContext.execute(deleteRequest)
             try container.viewContext.save()
         }
+    }
+    
+    
+    func findLevel(id:UUID) throws -> LevelMO? {
+        let request: NSFetchRequest<LevelMO> = createFetchLevelRequest(resultType: LevelMO.self, levelID: id)
+        return try container.viewContext.fetch(request).first
     }
 
     
@@ -135,4 +174,5 @@ class LevelStorageCoreData {
         }
     }
 }
+    
 

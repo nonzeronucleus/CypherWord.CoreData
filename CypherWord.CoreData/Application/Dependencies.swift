@@ -70,3 +70,16 @@ private enum DeleteAllLevelsUseCaseKey: DependencyKey {
     static let liveValue: DeleteAllLevelsUseCaseProtocol = DeleteAllLevelsUseCase()
 }
 
+// Mark - SaveLevelUseCase
+
+extension DependencyValues {
+    var saveLevelUseCase: SaveLevelUseCaseProtocol {
+        get { self[SaveLevelUseCaseKey.self] }
+        set { self[SaveLevelUseCaseKey.self] = newValue }
+    }
+}
+
+private enum SaveLevelUseCaseKey: DependencyKey {
+    static let liveValue: SaveLevelUseCaseProtocol = SaveLevelUseCase()
+}
+
