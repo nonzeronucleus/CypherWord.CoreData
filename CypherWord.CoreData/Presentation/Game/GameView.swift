@@ -124,30 +124,6 @@ extension GameView {
         selectedLevel = nil
     }
     
-//    func save() {
-//        if isPopulated {
-//            saveLevel()
-//        }
-//        else {
-//            saveLayout()
-//        }
-//    }
-    
-//    func saveLayout() {
-//        let transformer = CrosswordTransformer()
-//        
-//        if let levelGridText = transformer.transformedValue(crossword) as? String, let selectedLevel {
-//            selectedLevel.levelGridText = levelGridText
-//            try? modelContext.save()
-//            hasChanged = false
-//        }
-//    }
-//    
-//    func saveLevel() {
-//        let creator = LevelCreator(isLevel: true, modelContext: modelContext, crossword: crossword)
-//        creator.createLevel()
-//    }
-//    
 //    func generate() {
 //        let populator = CrosswordPopulator(crossword: crossword)
 //        

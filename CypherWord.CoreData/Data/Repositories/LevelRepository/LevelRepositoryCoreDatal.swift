@@ -31,7 +31,6 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         }
         
         save()
-//        fetchLevels(levelType: .layout, completion:completion)
     }
 
     func save(completion: @escaping (Result<Void, any Error>) -> Void) {
@@ -53,42 +52,6 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         }
         
     }
-    
-    
-//
-//    private func getMaxPlayableLevelNumber() -> Int {
-//        return levels.max(by: { $0.number < $1.number })?.number ?? 0
-//    }
-
-    
-//    func addLevel(level: Level, completion: @escaping (Result<[Level], Error>) -> Void) {
-//        let levelMO = LevelMO(context: container.viewContext)
-//        levelMO.id = level.id
-//        levelMO.number = Int64(level.number)
-//        levelMO.gridText = level.gridText
-//        levelMO.letterMap = level.letterMap
-//        let levelType = level.levelType
-//        
-//        save()
-//        fetchLevels(levelType: levelType, completion:completion)
-////        completion(.success(()))
-//    }
-//    
-    
-//    func fetchLevels(levelType:Level.LevelType) -> [Level] {
-//        do {
-//            let fetchRequest: NSFetchRequest<LevelMO> = createFetchRequest(resultType: LevelMO.self, levelType: levelType)
-//            let savedEntities = try container.viewContext.fetch(fetchRequest)
-//            
-//            let levels = savedEntities.map( {
-//                entity in Level(id: entity.id ?? UUID(), number: Int(entity.number), gridText: entity.gridText, letterMap: entity.letterMap)
-//            })
-//            return levels
-//        } catch let error {
-//            print("Error fetching Portfolio Entities. \(error)")
-//            return []
-//        }
-//    }
 }
 
 class LevelStorageCoreData {

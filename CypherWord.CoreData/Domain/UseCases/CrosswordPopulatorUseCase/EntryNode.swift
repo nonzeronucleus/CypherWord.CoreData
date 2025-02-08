@@ -1,11 +1,3 @@
-//
-//  EntryNode.swift
-//  CodeWord
-//
-//  Created by Ian Plumb on 01/11/2024.
-//
-
-
 class EntryNode {
     let entry: Entry
     var children: [EntryNode]
@@ -38,14 +30,6 @@ class EntryNode {
         }
         return 0
     }
-    
-//    func printNode() {
-//        print(entry.getWord())
-//        for child in children {
-//            child.printNode()
-//
-//        }
-//    }
     
     func increaseCount() {
         if let tree = tree {

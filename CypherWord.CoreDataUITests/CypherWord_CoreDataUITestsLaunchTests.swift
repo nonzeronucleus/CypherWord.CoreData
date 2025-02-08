@@ -1,10 +1,3 @@
-//
-//  CypherWord_CoreDataUITestsLaunchTests.swift
-//  CypherWord.CoreDataUITests
-//
-//  Created by Ian Plumb on 01/02/2025.
-//
-
 import XCTest
 
 final class CypherWord_CoreDataUITestsLaunchTests: XCTestCase {

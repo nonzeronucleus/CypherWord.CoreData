@@ -29,23 +29,7 @@ class LevelListViewModel: ObservableObject {
     @Dependency(\.deleteAllLevelsUseCase) private var deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol
     @Dependency(\.addLayoutUseCase) private var addLayoutUseCase: AddLayoutUseCaseProtocol
 
-//    private let fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
-//    private let fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol
-//    private let deleteAllLevelstUseCase: DeleteAllLevelsUseCaseProtocol
-//    private let addLayoutUseCase: AddLayoutUseCaseProtocol
-
-//    init(fetchLayoutsUseCase: FetchLevelsUseCaseProtocol,
-//         fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol,
-//         addLayoutUseCase: AddLayoutUseCaseProtocol,
-//         deleteAllLevelstUseCase: DeleteAllLevelsUseCaseProtocol
-//    ) {
     init(){
-
-//        self.fetchLayoutsUseCase = fetchLayoutsUseCase
-//        self.fetchPlayableLevelsUseCase = fetchPlayableLevelsUseCase
-//        self.addLayoutUseCase = addLayoutUseCase
-//        self.deleteAllLevelstUseCase = deleteAllLevelstUseCase
-//
         fetchLevels()
         fetchLayouts()
     }

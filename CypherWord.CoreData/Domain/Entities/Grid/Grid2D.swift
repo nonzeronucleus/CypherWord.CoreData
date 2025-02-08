@@ -1,5 +1,5 @@
 import Foundation
-//import Dependencies
+import Dependencies
 
 protocol Grid2DItem {
     func toStorable() -> Character
@@ -23,10 +23,9 @@ struct  Grid2D<Element: Codable & Identifiable & Grid2DItem> {
     }
 
     init(rows: Int, columns: Int, elementGenerator: (Int, Int) -> Element) {
-//        @Dependency(\.uuid) var uuid
+        @Dependency(\.uuid) var uuid
 
-//        self.id = uuid()
-        self.id = UUID()
+        self.id = uuid()
         self.elements = (0..<rows).map { row in
             (0..<columns).map { column in
                 elementGenerator(row, column)

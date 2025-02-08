@@ -80,8 +80,7 @@ struct CrosswordView: View {
     })
     
     crossword[0, 0].letter = "A"
-//    crossword[0, 0].toggle()
-
+    
     return CrosswordView(grid: crossword, viewMode: .attemptedValue,  performAction: { _ in } )
         .padding(.all, 10)
 }
@@ -92,10 +91,7 @@ struct CrosswordView: View {
     })
     
     crossword[0, 0].letter = "A"
-
-//    crossword[0, 0].toggle()
-
-//    CrosswordView(grid: crossword, viewMode: .actualValue, performAction: { _ in })
+    
     return CrosswordView(grid: crossword, viewMode: .actualValue, performAction: { _ in })
         .padding(.all, 10)
 }

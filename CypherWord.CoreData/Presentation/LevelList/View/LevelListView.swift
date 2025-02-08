@@ -4,7 +4,6 @@ import Dependencies
 struct LevelListView : View {
     @EnvironmentObject var viewModel: LevelListViewModel
     
-//    @ObservedObject var viewModel : LevelListViewModel
     private var gridItemLayout = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
     @State private var showThoughtsView = false
     var levelType: Level.LevelType
@@ -56,33 +55,50 @@ struct LevelListView : View {
     }
 }
 
-#Preview {
-    struct FakeLevelRepository: LevelRepositoryProtocol {
-        func fetchLevels(levelType: Level.LevelType, completion: @escaping (Result<[Level], any Error>) -> Void) {
-            completion(.success([
-                Level(id: UUID(), number: 1, gridText: "Test 1", letterMap: "ABC"),
-                Level(id: UUID(), number: 2, gridText: "Test 2", letterMap: "DEF"),
-                Level(id: UUID(), number: 3, gridText: "Test 3", letterMap: "GHI")
-            ]))
-        }
+#Preview("Layout") {
+    let testLayouts = [
+        Level(id: UUID(), number: 1),
+        Level(id: UUID(), number: 2)
+    ]
+    
+    let testPlayableLevels = [
+        Level(id: UUID(), number: 1),
+        Level(id: UUID(), number: 2),
+        Level(id: UUID(), number: 3),
+        Level(id: UUID(), number: 4)
+    ]
+    
+    withDependencies {
+        $0.levelRepository = FakeLevelRepository(testLayouts: testLayouts, testPlayableLevels: testPlayableLevels)
+    } operation: {
+        let viewModel = LevelListViewModel()
         
-        func deleteAll(levelType: Level.LevelType, completion: @escaping (Result<Void, any Error>) -> Void) {
-            completion(.success(()))
-        }
-        
-        func addLayout(completion: @escaping (Result<Void, Error>) -> Void) {
-            completion(.success(()))
-        }
-        
-        func save(completion: @escaping (Result<Void, Error>) -> Void) {
-            completion(.success(()))
-        }
+        return LevelListView(levelType: .layout)
+            .environmentObject(viewModel)
     }
+}
+
+#Preview("Playable") {
+    let testLayouts = [
+        Level(id: UUID(), number: 1),
+        Level(id: UUID(), number: 2)
+    ]
     
-    let viewModel = LevelListViewModel()
+    let testPlayableLevels = [
+        Level(id: UUID(), number: 1),
+        Level(id: UUID(), number: 2),
+        Level(id: UUID(), number: 3),
+        Level(id: UUID(), number: 4)
+    ]
     
-    return LevelListView(levelType: .layout)
-        .environmentObject(viewModel)
+    withDependencies {
+        $0.levelRepository = FakeLevelRepository(testLayouts: testLayouts, testPlayableLevels: testPlayableLevels)
+    } operation: {
+        let viewModel = LevelListViewModel()
+        
+        return LevelListView(levelType: .playable)
+            .environmentObject(viewModel)
+    }
 }
 
 

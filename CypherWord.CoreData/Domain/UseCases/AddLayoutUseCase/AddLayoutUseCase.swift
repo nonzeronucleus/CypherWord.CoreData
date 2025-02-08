@@ -4,7 +4,6 @@ import Dependencies
 class AddLayoutUseCase: AddLayoutUseCaseProtocol {
     @Dependency(\.levelRepository) private var repository: LevelRepositoryProtocol
     @Dependency(\.fetchLayoutsUseCase) private var fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
-//    private let fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
     
     func execute(completion: @escaping (Result<[Level], Error>) -> Void) {
         repository.addLayout { [weak self] result in

@@ -5,17 +5,7 @@ struct ContentView: View {
     let viewModel:LevelListViewModel
 
     init () {
-//        let fetchLayoutsUseCase = FetchLayoutsUseCase()
-//        let fetchPlayableLevelsUseCase = FetchPlayableLevelsUseCase()
-//        let addLayoutUseCase = AddLayoutUseCase(fetchLayoutsUseCase: fetchLayoutsUseCase)
-//        let deleteAllLevelsUseCase = DeleteAllLevelsUseCase(fetchLayoutsUseCase: fetchLayoutsUseCase)
-        
-        viewModel = LevelListViewModel(
-//            fetchLayoutsUseCase: fetchLayoutsUseCase,
-//            fetchPlayableLevelsUseCase:fetchPlayableLevelsUseCase,
-//            addLayoutUseCase: addLayoutUseCase,
-//            deleteAllLevelstUseCase: deleteAllLevelsUseCase
-        )
+        viewModel = LevelListViewModel()
     }
 
     var body: some View {

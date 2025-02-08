@@ -36,8 +36,4 @@ extension Crossword {
         }
         return true
     }
-    
-//    mutating func setLetterValues(_ letterValues: [Character: Int] ) {
-//        self.letterValues = CharacterIntMap(letterValues)
-//    }
 }

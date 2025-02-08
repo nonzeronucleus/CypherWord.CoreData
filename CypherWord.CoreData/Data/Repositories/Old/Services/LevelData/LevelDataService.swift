@@ -179,7 +179,6 @@ class LevelDataServiceImpl : LevelDataService {
     }
     
     private func importLevels(levelType:Level.LevelType) {
-//        let docDir = URL.documentsDirectory
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         

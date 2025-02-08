@@ -3,6 +3,5 @@ protocol LevelRepositoryProtocol {
     func addLayout(completion: @escaping (Result<Void, Error>) -> Void)
     func save(completion: @escaping (Result<Void, Error>) -> Void)
     func deleteAll(levelType: Level.LevelType, completion: @escaping (Result<Void, Error>) -> Void)
-//    func addLevel(level: Level, completion: @escaping (Result<[Level], Error>) -> Void)
 }
 

@@ -1,4 +1,5 @@
 import SwiftUI
+import Dependencies
 
 
 enum Tab: String, CaseIterable, Identifiable {
@@ -30,33 +31,25 @@ struct TabsView: View {
 }
 
 #Preview {
-    //    let fetchLayoutsUseCase = FetchLevelsUseCaseMock(levels:
-    //        [Level(id: UUID(), number: 1),
-    //        Level(id: UUID(), number: 2)]
-    //    )
-    //    let fetchPlayableLevelsUseCase = FetchLevelsUseCaseMock(levels:
-    //        [Level(id: UUID(), number: 1),
-    //        Level(id: UUID(), number: 2),
-    //         Level(id: UUID(), number: 3)]
-    //    )
-    //    let addLayoutUseCase: AddLayoutUseCaseProtocol = AddLayoutUseCaseMock()
-    //    let deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol = DeleteAllLevelsUseCaseMock()
+    let testLayouts = [
+        Level(id: UUID(), number: 1),
+        Level(id: UUID(), number: 2)
+    ]
     
-//    let testData1 = [
-//        Level(id: UUID(), number: 1),
-//        Level(id: UUID(), number: 2)
-//    ]
-//    
-//    
-    let viewModel = LevelListViewModel()
-//    
-//    TabsView()
-//        .environmentObject(viewModel)
-//        .withDependencies {
-//            $0.levelRepository = FakeLevelRepository(testLevels: testData1)
-//        }
+    let testPlayableLevels = [
+        Level(id: UUID(), number: 1),
+        Level(id: UUID(), number: 2),
+        Level(id: UUID(), number: 3),
+        Level(id: UUID(), number: 4)
+    ]
     
-    TabsView()
-        .environmentObject(viewModel)
+    withDependencies {
+        $0.levelRepository = FakeLevelRepository(testLayouts: testLayouts, testPlayableLevels: testPlayableLevels)
+    } operation: {
+        let viewModel = LevelListViewModel()
+
+        return TabsView()
+            .environmentObject(viewModel)
+    }
 }
 

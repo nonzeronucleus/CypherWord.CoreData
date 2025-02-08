@@ -2,7 +2,6 @@ import Foundation
 
 class CrosswordPopulatorUseCase {
     let wordlist = WordListContainer()
-//
     private(set) var entries: [Entry] = []
     private var crossword:Crossword
     
@@ -39,7 +38,7 @@ class CrosswordPopulatorUseCase {
     func populateCrossword() -> (crossword:Crossword, characterIntMap:CharacterIntMap) {
         let entryTree = EntryTree.init(rootEntry: entries.randomElement()!)
         var populated = false
-//        
+
         while !populated {
             if populateNode(node: entryTree.root) {
                 populated = true
@@ -52,7 +51,7 @@ class CrosswordPopulatorUseCase {
         
         return (crossword:crossword, characterIntMap:CharacterIntMap())
     }
-//    
+
     private func populateNode(node:EntryNode) -> Bool{
         var attempts = 0
         var childrenPopulated = false
@@ -109,23 +108,21 @@ class CrosswordPopulatorUseCase {
         if entry.length == 0 {
             return ""
         }
-//        
+
         let iter = entry.direction == .across ? (0,1) : (1,0)
-//        
+
         for i in 0...entry.length-1 {
             let pos = Pos(row:entry.startPos.row + iter.0 * i, column: entry.startPos.column + iter.1 * i)
-//
             let cell = crossword[pos.row, pos.column]
-            //cells[pos.row][pos.col]
-//
+
             if let char = cell.letter {
                 word.append(char)
             }
         }
-//        
+
         return word
     }
-//    
+
     func setWord(entry:Entry, word:String) {
         if entry.length == 0 {
             return

@@ -1,10 +1,8 @@
 import Foundation
 
 struct CharacterIntMap: Codable {
-    //    private var crossword: Crossword?
     private var data: [String: Int]
     
-    // Initialize with `[Character: Int]`
     init(_ map: [Character: Int]) {
         self.data = Dictionary(uniqueKeysWithValues: map.map { (String($0.key), $0.value) })
     }
@@ -14,7 +12,7 @@ struct CharacterIntMap: Codable {
         
         let alphabet = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
         
-        // Step 2: Shuffle the array to get a random order
+        // SShuffle the array to get a random order
         if shuffle {
             let shuffledAlphabet = alphabet.shuffled()
             for (index, letter) in shuffledAlphabet.enumerated() {
@@ -28,7 +26,7 @@ struct CharacterIntMap: Codable {
         }
         
 
-        // Step 3: Iterate over each letter and call the function
+        // Iterate over each letter and call the function
         
         data = Dictionary(uniqueKeysWithValues: letterValues.map { (String($0.key), $0.value) })
     }
@@ -40,7 +38,6 @@ struct CharacterIntMap: Codable {
     
     subscript(char:String?) -> Int? {
         get {
-            //            precondition(isValidIndex(row: row, column: column), "Index out of bounds")
             if let char {
                 if char != " " {
                     return data[char]
@@ -64,27 +61,4 @@ struct CharacterIntMap: Codable {
             data[String(character)] = newValue
         }
     }
-    
-//    subscript(int: Int) -> Character? {
-//        get {
-//            // Find the key (String) that corresponds to the value (Int).
-//            let val = (data.first(where: { $0.value == int })?.key)
-//
-//            if let val {
-//                return Character(val)
-//            }
-//            return nil
-//        }
-//        set {
-//            // Remove the existing key for the given Int.
-//            if let existingKey = data.first(where: { $0.value == int })?.key {
-//                data.removeValue(forKey: existingKey)
-//            }
-//
-//            // Add the new key-value pair if `newValue` is not nil.
-//            if let newKey = newValue {
-//                data[String(newKey)] = int
-//            }
-//        }
-//    }
 }

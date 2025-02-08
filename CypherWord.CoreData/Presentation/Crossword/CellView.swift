@@ -46,12 +46,7 @@ struct CellView: View {
                             .fill(cellColor)
                             .border(.black)
                     }
-//
-//                    Rectangle()
-//                        .stroke(lineWidth: 2)
-//                        .fill(.black)
-//                        .foregroundColor(.black)
-//                    // Number in the top left corner
+                    // Number in the top left corner
                     if let number {
                         Text(String(number+1))
                             .font(.system(size: numberFontSize)) // Explicitly setting font
@@ -68,14 +63,6 @@ struct CellView: View {
                         .foregroundColor(.black)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .padding(squareSize * 0.2) // Center by padding
-//                }
-//                else {
-//                    ZStack {
-//                        Rectangle()
-//                            .fill(Color.black)
-//                        Rectangle()
-//                            .stroke(lineWidth: 2)
-//                    }
                 }
             }
         }
@@ -147,20 +134,15 @@ struct CellView: View {
 
 
 
-//
-//
-//#Preview("Attempted blank") {
-//    let cell = Cell(pos: Pos.nilPos, letter: "C")
-//
-//    CellView(cell: cell, number: 3, mode: .attemptedValue)
-//        .frame(width: 60, height: 60, alignment: .center)
-//}
-//
-//#Preview("Attempted with letter") {
-//    var cell = Cell(pos: Pos.nilPos, letter: "D")
-//    cell.attemptedLetter = "X"
-//
-//    return CellView(cell: cell, number: 2, mode: .attemptedValue)
-//        .frame(width: 60, height: 60, alignment: .center)
-//}
+
+
+#Preview("Attempted blank") {
+    CellView(letter: " ")
+        .frame(width: 60, height: 60, alignment: .center)
+}
+
+#Preview("Attempted with letter") {
+    CellView(letter: "A", number: 3, selected: false, checkStatus: .correct)
+        .frame(width: 60, height: 60, alignment: .center)
+}
 

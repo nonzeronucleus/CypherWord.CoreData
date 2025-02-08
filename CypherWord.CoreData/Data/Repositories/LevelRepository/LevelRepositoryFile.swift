@@ -1,5 +1,5 @@
 import Foundation
-//
+
 enum FileError: Error {
     case notFound
     case other(Error)
@@ -11,7 +11,6 @@ extension LevelRepositoryFile : LevelRepositoryProtocol {
         decoder.dateDecodingStrategy = .iso8601
 
         do {
-//            let path = try filePath().appendingPathComponent(getFileName(levelType: levelType))
             let fName = getFileName(levelType: levelType)
             if let pathURL = Bundle.main.url(forResource: fName, withExtension: "json") {
                 let jsonData = try Data(contentsOf: pathURL)

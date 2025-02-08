@@ -9,37 +9,3 @@ class LevelMapper {
     }
 }
 
-//    func getLevels() -> [Level]
-//    func addLevel(_ level: Level) -> [Level]
-//    func deleteLevel(_ Level: Level) -> [Level]
-
-
-//
-//class LevelRepositoryImpl: LevelRepository {
-//    private var levels: [Level] = []
-//    var levelType: Level.LevelType
-//    
-//    init(type: Level.LevelType) {
-//        self.levelType = type
-//        
-//        loadLevels()
-//    }
-//    
-//    func loadLevels() {
-//        
-//    }
-//    
-//    
-//    func getLevels() -> [Level] {
-//        return levels
-//    }
-//    
-//    func addLevel(_ level: Level) -> [Level] {
-//        levels.append(level)
-//        return levels
-//    }
-//    
-//    func deleteLevel(_ Level: Level) -> [Level] {
-//        return levels
-//    }
-//}

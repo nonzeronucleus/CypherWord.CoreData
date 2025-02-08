@@ -1,10 +1,3 @@
-//
-//  CypherWord_CoreDataTests.swift
-//  CypherWord.CoreDataTests
-//
-//  Created by Ian Plumb on 01/02/2025.
-//
-
 import Testing
 @testable import CypherWord_CoreData
 

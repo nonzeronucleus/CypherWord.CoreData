@@ -1,11 +1,3 @@
-//
-//  EntryTree.swift
-//  CodeWord
-//
-//  Created by Ian Plumb on 01/11/2024.
-//
-
-
 class EntryTree {
     var root: EntryNode
     var count: Int = 0
@@ -25,7 +17,6 @@ class EntryTree {
     }
     
     func addChildren(parent: EntryNode) {
-//        for childEntry in parent.entry.linkedWords {
         for childEntry in parent.entry.linkedEntries {
             if findNode(childEntry) == nil {
                 let child = EntryNode(entry: childEntry)
@@ -36,10 +27,6 @@ class EntryTree {
             }
         }
     }
-    
-//    func printTreee() {
-//        root.printNode()
-//    }
     
     func findNode(_ entry: Entry) -> EntryNode? {
         return root.findNode(entry)
