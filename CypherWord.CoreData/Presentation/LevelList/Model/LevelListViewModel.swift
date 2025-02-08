@@ -1,4 +1,5 @@
 import Foundation
+import Dependencies
 import Combine
 
 
@@ -23,22 +24,28 @@ class LevelListViewModel: ObservableObject {
     }
     
     private var cancellables = Set<AnyCancellable>()
-    private let fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
-    private let fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol
-    private let deleteAllLevelstUseCase: DeleteAllLevelsUseCaseProtocol
-    private let addLayoutUseCase: AddLayoutUseCaseProtocol
+    @Dependency(\.fetchLayoutsUseCase) private var fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
+    @Dependency(\.fetchPlayableLevelsUseCase) private var fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol
+    @Dependency(\.deleteAllLevelsUseCase) private var deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol
+    @Dependency(\.addLayoutUseCase) private var addLayoutUseCase: AddLayoutUseCaseProtocol
 
-    init(fetchLayoutsUseCase: FetchLevelsUseCaseProtocol,
-         fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol,
-         addLayoutUseCase: AddLayoutUseCaseProtocol,
-         deleteAllLevelstUseCase: DeleteAllLevelsUseCaseProtocol
-    ) {
+//    private let fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
+//    private let fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol
+//    private let deleteAllLevelstUseCase: DeleteAllLevelsUseCaseProtocol
+//    private let addLayoutUseCase: AddLayoutUseCaseProtocol
 
-        self.fetchLayoutsUseCase = fetchLayoutsUseCase
-        self.fetchPlayableLevelsUseCase = fetchPlayableLevelsUseCase
-        self.addLayoutUseCase = addLayoutUseCase
-        self.deleteAllLevelstUseCase = deleteAllLevelstUseCase
+//    init(fetchLayoutsUseCase: FetchLevelsUseCaseProtocol,
+//         fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol,
+//         addLayoutUseCase: AddLayoutUseCaseProtocol,
+//         deleteAllLevelstUseCase: DeleteAllLevelsUseCaseProtocol
+//    ) {
+    init(){
 
+//        self.fetchLayoutsUseCase = fetchLayoutsUseCase
+//        self.fetchPlayableLevelsUseCase = fetchPlayableLevelsUseCase
+//        self.addLayoutUseCase = addLayoutUseCase
+//        self.deleteAllLevelstUseCase = deleteAllLevelstUseCase
+//
         fetchLevels()
         fetchLayouts()
     }
@@ -85,7 +92,7 @@ class LevelListViewModel: ObservableObject {
     }
 
     func deleteAll(levelType: Level.LevelType) {
-        deleteAllLevelstUseCase.execute(levelType: levelType, completion: { [weak self] result in
+        deleteAllLevelsUseCase.execute(levelType: levelType, completion: { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                     case .success(let levels):

@@ -6,6 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		28CAACAD2D56B18600AE7721 /* Resolver in Frameworks */ = {isa = PBXBuildFile; productRef = 28CAACAC2D56B18600AE7721 /* Resolver */; };
+		28CAACB72D56B31400AE7721 /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 28CAACB62D56B31400AE7721 /* Dependencies */; };
+		28CAACB92D56B31400AE7721 /* DependenciesMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 28CAACB82D56B31400AE7721 /* DependenciesMacros */; };
+		28CAACBB2D56B31400AE7721 /* DependenciesTestSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 28CAACBA2D56B31400AE7721 /* DependenciesTestSupport */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		28E36D9D2D4E0B3A00AEF8E3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +59,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				28CAACAD2D56B18600AE7721 /* Resolver in Frameworks */,
+				28CAACB72D56B31400AE7721 /* Dependencies in Frameworks */,
+				28CAACB92D56B31400AE7721 /* DependenciesMacros in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				28CAACBB2D56B31400AE7721 /* DependenciesTestSupport in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +123,9 @@
 			);
 			name = CypherWord.CoreData;
 			packageProductDependencies = (
+				28CAACAC2D56B18600AE7721 /* Resolver */,
+				28CAACB62D56B31400AE7721 /* Dependencies */,
+				28CAACB82D56B31400AE7721 /* DependenciesMacros */,
 			);
 			productName = CypherWord.CoreData;
 			productReference = 28E36D8C2D4E0B3800AEF8E3 /* CypherWord.CoreData.app */;
@@ -135,6 +149,7 @@
 			);
 			name = CypherWord.CoreDataTests;
 			packageProductDependencies = (
+				28CAACBA2D56B31400AE7721 /* DependenciesTestSupport */,
 			);
 			productName = CypherWord.CoreDataTests;
 			productReference = 28E36D9C2D4E0B3A00AEF8E3 /* CypherWord.CoreDataTests.xctest */;
@@ -195,6 +210,10 @@
 			);
 			mainGroup = 28E36D832D4E0B3800AEF8E3;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				28CAACAB2D56B18600AE7721 /* XCRemoteSwiftPackageReference "Resolver" */,
+				28CAACB52D56B31400AE7721 /* XCRemoteSwiftPackageReference "swift-dependencies" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 28E36D8D2D4E0B3800AEF8E3 /* Products */;
 			projectDirPath = "";
@@ -558,6 +577,48 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		28CAACAB2D56B18600AE7721 /* XCRemoteSwiftPackageReference "Resolver" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hmlongco/Resolver.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.1;
+			};
+		};
+		28CAACB52D56B31400AE7721 /* XCRemoteSwiftPackageReference "swift-dependencies" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-dependencies";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.7.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		28CAACAC2D56B18600AE7721 /* Resolver */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28CAACAB2D56B18600AE7721 /* XCRemoteSwiftPackageReference "Resolver" */;
+			productName = Resolver;
+		};
+		28CAACB62D56B31400AE7721 /* Dependencies */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28CAACB52D56B31400AE7721 /* XCRemoteSwiftPackageReference "swift-dependencies" */;
+			productName = Dependencies;
+		};
+		28CAACB82D56B31400AE7721 /* DependenciesMacros */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28CAACB52D56B31400AE7721 /* XCRemoteSwiftPackageReference "swift-dependencies" */;
+			productName = DependenciesMacros;
+		};
+		28CAACBA2D56B31400AE7721 /* DependenciesTestSupport */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28CAACB52D56B31400AE7721 /* XCRemoteSwiftPackageReference "swift-dependencies" */;
+			productName = DependenciesTestSupport;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 28E36D842D4E0B3800AEF8E3 /* Project object */;
 }

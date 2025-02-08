@@ -69,10 +69,11 @@ struct LevelListView : View {
     let deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol = DeleteAllLevelsUseCaseMock()
     
     
-    let viewModel = LevelListViewModel(fetchLayoutsUseCase: fetchLayoutsUseCase,
-                                       fetchPlayableLevelsUseCase: fetchPlayableLevelsUseCase,
-                                       addLayoutUseCase: addLayoutUseCase,
-                                       deleteAllLevelstUseCase: deleteAllLevelsUseCase)
+    let viewModel = LevelListViewModel()
+//        fetchLayoutsUseCase: fetchLayoutsUseCase,
+//                                       fetchPlayableLevelsUseCase: fetchPlayableLevelsUseCase,
+//                                       addLayoutUseCase: addLayoutUseCase,
+//                                       deleteAllLevelstUseCase: deleteAllLevelsUseCase)
 
     LevelListView(levelType: .layout)
         .environmentObject(viewModel)

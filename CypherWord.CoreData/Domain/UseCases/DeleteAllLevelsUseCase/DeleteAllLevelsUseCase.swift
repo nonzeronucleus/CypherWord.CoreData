@@ -1,15 +1,10 @@
 import Foundation
+import Dependencies
 
 class DeleteAllLevelsUseCase :DeleteAllLevelsUseCaseProtocol {
-    private let repository: LevelRepositoryProtocol
-    private let fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
+    @Dependency(\.levelRepository) private var repository: LevelRepositoryProtocol
+    @Dependency(\.fetchLayoutsUseCase) private var fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
 
-    init(repository: LevelRepositoryProtocol,
-         fetchLayoutsUseCase: FetchLevelsUseCaseProtocol) {
-        self.repository = repository
-        self.fetchLayoutsUseCase = fetchLayoutsUseCase
-    }
-    
     func execute(levelType: Level.LevelType, completion: @escaping (Result<[Level], any Error>) -> Void) {
         repository.deleteAll (levelType: levelType, completion: { [weak self] result in
             DispatchQueue.main.async {

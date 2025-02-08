@@ -1,14 +1,10 @@
 import Foundation
+import Dependencies
 
 class AddLayoutUseCase: AddLayoutUseCaseProtocol {
-    private let repository: LevelRepositoryProtocol
-    private let fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
-
-    init(repository: LevelRepositoryProtocol,
-         fetchLayoutsUseCase: FetchLevelsUseCaseProtocol) {
-        self.repository = repository
-        self.fetchLayoutsUseCase = fetchLayoutsUseCase
-    }
+    @Dependency(\.levelRepository) private var repository: LevelRepositoryProtocol
+    @Dependency(\.fetchLayoutsUseCase) private var fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
+//    private let fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
     
     func execute(completion: @escaping (Result<[Level], Error>) -> Void) {
         repository.addLayout { [weak self] result in
@@ -20,35 +16,12 @@ class AddLayoutUseCase: AddLayoutUseCaseProtocol {
                 }
                 
                 switch result {
-                case .success:
-                    self.fetchLayoutsUseCase.execute(completion: completion)
-                case .failure(let error):
-                    completion(.failure(error))
+                    case .success:
+                        self.fetchLayoutsUseCase.execute(completion: completion)
+                    case .failure(let error):
+                        completion(.failure(error))
                 }
             }
         }
     }
-    
-//    private func save(completion: @escaping (Result<[Level], Error>) -> Void) {
-//        repository.save { [weak self] result in
-//            DispatchQueue.main.async {
-//                guard let self = self else {
-//                    return completion(.failure(
-//                        OptionalUnwrappingError.foundNil("Self deallocated in AddLayoutUseCase.save")
-//                    ))
-//                }
-//                
-//                switch result {
-//                case .success:
-//                    self.fetchNewLayouts(completion: completion)
-//                case .failure(let error):
-//                    completion(.failure(error))
-//                }
-//            }
-//        }
-//    }
-//    
-//    private func fetchNewLayouts(completion: @escaping (Result<[Level], Error>) -> Void) {
-//        fetchLayoutsUseCase.execute(completion: completion)
-//    }
 }

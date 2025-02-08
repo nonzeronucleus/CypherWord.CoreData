@@ -2,11 +2,9 @@ import SwiftUI
 
 struct LevelListRootView : View {
     @ObservedObject var viewModel: LevelListViewModel
-    private let repository: LevelRepositoryProtocol
 
-    init(_ viewModel: LevelListViewModel, repository: LevelRepositoryProtocol) {
+    init(_ viewModel: LevelListViewModel) {
         self.viewModel = viewModel
-        self.repository = repository
     }
     
     var body: some View {
@@ -41,10 +39,11 @@ struct LevelListRootView : View {
     let deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol = DeleteAllLevelsUseCaseMock()
     
     
-    let viewModel = LevelListViewModel(fetchLayoutsUseCase: fetchLayoutsUseCase,
-                                       fetchPlayableLevelsUseCase: fetchPlayableLevelsUseCase,
-                                       addLayoutUseCase: addLayoutUseCase,
-                                       deleteAllLevelstUseCase: deleteAllLevelsUseCase)
+    let viewModel = LevelListViewModel()
+//        fetchLayoutsUseCase: fetchLayoutsUseCase,
+//                                       fetchPlayableLevelsUseCase: fetchPlayableLevelsUseCase,
+//                                       addLayoutUseCase: addLayoutUseCase,
+//                                       deleteAllLevelstUseCase: deleteAllLevelsUseCase)
     
-    LevelListRootView(viewModel, repository: <#T##any LevelRepositoryProtocol#>)
+    LevelListRootView(viewModel)
 }

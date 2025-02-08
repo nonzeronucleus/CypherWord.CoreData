@@ -5,17 +5,16 @@ struct ContentView: View {
     let viewModel:LevelListViewModel
 
     init () {
-        let layoutRepository = LevelStorageCoreData()
-        let fetchLayoutsUseCase = FetchLayoutssUseCase(repository: layoutRepository)
-        let fetchPlayableLevelsUseCase = FetchPlayableLevelsUseCase(repository: layoutRepository)
-        let addLayoutUseCase = AddLayoutUseCase(repository: layoutRepository, fetchLayoutsUseCase: fetchLayoutsUseCase)
-        let deleteAllLevelsUseCase = DeleteAllLevelsUseCase(repository: layoutRepository, fetchLayoutsUseCase: fetchLayoutsUseCase)
+//        let fetchLayoutsUseCase = FetchLayoutsUseCase()
+//        let fetchPlayableLevelsUseCase = FetchPlayableLevelsUseCase()
+//        let addLayoutUseCase = AddLayoutUseCase(fetchLayoutsUseCase: fetchLayoutsUseCase)
+//        let deleteAllLevelsUseCase = DeleteAllLevelsUseCase(fetchLayoutsUseCase: fetchLayoutsUseCase)
         
         viewModel = LevelListViewModel(
-            fetchLayoutsUseCase: fetchLayoutsUseCase,
-            fetchPlayableLevelsUseCase:fetchPlayableLevelsUseCase,
-            addLayoutUseCase: addLayoutUseCase,
-            deleteAllLevelstUseCase: deleteAllLevelsUseCase
+//            fetchLayoutsUseCase: fetchLayoutsUseCase,
+//            fetchPlayableLevelsUseCase:fetchPlayableLevelsUseCase,
+//            addLayoutUseCase: addLayoutUseCase,
+//            deleteAllLevelstUseCase: deleteAllLevelsUseCase
         )
     }
 
