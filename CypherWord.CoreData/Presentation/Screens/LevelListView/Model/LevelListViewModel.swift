@@ -30,6 +30,9 @@ class LevelListViewModel: ObservableObject {
     @Dependency(\.addLayoutUseCase) private var addLayoutUseCase: AddLayoutUseCaseProtocol
 
     init(){
+    }
+    
+    func reload() {
         fetchLevels()
         fetchLayouts()
     }
@@ -80,7 +83,13 @@ class LevelListViewModel: ObservableObject {
             DispatchQueue.main.async {
                 switch result {
                     case .success(let levels):
-                        self?.layouts = levels
+                        switch levelType {
+                            case .playable:
+                                self?.levels = levels
+                            case .layout:
+                                self?.layouts = levels
+                        }
+                        
                     case .failure(let error):
                         self?.error = error.localizedDescription
                 }

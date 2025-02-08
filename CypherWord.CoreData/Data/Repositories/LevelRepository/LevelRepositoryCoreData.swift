@@ -1,6 +1,28 @@
 import CoreData
 
 extension LevelStorageCoreData:LevelRepositoryProtocol {
+    func saveLevels(_ levels: [Level], completion: @escaping (Result<Void, any Error>) -> Void) {
+        do {
+            for level in levels {
+                if try findLevel(id: level.id) == nil {
+                    let levelMO = LevelMO(context: container.viewContext)
+                    levelMO.id = level.id
+                    levelMO.number = try fetchHighestNumber(levelType: level.levelType) + 1 //Int64(level.number)
+                    levelMO.gridText = level.gridText
+                    levelMO.letterMap = level.letterMap
+                    save()
+                }
+                else {
+                    print("Level already exists")
+                }
+            }
+            completion(.success(()))
+        } catch {
+            completion(.failure(error))
+        }
+        
+    }
+    
     func fetchLevels(levelType: Level.LevelType, completion: @escaping (Result<[Level], Error>) -> Void) {
         do {
             let fetchRequest: NSFetchRequest<LevelMO> = createFetchLevelsRequest(resultType: LevelMO.self, levelType: levelType)
@@ -21,7 +43,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
 
         do {
             levelMO.id = UUID()
-            levelMO.number = try self.fetchHighestNumber() + 1
+            levelMO.number = try self.fetchHighestNumber(levelType: .layout) + 1
             levelMO.gridText = nil
             levelMO.letterMap = nil
             completion(.success(()))
@@ -58,7 +80,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
             if levelMO == nil {
                 levelMO = LevelMO(context: container.viewContext)
                 levelMO?.id = UUID()
-                levelMO?.number = try self.fetchHighestNumber() + 1
+                levelMO?.number = try self.fetchHighestNumber(levelType: level.levelType) + 1
 
 //                levelMO.id = level.id
             }
@@ -82,12 +104,20 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
 class LevelStorageCoreData {
     private lazy var container: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "LevelsContainer")
+        
         container.loadPersistentStores { _, error in
             if let error = error as NSError? {
                 // TODO: - Log to Crashlytics
                 assertionFailure("CoreDataStorage Unresolved error \(error), \(error.userInfo)")
             }
         }
+        if let storeURL = container.persistentStoreCoordinator.persistentStores.first?.url {
+            print("Core Data SQLite DB location: \(storeURL.absoluteString)")
+        }
+        else {
+            print("Can't find")
+        }
+        
         return container
     }()
 
@@ -113,7 +143,7 @@ class LevelStorageCoreData {
     }
 
     
-    private func fetchHighestNumber() throws -> Int64 {
+    private func fetchHighestNumber(levelType: Level.LevelType) throws -> Int64 {
         // Create a fetch request for dictionaries (so we get a dictionary result, not full managed objects)
         let fetchRequest = NSFetchRequest<NSDictionary>(entityName: "LevelMO")
         fetchRequest.resultType = .dictionaryResultType
@@ -122,7 +152,11 @@ class LevelStorageCoreData {
         let keyPathExpression = NSExpression(forKeyPath: "number")
         
         // Add a predicate to filter for objects where letterMap is nil.
-        fetchRequest.predicate = NSPredicate(format: "letterMap == nil")
+        if levelType == .playable {
+            fetchRequest.predicate = NSPredicate(format: "letterMap != nil")
+        } else {
+            fetchRequest.predicate = NSPredicate(format: "letterMap == nil")
+        }
         // Create an expression that calculates the maximum value for the key path
         let maxExpression = NSExpression(forFunction: "max:", arguments: [keyPathExpression])
         
@@ -161,7 +195,11 @@ class LevelStorageCoreData {
     
     func findLevel(id:UUID) throws -> LevelMO? {
         let request: NSFetchRequest<LevelMO> = createFetchLevelRequest(resultType: LevelMO.self, levelID: id)
-        return try container.viewContext.fetch(request).first
+        let level = try container.viewContext.fetch(request).first
+        
+        print("Level found: \(String(describing: level?.id))")
+        
+        return level
     }
 
     

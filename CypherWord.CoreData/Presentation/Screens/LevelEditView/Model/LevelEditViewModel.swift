@@ -70,7 +70,6 @@ class LevelEditViewModel: ObservableObject {
     
     func populate() {
         isBusy = true
-//        let populator = CrosswordPopulatorUseCase()
         
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }

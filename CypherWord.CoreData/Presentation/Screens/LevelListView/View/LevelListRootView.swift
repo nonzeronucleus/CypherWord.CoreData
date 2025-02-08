@@ -6,6 +6,7 @@ struct LevelListRootView : View {
 
     init(_ viewModel: LevelListViewModel) {
         self.viewModel = viewModel
+        self.viewModel.reload()
     }
     
     var body: some View {

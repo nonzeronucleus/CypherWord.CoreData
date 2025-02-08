@@ -2,14 +2,9 @@ import Foundation
 
 class CrosswordPopulatorUseCase:CrosswordPopulatorUseCaseProtocol {
     func execute(initCrossword: Crossword, completion: @escaping (Result<(Crossword, CharacterIntMap) , any Error>) -> Void) {
-        print("A")
         let crosswordPopulator = CrosswordPopulator(crossword: initCrossword)
-        print("B")
-
         let res = crosswordPopulator.populateCrossword()
-        print("C")
         completion(.success(res))
-        print("D")
     }
 }
 

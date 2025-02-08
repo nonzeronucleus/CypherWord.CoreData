@@ -52,7 +52,6 @@ public struct LevelEditView: View {
             .padding(20)
             if model.isBusy {
                 ZStack {
-                    let _ = print("X")
                     Color.black.opacity(0.7)
                         .edgesIgnoringSafeArea(.all)
                     

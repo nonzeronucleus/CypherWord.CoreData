@@ -1,12 +1,12 @@
 [
   {
-      "letterMap" : null,
+      "letterMap" : "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     "gridText" : "AMAZE..E.ISLES.|.O..APPLET.A...|BIGHT..M...P...|...Y......ASHES|...E.......E..P|...N...S......A|..DAMASK..LIVER|....A..I..O....|LIVER..FLEXED..|E......F...R...|F..E.......E...|TWIXT......C...|...P...J..STONY|...E.UNIQUE..I.|.ZILCH.B..WRYLY|",
     "number" : 1,
     "id" : "A345DFA2-737E-4228-8AB0-ACAA60E73802",
   },
   {
-    "letterMap" : null,
+    "letterMap" : "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     "number" : 2,
     "id" : "F5D58983-4231-49BC-B934-2B31461B5109",
     "gridText" : "FAKES..A.TRACE.|.W..UTOPIA.D...|VENOM..T...A...|...X......OGLES|...I.......E..W|...D...F......I|..SEQUEL..HERTZ|....U..Y..A....|CONGA..BANJOS..|H......Y...F...|O..G.......F...|PIERS......A...|...O...A..ALIBI|...S.MISSES..U.|.PASTY.H..PADDY|",

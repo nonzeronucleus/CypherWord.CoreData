@@ -15,6 +15,22 @@ private enum LevelRepositoryKey: DependencyKey {
 }
 
 
+// Mark - FileRepositoryProtocol
+
+extension DependencyValues {
+    var fileRepository: FileRepositoryProtocol {
+        get { self[FileRepositoryKey.self] }
+        set { self[FileRepositoryKey.self] = newValue }
+    }
+}
+
+private enum FileRepositoryKey: DependencyKey {
+    static let liveValue: FileRepositoryProtocol =  FileRepository()
+    static let previewValue: FileRepositoryProtocol =  FileRepository()
+}
+
+
+
 // Mark - FetchLevelsUseCaseProtocol
 
 extension DependencyValues {
@@ -81,5 +97,18 @@ extension DependencyValues {
 
 private enum SaveLevelUseCaseKey: DependencyKey {
     static let liveValue: SaveLevelUseCaseProtocol = SaveLevelUseCase()
+}
+
+// Mark - Import
+
+extension DependencyValues {
+    var importLevelsUseCase: ImportLevelsUseCaseProtocol {
+        get { self[ImportLevelsUseCaseKey.self] }
+        set { self[ImportLevelsUseCaseKey.self] = newValue }
+    }
+}
+
+private enum ImportLevelsUseCaseKey: DependencyKey {
+    static let liveValue: ImportLevelsUseCaseProtocol = ImportLevelsUseCase()
 }
 

@@ -5,7 +5,7 @@ enum FileError: Error {
     case other(Error)
 }
 
-extension LevelRepositoryFile : LevelRepositoryProtocol {
+extension FileRepository : FileRepositoryProtocol {
     func fetchLevels(levelType: Level.LevelType, completion: @escaping (Result<[Level], any Error>) -> Void) {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
@@ -27,24 +27,24 @@ extension LevelRepositoryFile : LevelRepositoryProtocol {
 
     }
     
-    func addLayout(completion: @escaping (Result<Void, any Error>) -> Void) {
-        fatalError("Not implemented")
-    }
-    
-    func save(completion: @escaping (Result<Void, any Error>) -> Void) {
-        fatalError("Not implemented")
-    }
-    
-    func deleteAll(levelType: Level.LevelType, completion: @escaping (Result<Void, any Error>) -> Void) {
-        fatalError("Not implemented")
-    }
-    
-    func saveLevel(level: Level, completion: @escaping (Result<Void, any Error>) -> Void) {
-        
-    }
+//    func addLayout(completion: @escaping (Result<Void, any Error>) -> Void) {
+//        fatalError("Not implemented")
+//    }
+//    
+//    func save(completion: @escaping (Result<Void, any Error>) -> Void) {
+//        fatalError("Not implemented")
+//    }
+//    
+//    func deleteAll(levelType: Level.LevelType, completion: @escaping (Result<Void, any Error>) -> Void) {
+//        fatalError("Not implemented")
+//    }
+//    
+//    func saveLevel(level: Level, completion: @escaping (Result<Void, any Error>) -> Void) {
+//        
+//    }
 }
 
-class LevelRepositoryFile {
+class FileRepository {
     private func filePath() throws -> URL {
         try FileManager.default.url(for: .documentDirectory,
                                     in: .userDomainMask,
