@@ -7,12 +7,26 @@ struct CharacterIntMap: Codable {
         self.data = Dictionary(uniqueKeysWithValues: map.map { (String($0.key), $0.value) })
     }
     
+    init(from json: String) {
+        if let jsonData = json.data(using: .utf8) {
+            if let decodedData = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Int] {
+                data = decodedData
+            }
+            else {
+                fatalError("Failed to decode JSON \(json)")
+            }
+        }
+        else {
+            fatalError("Failed to convert JSON string to data \(json)")
+        }
+    }
+    
     init(shuffle: Bool = false) {
         var letterValues: [Character:Int] = [:]
         
         let alphabet = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
         
-        // SShuffle the array to get a random order
+        // Shuffle the array to get a random order
         if shuffle {
             let shuffledAlphabet = alphabet.shuffled()
             for (index, letter) in shuffledAlphabet.enumerated() {
@@ -34,6 +48,14 @@ struct CharacterIntMap: Codable {
     // Convert back to `[Character: Int]`
     var characterIntMap: [Character: Int] {
         Dictionary(uniqueKeysWithValues: data.map { (Character($0.key), $0.value) })
+    }
+    
+    func toJSON() -> String {
+        if let jsonData = try? JSONSerialization.data(withJSONObject: data, options: []),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            return jsonString
+        }
+        return ""
     }
     
     subscript(char:String?) -> Int? {

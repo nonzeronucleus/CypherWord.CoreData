@@ -39,11 +39,12 @@ public struct LevelEditView: View {
                 Button("Populate") {
                     model.populate()
                 }
-                //            if (levelModel.crossword.isPopulated) {
-                //                Button("Reset") {
-                //                    model.reset()
-                //                }
-                //            }
+                
+                if (model.crossword.isPopulated) {
+                    Button("Reset") {
+                        model.reset()
+                    }
+                }
                 
                 if let error = model.error {
                     Text(error)

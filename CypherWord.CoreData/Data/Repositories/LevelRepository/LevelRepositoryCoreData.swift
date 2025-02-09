@@ -12,9 +12,6 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
                     levelMO.letterMap = level.letterMap
                     save()
                 }
-                else {
-                    print("Level already exists")
-                }
             }
             completion(.success(()))
         } catch {
@@ -46,13 +43,29 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
             levelMO.number = try self.fetchHighestNumber(levelType: .layout) + 1
             levelMO.gridText = nil
             levelMO.letterMap = nil
+            save()
             completion(.success(()))
         } catch let error {
             completion(.failure(error))
         }
         
-        save()
     }
+    
+    func addPlayableLevel(level: Level, completion: @escaping (Result<Void, Error>) -> Void) {
+        let levelMO = LevelMO(context: container.viewContext)
+
+        do {
+            levelMO.id = UUID()
+            levelMO.number = try self.fetchHighestNumber(levelType: .playable) + 1
+            levelMO.gridText = level.gridText
+            levelMO.letterMap = level.letterMap
+            save()
+            completion(.success(()))
+        } catch let error {
+            completion(.failure(error))
+        }
+    }
+
 
     func save(completion: @escaping (Result<Void, any Error>) -> Void) {
         do {
@@ -111,16 +124,16 @@ class LevelStorageCoreData {
                 assertionFailure("CoreDataStorage Unresolved error \(error), \(error.userInfo)")
             }
         }
-        if let storeURL = container.persistentStoreCoordinator.persistentStores.first?.url {
-            print("Core Data SQLite DB location: \(storeURL.absoluteString)")
-        }
-        else {
-            print("Can't find")
-        }
         
         return container
     }()
+    
 
+    var dbLocation: URL? {
+        return container.persistentStoreCoordinator.persistentStores.first?.url
+    }
+
+    
     private let entityName: String = "LevelMO"
     
     private func createFetchLevelsRequest<T>(resultType: T.Type, levelType: Level.LevelType) -> NSFetchRequest<T> where T: NSFetchRequestResult {
@@ -196,8 +209,6 @@ class LevelStorageCoreData {
     func findLevel(id:UUID) throws -> LevelMO? {
         let request: NSFetchRequest<LevelMO> = createFetchLevelRequest(resultType: LevelMO.self, levelID: id)
         let level = try container.viewContext.fetch(request).first
-        
-        print("Level found: \(String(describing: level?.id))")
         
         return level
     }

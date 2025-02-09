@@ -99,7 +99,7 @@ private enum SaveLevelUseCaseKey: DependencyKey {
     static let liveValue: SaveLevelUseCaseProtocol = SaveLevelUseCase()
 }
 
-// Mark - Import
+// Mark - Import Use case
 
 extension DependencyValues {
     var importLevelsUseCase: ImportLevelsUseCaseProtocol {
@@ -110,5 +110,18 @@ extension DependencyValues {
 
 private enum ImportLevelsUseCaseKey: DependencyKey {
     static let liveValue: ImportLevelsUseCaseProtocol = ImportLevelsUseCase()
+}
+
+// Mark - Save New Playable Level
+
+extension DependencyValues {
+    var addPlayableLevelUseCase: AddPlayableLevelUseCaseProtocol {
+        get { self[AddPlayableLevelUseCaseKey.self] }
+        set { self[AddPlayableLevelUseCaseKey.self] = newValue }
+    }
+}
+
+private enum AddPlayableLevelUseCaseKey: DependencyKey {
+    static let liveValue: AddPlayableLevelUseCaseProtocol = AddPlayableLevelUseCase()
 }
 

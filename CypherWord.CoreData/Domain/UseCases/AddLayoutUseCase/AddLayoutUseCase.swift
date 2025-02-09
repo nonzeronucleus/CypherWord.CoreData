@@ -3,7 +3,7 @@ import Dependencies
 
 class AddLayoutUseCase: AddLayoutUseCaseProtocol {
     @Dependency(\.levelRepository) private var repository: LevelRepositoryProtocol
-    @Dependency(\.fetchLayoutsUseCase) private var fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
+//    @Dependency(\.fetchLayoutsUseCase) private var fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
     
     func execute(completion: @escaping (Result<[Level], Error>) -> Void) {
         repository.addLayout { [weak self] result in
@@ -16,7 +16,7 @@ class AddLayoutUseCase: AddLayoutUseCaseProtocol {
                 
                 switch result {
                     case .success:
-                        self.fetchLayoutsUseCase.execute(completion: completion)
+                        self.repository.fetchLevels(levelType: .layout, completion: completion)
                     case .failure(let error):
                         completion(.failure(error))
                 }

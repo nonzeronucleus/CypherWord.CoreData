@@ -20,6 +20,9 @@ class LevelListViewModel: ObservableObject {
 
     func updateSelectedLevel() {
         selectedLevel = layouts.first(where: { $0.id == selectedLevelID })
+        if selectedLevel == nil {
+            selectedLevel = levels.first(where: { $0.id == selectedLevelID })
+        }
         showDetail = selectedLevel != nil
     }
     

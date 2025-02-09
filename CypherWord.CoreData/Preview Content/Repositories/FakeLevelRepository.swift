@@ -1,4 +1,8 @@
 class FakeLevelRepository: LevelRepositoryProtocol {
+    func addPlayableLevel(level: Level, completion: @escaping (Result<Void, any Error>) -> Void) {
+        fatalError("To Implement - addPlayableLevel")
+    }
+    
     func saveLevels(_ levels: [Level], completion: @escaping (Result<Void, any Error>) -> Void) {
         fatalError("To Implement - saveLevels")
     }
