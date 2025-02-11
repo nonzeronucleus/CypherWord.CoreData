@@ -3,16 +3,16 @@ import SwiftUI
 struct ContentView: View {
     @StateObject var model = ContentViewModel()
     @State var selection:Tab = .level
-    let listViewModel:LevelListViewModel
+//    let listViewModel:LevelListViewModel
 
     init () {
-        listViewModel = LevelListViewModel()
+//        listViewModel = LevelListViewModel(navigationViewModel: <#T##NavigationViewModel#>)
     }
 
     var body: some View {
         Group {
             if model.isInitialized {
-                LevelListRootView(listViewModel)
+                NavigationView(/*listViewModel*/)
             } else {
                 StartupLoadingView()
             }

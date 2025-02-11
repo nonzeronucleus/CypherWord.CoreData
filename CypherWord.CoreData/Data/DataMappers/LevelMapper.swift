@@ -1,7 +1,7 @@
 
 
 class LevelMapper {
-    static func map(mo: LevelMO) -> Level {
+    static func map(mo: LevelMO) -> Level? {
         guard let id = mo.id else {
             fatalError("Missing id for LevelMO number \(mo.number)")
         }

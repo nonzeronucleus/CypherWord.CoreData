@@ -33,7 +33,7 @@ struct LevelListView : View {
                     let levels = levelType == .layout ? viewModel.layouts : viewModel.levels
                     ForEach(levels) { level in
                         CartoonButton(levelNumber:level.number, gradient:Gradient(colors: [primaryColor, secondaryColor])) {
-                            viewModel.selectedLevelID = level.id
+                            viewModel.onSelectLevel(level: level)
                         }
                     }
                 }
@@ -55,51 +55,51 @@ struct LevelListView : View {
     }
 }
 
-#Preview("Layout") {
-    let testLayouts = [
-        Level(id: UUID(), number: 1),
-        Level(id: UUID(), number: 2)
-    ]
-    
-    let testPlayableLevels = [
-        Level(id: UUID(), number: 1),
-        Level(id: UUID(), number: 2),
-        Level(id: UUID(), number: 3),
-        Level(id: UUID(), number: 4)
-    ]
-    
-    withDependencies {
-        $0.levelRepository = FakeLevelRepository(testLayouts: testLayouts, testPlayableLevels: testPlayableLevels)
-    } operation: {
-        let viewModel = LevelListViewModel()
-        
-        return LevelListView(levelType: .layout)
-            .environmentObject(viewModel)
-    }
-}
+//#Preview("Layout") {
+//    let testLayouts = [
+//        Level(id: UUID(), number: 1),
+//        Level(id: UUID(), number: 2)
+//    ]
+//    
+//    let testPlayableLevels = [
+//        Level(id: UUID(), number: 1),
+//        Level(id: UUID(), number: 2),
+//        Level(id: UUID(), number: 3),
+//        Level(id: UUID(), number: 4)
+//    ]
+//    
+//    withDependencies {
+//        $0.levelRepository = FakeLevelRepository(testLayouts: testLayouts, testPlayableLevels: testPlayableLevels)
+//    } operation: {
+//        let viewModel = LevelListViewModel()
+//        
+//        return LevelListView(levelType: .layout)
+//            .environmentObject(viewModel)
+//    }
+//}
 
-#Preview("Playable") {
-    let testLayouts = [
-        Level(id: UUID(), number: 1),
-        Level(id: UUID(), number: 2)
-    ]
-    
-    let testPlayableLevels = [
-        Level(id: UUID(), number: 1),
-        Level(id: UUID(), number: 2),
-        Level(id: UUID(), number: 3),
-        Level(id: UUID(), number: 4)
-    ]
-    
-    withDependencies {
-        $0.levelRepository = FakeLevelRepository(testLayouts: testLayouts, testPlayableLevels: testPlayableLevels)
-    } operation: {
-        let viewModel = LevelListViewModel()
-        
-        return LevelListView(levelType: .playable)
-            .environmentObject(viewModel)
-    }
-}
+//#Preview("Playable") {
+//    let testLayouts = [
+//        Level(id: UUID(), number: 1),
+//        Level(id: UUID(), number: 2)
+//    ]
+//    
+//    let testPlayableLevels = [
+//        Level(id: UUID(), number: 1),
+//        Level(id: UUID(), number: 2),
+//        Level(id: UUID(), number: 3),
+//        Level(id: UUID(), number: 4)
+//    ]
+//    
+//    withDependencies {
+//        $0.levelRepository = FakeLevelRepository(testLayouts: testLayouts, testPlayableLevels: testPlayableLevels)
+//    } operation: {
+//        let viewModel = LevelListViewModel()
+//        
+//        return LevelListView(levelType: .playable)
+//            .environmentObject(viewModel)
+//    }
+//}
 
 
 

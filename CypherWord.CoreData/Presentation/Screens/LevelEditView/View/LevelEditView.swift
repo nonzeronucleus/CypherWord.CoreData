@@ -2,6 +2,8 @@ import SwiftUI
 import Foundation
 
 public struct LevelEditView: View {
+    @State private var showAlert = false
+    @Environment(\.dismiss) private var dismiss
     @ObservedObject  var model: LevelEditViewModel
     
     init(_ model: LevelEditViewModel) {
@@ -55,15 +57,31 @@ public struct LevelEditView: View {
                 ZStack {
                     Color.black.opacity(0.7)
                         .edgesIgnoringSafeArea(.all)
-                    
-                    // A progress spinner centered on the overlay.
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        .scaleEffect(2.5)
+                
+                    VStack {
+                        // A progress spinner centered on the overlay.
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .scaleEffect(2.5)
+                        
+                        Button("Cancel") {
+                            print("Cancel")
+//                            model.isBusy = false
+                        }
+                    }
                 }
             }
         }
-
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("< Back") { showAlert = true }
+            }
+        }
+        .alert("Save changes?", isPresented: $showAlert) {
+            Button("Yes", role: .destructive) { model.save(); dismiss() }
+            Button("No", role: .destructive) { dismiss() }
+            Button("Cancel", role: .cancel) {}
+        }
     }
     
 }

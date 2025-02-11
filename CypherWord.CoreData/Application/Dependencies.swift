@@ -125,3 +125,16 @@ private enum AddPlayableLevelUseCaseKey: DependencyKey {
     static let liveValue: AddPlayableLevelUseCaseProtocol = AddPlayableLevelUseCase()
 }
 
+// Mark - Save New Playable Level
+
+extension DependencyValues {
+    var fetchLevelByIDUseCase: FetchLevelByIDUseCaseProtocol {
+        get { self[FetchLevelByIDUseCaseKey.self] }
+        set { self[FetchLevelByIDUseCaseKey.self] = newValue }
+    }
+}
+
+private enum FetchLevelByIDUseCaseKey: DependencyKey {
+    static let liveValue: FetchLevelByIDUseCaseProtocol = FetchLevelByIDUseCase()
+}
+

@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import Dependencies
 import Combine
 
@@ -7,8 +8,19 @@ class LevelListViewModel: ObservableObject {
     @Published var levels: [Level] = []
     @Published var layouts: [Level] = []
     @Published var error:String?
-    
-    @Published private(set) var selectedLevel: Level?
+//    @Published var path: [String] = []
+//    var path: NavigationPath {
+//        get {
+//            return navigationViewModel.path
+//        }
+//        set {
+//            navigationViewModel.path = newValue
+//        }
+//    }
+
+    @Published private(set) var selectedLayout: Level?
+    @Published private(set) var selectedPlayableLevel: Level?
+    var navigationViewModel: NavigationViewModel?
     
     @Published var selectedLevelID: UUID? {
         didSet {
@@ -18,13 +30,7 @@ class LevelListViewModel: ObservableObject {
     
     @Published var showDetail: Bool = false
 
-    func updateSelectedLevel() {
-        selectedLevel = layouts.first(where: { $0.id == selectedLevelID })
-        if selectedLevel == nil {
-            selectedLevel = levels.first(where: { $0.id == selectedLevelID })
-        }
-        showDetail = selectedLevel != nil
-    }
+
     
     private var cancellables = Set<AnyCancellable>()
     @Dependency(\.fetchLayoutsUseCase) private var fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
@@ -32,12 +38,22 @@ class LevelListViewModel: ObservableObject {
     @Dependency(\.deleteAllLevelsUseCase) private var deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol
     @Dependency(\.addLayoutUseCase) private var addLayoutUseCase: AddLayoutUseCaseProtocol
 
-    init(){
+    init(navigationViewModel:NavigationViewModel){
+        self.navigationViewModel = navigationViewModel
+        reload()
     }
     
     func reload() {
         fetchLevels()
         fetchLayouts()
+    }
+    
+    func createGameViewModel() -> GameViewModel {
+        return GameViewModel(level: selectedPlayableLevel!, navigationViewModel: navigationViewModel!)
+    }
+    
+    func createLayoutViewModel() -> LevelEditViewModel {
+        return LevelEditViewModel(level: selectedPlayableLevel!/*, navigationViewModel: navigationViewModel*/)
     }
     
     func fetchLevels() {
@@ -98,5 +114,26 @@ class LevelListViewModel: ObservableObject {
                 }
             }
         })
+    }
+    
+    func updateSelectedLevel() {
+        
+        
+//        if let navigationViewModel  {
+//            selectedLayout = layouts.first(where: { $0.id == selectedLevelID })
+//            navigationViewModel.navigateTo(.edit)
+//            print("\(String(describing: selectedLayout))")
+//            if selectedLayout == nil {
+//                selectedPlayableLevel = levels.first(where: { $0.id == selectedLevelID })
+//                navigationViewModel.navigateTo(.game)
+//            }
+//            showDetail = selectedLayout != nil || selectedPlayableLevel != nil
+//        }
+    }
+    
+    func onSelectLevel(level:Level) {
+        navigationViewModel?.navigateTo(level:level)
+//        selectedLevelID = id
+//        print(id)
     }
 }
