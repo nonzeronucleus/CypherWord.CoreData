@@ -6,6 +6,15 @@ class CrosswordPopulatorUseCase:CrosswordPopulatorUseCaseProtocol {
         let res = crosswordPopulator.populateCrossword()
         completion(.success(res))
     }
+    
+    func executeAsync(initCrossword: Crossword) async -> Result<(Crossword, CharacterIntMap), Error> {
+        return await withCheckedContinuation { continuation in
+            execute(initCrossword: initCrossword) { result in
+                guard !Task.isCancelled else { return } // Stop if task is cancelled
+                continuation.resume(returning: result)
+            }
+        }
+    }
 }
 
 class CrosswordPopulator {

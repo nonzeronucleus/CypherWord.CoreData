@@ -65,7 +65,7 @@ public struct LevelEditView: View {
                             .scaleEffect(2.5)
                         
                         Button("Cancel") {
-                            print("Cancel")
+                            model.cancelPopulation()
 //                            model.isBusy = false
                         }
                     }

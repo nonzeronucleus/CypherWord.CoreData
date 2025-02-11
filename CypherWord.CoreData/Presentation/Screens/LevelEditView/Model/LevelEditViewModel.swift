@@ -15,6 +15,8 @@ class LevelEditViewModel: ObservableObject {
     @Published var isPopulated: Bool = false
     @Published var isBusy: Bool = false
     
+    private var populateTask: Task<Void, Never>? // Stores the running task
+    
     init(level:Level) {
         self.level = level
         var newCrossword:Crossword?
@@ -115,30 +117,66 @@ class LevelEditViewModel: ObservableObject {
     }
 
     
+//    func populate() {
+//        isBusy = true
+//        
+//        DispatchQueue.main.async { [weak self] in
+//            guard let self = self else { return }
+//            let populator = CrosswordPopulatorUseCase()
+//            
+//            populator.execute(initCrossword: crossword) { [weak self] result in
+//                DispatchQueue.main.async {
+//                    switch result {
+//                        case .success(let (newCrossword, characterIntMap)):
+//                            self?.crossword = newCrossword
+//                            self?.letterValues = characterIntMap
+//                            self?.isBusy = false
+//                            self?.isPopulated = true
+//                            
+//                            // You can also do something with characterIntMap if needed
+//                        case .failure(let error):
+//                            self?.error = error.localizedDescription
+//                            self?.isBusy = false
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+    
+    @MainActor
     func populate() {
         isBusy = true
-        
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            let populator = CrosswordPopulatorUseCase()
+        populateTask?.cancel() // Cancel any existing task
+
+        populateTask = Task { [weak self] in
+            guard let self else { return } // Swift 5.9 shorthand for `guard let self = self else { return }`
             
-            populator.execute(initCrossword: crossword) { [weak self] result in
-                DispatchQueue.main.async {
-                    switch result {
-                        case .success(let (newCrossword, characterIntMap)):
-                            self?.crossword = newCrossword
-                            self?.letterValues = characterIntMap
-                            self?.isBusy = false
-                            self?.isPopulated = true
-                            
-                            // You can also do something with characterIntMap if needed
-                        case .failure(let error):
-                            self?.error = error.localizedDescription
-                            self?.isBusy = false
-                    }
+            let populator = CrosswordPopulatorUseCase()
+            let result = await populator.executeAsync(initCrossword: self.crossword)
+
+            guard !Task.isCancelled else { return }
+
+            await MainActor.run { // Ensure UI updates happen on the main thread
+                switch result {
+                    case .success(let (newCrossword, characterIntMap)):
+                        self.crossword = newCrossword
+                        self.letterValues = characterIntMap
+                        self.isPopulated = true
+                    case .failure(let error):
+                        self.error = error.localizedDescription
                 }
+                self.isBusy = false
             }
         }
+    }
+
+    
+    
+    // Call this function from your UI button
+    func cancelPopulation() {
+        populateTask?.cancel()
+        isBusy = false // Update UI to remove spinner
     }
     
     func resize(newSize: Int) {
