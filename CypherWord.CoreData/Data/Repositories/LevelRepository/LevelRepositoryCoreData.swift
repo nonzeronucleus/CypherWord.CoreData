@@ -94,6 +94,21 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         }
     }
     
+    func delete(levelID: UUID, completion: @escaping (Result<Void, Error>) -> Void) {
+        let request: NSFetchRequest<NSFetchRequestResult> = createFetchLevelRequest(resultType: NSFetchRequestResult.self, levelID: levelID)
+        
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+
+        do {
+            try container.viewContext.execute(deleteRequest)
+            try container.viewContext.save()
+            completion(.success(()))
+        } catch let error {
+            completion(.failure(error))
+        }
+    }
+
+    
     func saveLevel(level: Level, completion: @escaping (Result<Void, any Error>) -> Void) {
         do {
             var levelMO = try findLevel(id: level.id)
@@ -212,6 +227,7 @@ class LevelStorageCoreData {
             try container.viewContext.save()
         }
     }
+    
     
     
     func findLevel(id:UUID) throws -> LevelMO? {

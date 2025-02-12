@@ -1,6 +1,10 @@
 import Foundation
 
 class FakeLevelRepository: LevelRepositoryProtocol {
+    func delete(levelID: UUID, completion: @escaping (Result<Void, any Error>) -> Void) {
+        fatalError("To Implement - addPlayableLevel")
+    }
+    
     func fetchLevelByID(id: UUID, completion: @escaping (Result<LevelMO?, any Error>) -> Void) {
         fatalError("To Implement - addPlayableLevel")
     }

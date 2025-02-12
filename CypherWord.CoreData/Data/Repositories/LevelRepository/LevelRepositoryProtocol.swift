@@ -9,6 +9,7 @@ protocol LevelRepositoryProtocol: FileRepositoryProtocol {
     func addPlayableLevel(level: Level, completion: @escaping (Result<Void, Error>) -> Void) 
 
     func deleteAll(levelType: Level.LevelType, completion: @escaping (Result<Void, Error>) -> Void)
+    func delete(levelID: UUID, completion: @escaping (Result<Void, Error>) -> Void) 
     func saveLevel(level: Level, completion: @escaping (Result<Void, Error>) -> Void)
 }
 

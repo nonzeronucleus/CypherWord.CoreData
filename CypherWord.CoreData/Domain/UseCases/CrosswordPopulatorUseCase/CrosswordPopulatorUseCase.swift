@@ -66,7 +66,7 @@ class CrosswordPopulator {
             }
         }
         
-        return (crossword:crossword, characterIntMap:CharacterIntMap())
+        return (crossword:crossword, characterIntMap:CharacterIntMap(shuffle: true))
     }
 
     private func populateNode(node:EntryNode) -> Bool{

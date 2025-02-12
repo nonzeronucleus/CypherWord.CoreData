@@ -11,6 +11,7 @@ class LevelEditViewModel: ObservableObject {
     }
 
     @Dependency(\.saveLevelUseCase) private var saveLevelUseCase: SaveLevelUseCaseProtocol
+    @Dependency(\.deleteLevelUseCase) private var deleteLevelUseCase: DeleteLevelUseCaseProtocol
     @Dependency(\.addPlayableLevelUseCase) private var addPlayableLevelUseCase: AddPlayableLevelUseCaseProtocol
     private let navigationViewModel: NavigationViewModel
 
@@ -86,6 +87,28 @@ class LevelEditViewModel: ObservableObject {
         }
         currentState = .clean
     }
+    
+    func delete() {
+        isBusy = true
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            deleteLevelUseCase.execute(levelID: level.id, completion: { [weak self] result in
+                DispatchQueue.main.async {
+                    switch result {
+                        case .success():
+                            self?.isBusy = false
+                            self?.goBack()
+                        case .failure(let error):
+                            self?.error = error.localizedDescription
+                    }
+                }
+            })
+        }
+    }
+    
+    
     func save(then onComplete: @escaping (() -> Void) = {}) {
         isBusy = true
         

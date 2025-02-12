@@ -40,7 +40,10 @@ public struct LevelEditView: View {
                 Button("Populate") {
                     model.populate()
                 }
-                
+                Button("Delete") {
+                    model.delete()
+                }
+
                 if (model.crossword.isPopulated) {
                     Button("Reset") {
                         model.reset()
@@ -86,9 +89,10 @@ public struct LevelEditView: View {
     
 }
 
-//#Preview {
-//    let level = Level(id: UUID(), number: 1, gridText: " ...|.. .|. ..|. ..|", letterMap: nil)
-//    let viewModel = LevelEditViewModel(level: level, navigationViewModel: <#T##NavigationViewModel#>)
-//    
-//    LevelEditView(viewModel)
-//}
+#Preview {
+    let navigationViewModel = NavigationViewModel()
+    let level = Level(id: UUID(), number: 1, gridText: " ...|.. .|. ..|. ..|", letterMap: nil)
+    let viewModel = LevelEditViewModel(level: level, navigationViewModel: navigationViewModel)
+    
+    LevelEditView(viewModel)
+}

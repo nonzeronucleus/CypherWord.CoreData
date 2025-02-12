@@ -138,3 +138,18 @@ private enum FetchLevelByIDUseCaseKey: DependencyKey {
     static let liveValue: FetchLevelByIDUseCaseProtocol = FetchLevelByIDUseCase()
 }
 
+
+// Mark - Delete Level
+
+extension DependencyValues {
+    var deleteLevelUseCase: DeleteLevelUseCaseProtocol {
+        get { self[DeleteLevelUseCaseKey.self] }
+        set { self[DeleteLevelUseCaseKey.self] = newValue }
+    }
+}
+
+private enum DeleteLevelUseCaseKey: DependencyKey {
+    static let liveValue: DeleteLevelUseCaseProtocol = DeleteLevelUseCase()
+}
+
+
