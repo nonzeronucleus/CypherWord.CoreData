@@ -30,7 +30,7 @@ class NavigationViewModel: ObservableObject {
     }
 
     func createLayoutViewModel() -> LevelEditViewModel {
-        return LevelEditViewModel(level: level!) //, navigationViewModel: self)
+        return LevelEditViewModel(level: level!, navigationViewModel: self)
     }
     
 }

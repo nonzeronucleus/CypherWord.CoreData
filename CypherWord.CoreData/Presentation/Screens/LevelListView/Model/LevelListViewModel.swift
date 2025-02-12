@@ -48,14 +48,14 @@ class LevelListViewModel: ObservableObject {
         fetchLayouts()
     }
     
-    func createGameViewModel() -> GameViewModel {
-        return GameViewModel(level: selectedPlayableLevel!, navigationViewModel: navigationViewModel!)
-    }
-    
-    func createLayoutViewModel() -> LevelEditViewModel {
-        return LevelEditViewModel(level: selectedPlayableLevel!/*, navigationViewModel: navigationViewModel*/)
-    }
-    
+//    func createGameViewModel() -> GameViewModel {
+//        return GameViewModel(level: selectedPlayableLevel!, navigationViewModel: navigationViewModel!)
+//    }
+//    
+//    func createLayoutViewModel() -> LevelEditViewModel {
+//        return LevelEditViewModel(level: selectedPlayableLevel!, navigationViewModel: navigationViewModel)
+//    }
+//    
     func fetchLevels() {
         fetchPlayableLevelsUseCase.execute { [weak self] result in
             DispatchQueue.main.async {

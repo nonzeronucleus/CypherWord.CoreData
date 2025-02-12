@@ -36,7 +36,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
 
     func fetchLevelByID(id: UUID, completion: @escaping (Result<LevelMO?, Error>) -> Void) {
         do {
-            var levelMO = try findLevel(id: id)
+            let levelMO = try findLevel(id: id)
             completion(.success(levelMO))
         } catch let error {
             completion(.failure(error))
@@ -143,16 +143,6 @@ class LevelStorageCoreData {
 
     
     private let entityName: String = "LevelMO"
-    
-    
-//    private func createFetchLevelByIDRequest<T>(resultType: T.Type, levelID: UUID) -> NSFetchRequest<T> where T: NSFetchRequestResult {
-//        let request = NSFetchRequest<T>(entityName: entityName)
-//        request.predicate = NSPredicate(format: "id != nil")
-//        request.sortDescriptors = [NSSortDescriptor(key: "number", ascending: true)]
-//        return request
-//    }
-//    
-//
     
     private func createFetchLevelsRequest<T>(resultType: T.Type, levelType: Level.LevelType) -> NSFetchRequest<T> where T: NSFetchRequestResult {
         let request = NSFetchRequest<T>(entityName: entityName)

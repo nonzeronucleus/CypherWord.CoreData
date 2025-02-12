@@ -1,10 +1,18 @@
 import Foundation
+import SwiftUICore
 import Dependencies
 
 
 class LevelEditViewModel: ObservableObject {
+    enum EditState {
+        case clean
+        case changed
+        case populated
+    }
+
     @Dependency(\.saveLevelUseCase) private var saveLevelUseCase: SaveLevelUseCaseProtocol
     @Dependency(\.addPlayableLevelUseCase) private var addPlayableLevelUseCase: AddPlayableLevelUseCaseProtocol
+    private let navigationViewModel: NavigationViewModel
 
     static let defaultSize = 11
     @Published private(set) var level: Level
@@ -12,13 +20,16 @@ class LevelEditViewModel: ObservableObject {
     @Published var crossword: Crossword
     @Published private(set) var error:String?
     @Published var letterValues: CharacterIntMap?
-    @Published var isPopulated: Bool = false
     @Published var isBusy: Bool = false
+    @Published var showAlert: Bool = false
+    
+    var currentState = EditState.clean
     
     private var populateTask: Task<Void, Never>? // Stores the running task
     
-    init(level:Level) {
+    init(level:Level, navigationViewModel:NavigationViewModel) {
         self.level = level
+        self.navigationViewModel = navigationViewModel
         var newCrossword:Crossword?
         
         let transformer = CrosswordTransformer()
@@ -43,9 +54,15 @@ class LevelEditViewModel: ObservableObject {
     }
     
     func toggleCell(id: UUID) {
+        if currentState == .populated {
+            // TODO flag alert about changing a populated crossword
+            return
+        }
+        
         if let location = crossword.locationOfElement(byID: id) {
             crossword.updateElement(byPos: location) { cell in
                 cell.toggle()
+                currentState = .changed
             }
             let opposite = Pos(row: crossword.columns - 1 - location.row, column: crossword.rows - 1 - location.column)
             
@@ -64,13 +81,12 @@ class LevelEditViewModel: ObservableObject {
                 if cell.letter != nil {
                     cell.letter = " "
                 }
-//                cell.isActive = false
                 crossword[row, col] = cell
             }
         }
-        isPopulated = false
+        currentState = .clean
     }
-    func save() {
+    func save(then onComplete: @escaping (() -> Void) = {}) {
         isBusy = true
         
         DispatchQueue.main.async { [weak self] in
@@ -79,13 +95,20 @@ class LevelEditViewModel: ObservableObject {
             
             level.gridText = crosswordTransformer.transformedValue(crossword) as? String
             
-            if isPopulated {
-                level.letterMap = letterValues?.toJSON()
-                savePlayableLevel()
-            }
-            else {
-                // Save current layout
-                saveLayout()
+            switch currentState {
+                case .clean:
+                    break
+                case .populated:
+                    level.letterMap = letterValues?.toJSON()
+                    savePlayableLevel()
+                    currentState = .clean
+                    isBusy = false
+                    onComplete()
+                case .changed:
+                    saveLayout()
+                    currentState = .clean
+                    isBusy = false
+                    onComplete()
             }
         }
     }
@@ -117,35 +140,11 @@ class LevelEditViewModel: ObservableObject {
     }
 
     
-//    func populate() {
-//        isBusy = true
-//        
-//        DispatchQueue.main.async { [weak self] in
-//            guard let self = self else { return }
-//            let populator = CrosswordPopulatorUseCase()
-//            
-//            populator.execute(initCrossword: crossword) { [weak self] result in
-//                DispatchQueue.main.async {
-//                    switch result {
-//                        case .success(let (newCrossword, characterIntMap)):
-//                            self?.crossword = newCrossword
-//                            self?.letterValues = characterIntMap
-//                            self?.isBusy = false
-//                            self?.isPopulated = true
-//                            
-//                            // You can also do something with characterIntMap if needed
-//                        case .failure(let error):
-//                            self?.error = error.localizedDescription
-//                            self?.isBusy = false
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-    
     @MainActor
     func populate() {
+        // if not clean, ask about saving
+        print("if not clean, ask about saving")
+        
         isBusy = true
         populateTask?.cancel() // Cancel any existing task
 
@@ -162,7 +161,7 @@ class LevelEditViewModel: ObservableObject {
                     case .success(let (newCrossword, characterIntMap)):
                         self.crossword = newCrossword
                         self.letterValues = characterIntMap
-                        self.isPopulated = true
+                        self.currentState = .populated
                     case .failure(let error):
                         self.error = error.localizedDescription
                 }
@@ -170,6 +169,24 @@ class LevelEditViewModel: ObservableObject {
             }
         }
     }
+    
+    func handleBackButtonTap() {
+        if currentState == .clean {
+            goBack()
+        }
+        else {
+            showAlert = true
+        }
+    }
+    
+    func handleSaveChangesButtonTap() {
+        save(then: goBack)
+    }
+    
+    func goBack() {
+        navigationViewModel.goBack()
+    }
+
 
     
     

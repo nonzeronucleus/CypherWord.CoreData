@@ -28,39 +28,6 @@ class GameViewModel: ObservableObject {
     @Published var selectedLevel : Level?
     private let navigationViewModel: NavigationViewModel
     
-//    init(levelID:UUID, navigationViewModel:NavigationViewModel) {
-//        self.navigationViewModel = navigationViewModel
-//        
-//        fetchLevelByIDUseCase.execute(id: levelID) { [weak self] result in
-//            DispatchQueue.main.async {
-//                switch result {
-//                    case .success(let level):
-//                        guard let level = level else {
-//                            fatalError( "Failed to load level")
-//                        }
-//                        self?.level = level
-//                    case .failure(let error):
-//                        self?.error = error.localizedDescription
-//                }
-//            }
-//        }
-//    }
-
-        
-//        if let level = try? fetchLevelByIDUseCase.execute(id: levelID, completion: ({
-//            self.level = level
-//            var newCrossword:Crossword?
-//            
-//            let transformer = CrosswordTransformer()
-//            
-//            guard let gridText = level.gridText else {
-//                error = "Could not load crossword grid"
-//                crossword = Crossword(rows: 15, columns: 15)
-//                size = 1
-//            }
-//        }
-//    }
-    
     
     init(level:Level, navigationViewModel:NavigationViewModel) {
         self.level = level
@@ -115,13 +82,13 @@ class GameViewModel: ObservableObject {
     }
     
     func handleBackButtonTap() {
-        navigationViewModel.goBack()
-//        if hasChanged {
-//            showingConfirmation = true
-//        }
-//        else {
-//            exit()
-//        }
+        if hasChanged {
+            showingConfirmation = true
+        }
+        else {
+            navigationViewModel.goBack()
+//          exit()
+        }
     }
     
     func exit() {

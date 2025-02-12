@@ -3,7 +3,6 @@ import Foundation
 
 public struct LevelEditView: View {
     @State private var showAlert = false
-    @Environment(\.dismiss) private var dismiss
     @ObservedObject  var model: LevelEditViewModel
     
     init(_ model: LevelEditViewModel) {
@@ -66,7 +65,6 @@ public struct LevelEditView: View {
                         
                         Button("Cancel") {
                             model.cancelPopulation()
-//                            model.isBusy = false
                         }
                     }
                 }
@@ -74,21 +72,23 @@ public struct LevelEditView: View {
         }
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
-                Button("< Back") { showAlert = true }
+                Button("< Back") {
+                    model.handleBackButtonTap()
+                }  // showAlert = true
             }
         }
-        .alert("Save changes?", isPresented: $showAlert) {
-            Button("Yes", role: .destructive) { model.save(); dismiss() }
-            Button("No", role: .destructive) { dismiss() }
+        .alert("Save changes?", isPresented: $model.showAlert) {
+            Button("Yes", role: .destructive) { model.handleSaveChangesButtonTap() }
+            Button("No", role: .destructive) { model.goBack() }
             Button("Cancel", role: .cancel) {}
         }
     }
     
 }
 
-#Preview {
-    let level = Level(id: UUID(), number: 1, gridText: " ...|.. .|. ..|. ..|", letterMap: nil)
-    let viewModel = LevelEditViewModel(level: level)
-    
-    LevelEditView(viewModel)
-}
+//#Preview {
+//    let level = Level(id: UUID(), number: 1, gridText: " ...|.. .|. ..|. ..|", letterMap: nil)
+//    let viewModel = LevelEditViewModel(level: level, navigationViewModel: <#T##NavigationViewModel#>)
+//    
+//    LevelEditView(viewModel)
+//}
