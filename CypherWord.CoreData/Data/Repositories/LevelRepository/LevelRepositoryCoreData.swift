@@ -125,6 +125,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
             if let levelMO = levelMO {
                 levelMO.gridText = level.gridText
                 levelMO.letterMap = level.letterMap
+                levelMO.attemptedLetters = level.attemptedLetters
                 save()
                 completion(.success(()))
             }

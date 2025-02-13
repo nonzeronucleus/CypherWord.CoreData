@@ -11,12 +11,15 @@ struct GameView: View {
         GeometryReader { geometry in
             
             VStack {
-                Text(model.level.levelType == .playable ? "Level":"Layout")
-                    .frame(maxWidth: .infinity)
-                    .padding(CGFloat(integerLiteral: 32))
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
-                    .background(Color.blue)
-                
+//                HStack {
+//                    
+//                    Text(model.level.levelType == .playable ? "Level":"Layout")
+//                        .frame(maxWidth: .infinity)
+//                        .padding(CGFloat(integerLiteral: 16))
+//                        .font(.system(size: 32, weight: .bold, design: .rounded))
+//                        .background(Color.blue)
+//                }
+//                
                 VStack {
                     ZStack {
                         CrosswordView(
@@ -25,6 +28,7 @@ struct GameView: View {
                             letterValues: model.letterValues,
                             selectedNumber: model.selectedNumber,
                             attemptedletterValues: model.attemptedValues,
+                            checking: model.checking,
                             performAction: {
                                 id in model.onCellClick(id: id)
                             })
@@ -50,7 +54,6 @@ struct GameView: View {
                                     isPresented: $model.showingConfirmation) {
                     Text("Save Changes?")
                     Button("Save and exit", role: .none) {
-//                        save()
                         model.exit()
                     }
                     Button("Exit without saving", role: .destructive) {
@@ -63,25 +66,27 @@ struct GameView: View {
                 HStack {
                     Spacer()
                     
-                    Button("Go Back") {
-                        model.handleBackButtonTap()
+                    Button("Check") {
+                        model.checkLetters()
                     }
-                    
-                    Spacer()
+//                    
+//                    Spacer()
 
-                    Button("Save") {
-//                        save()
-                    }
-                    
-                    Spacer()
-
-                    Button("Generate") {
-//                        generate()
-                    }
+//                    Button("Save") {
+////                        save()
+//                    }
                     
                     Spacer()
                 }
             }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("< Back") {
+                        model.handleBackButtonTap()
+                    }  // showAlert = true
+                }
+            }
+
         }
     }
 }
@@ -132,3 +137,11 @@ struct GameView: View {
 ////        
 ////    }
 //}
+
+
+#Preview {
+    let level = Level(id: UUID(), number: 1, attemptedLetters: nil)
+    let navigationViewModel = NavigationViewModel()
+    let model = GameViewModel(level: level, navigationViewModel: navigationViewModel)
+    GameView(model)
+}

@@ -13,6 +13,7 @@ import Dependencies
 
 class GameViewModel: ObservableObject {
     @Dependency(\.fetchLevelByIDUseCase) private var fetchLevelByIDUseCase: FetchLevelByIDUseCaseProtocol
+    @Dependency(\.saveLevelUseCase) private var saveLevelUseCase: SaveLevelUseCaseProtocol
 
     static let defaultSize = 11
     @Published private(set) var level: Level
@@ -100,19 +101,57 @@ class GameViewModel: ObservableObject {
     
     
     func onLetterPressed(letter: Character) {
-//        if completed {
-//            return
-//        }
+        if completed {
+            return
+        }
 
-//        checking = false
+        checking = false
         if let selectedNumber {
             attemptedValues[selectedNumber] = letter
-//            saveProgress()
+            save()
         }
     }
     
+    
+    func save(then onComplete: @escaping (() -> Void) = {}) {
+        isBusy = true
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            level.attemptedLetters = String(self.attemptedValues)
+            saveProgress()
+        }
+    }
+
+    
+    private func saveProgress() {
+        saveLevelUseCase.execute(level: level, completion: { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                    case .success():
+                        self?.isBusy = false
+                    case .failure(let error):
+                        self?.error = error.localizedDescription
+                }
+            }
+        })
+    }
+    
+    
     func onDeletePressed() {
-        print("Delete")
+        if completed {
+            return
+        }
+
+        checking = false
+        if let selectedNumber {
+            attemptedValues[selectedNumber] = " "
+            save()
+        }
+    }
+    
+    func checkLetters() {
+        checking.toggle()
     }
     
     var usedLetters: Set<Character> {

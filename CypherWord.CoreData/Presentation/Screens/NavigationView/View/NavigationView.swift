@@ -33,6 +33,7 @@ struct NavigationView : View {
                             case .playable:
 //                                Text("Not yet implemented")
                             GameView(viewModel.createGameViewModel())
+                                    .navigationBarBackButtonHidden(true)
                         }
                     }
                     .environmentObject(LevelListViewModel(navigationViewModel: viewModel))
