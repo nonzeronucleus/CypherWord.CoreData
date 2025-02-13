@@ -41,26 +41,26 @@ struct NavigationView : View {
     }
 }
 
-#Preview {
-    let testLayouts = [
-        Level(id: UUID(), number: 1),
-        Level(id: UUID(), number: 2)
-    ]
-    
-    let testPlayableLevels = [
-        Level(id: UUID(), number: 1),
-        Level(id: UUID(), number: 2),
-        Level(id: UUID(), number: 3),
-        Level(id: UUID(), number: 4)
-    ]
-    
-    withDependencies {
-        $0.levelRepository = FakeLevelRepository(testLayouts: testLayouts, testPlayableLevels: testPlayableLevels)
-    } operation: {
-//        let viewModel = LevelListViewModel()
-        return NavigationView(/*viewModel*/)
-    }
-}
+//#Preview {
+//    let testLayouts = [
+//        Level(id: UUID(), number: 1),
+//        Level(id: UUID(), number: 2)
+//    ]
+//    
+//    let testPlayableLevels = [
+//        Level(id: UUID(), number: 1),
+//        Level(id: UUID(), number: 2),
+//        Level(id: UUID(), number: 3),
+//        Level(id: UUID(), number: 4)
+//    ]
+//    
+//    withDependencies {
+//        $0.levelRepository = FakeLevelRepository(testLayouts: testLayouts, testPlayableLevels: testPlayableLevels)
+//    } operation: {
+////        let viewModel = LevelListViewModel()
+//        return NavigationView(/*viewModel*/)
+//    }
+//}
 
 
 //

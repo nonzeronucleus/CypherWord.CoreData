@@ -5,6 +5,8 @@ class Level: Identifiable, Codable {
     var number: Int
     var gridText: String?
     var letterMap: String?
+    var attemptedLetters: String
+    
     var levelType: LevelType {
         get {
             return letterMap == nil ? .layout : .playable
@@ -16,11 +18,12 @@ class Level: Identifiable, Codable {
         case playable = "playable"
     }
 
-    init(id: UUID, number: Int, gridText: String? =  nil, letterMap: String? =  nil) {
+    init(id: UUID, number: Int, gridText: String? =  nil, letterMap: String? =  nil, attemptedLetters: String?) { 
         self.id = id
         self.number = number
         self.gridText = gridText
         self.letterMap = letterMap
+        self.attemptedLetters = attemptedLetters ?? String(repeating: " ", count: 26)
     }
 
     var name: String {

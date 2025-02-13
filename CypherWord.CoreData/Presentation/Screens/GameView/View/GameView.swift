@@ -19,12 +19,31 @@ struct GameView: View {
                 
                 VStack {
                     ZStack {
-                        CrosswordView(grid: model.crossword, viewMode: .actualValue, performAction: { id in model.onCellClick(id: id) })
+                        CrosswordView(
+                            grid: model.crossword,
+                            viewMode: .attemptedValue,
+                            letterValues: model.letterValues,
+                            selectedNumber: model.selectedNumber,
+                            attemptedletterValues: model.attemptedValues,
+                            performAction: {
+                                id in model.onCellClick(id: id)
+                            })
                             .frame(width: geometry.size.width * 0.98, height: geometry.size.width * 0.98) // Lock height to 98% of the screen
                             .border(.gray)
                             .padding(.top,10)
+                        
                     }
 
+                    Spacer()
+                    
+                    // Keyboard at the bottom
+                    LetterKeyboardView(
+                        onLetterPressed: { letter in model.onLetterPressed(letter: letter) },
+                        onDeletePressed: model.onDeletePressed,
+                        showEnter: false,
+                        usedLetters: model.usedLetters
+                    )
+                    .padding(20)
                     Spacer()
                 }
                 .confirmationDialog("Save changes?",

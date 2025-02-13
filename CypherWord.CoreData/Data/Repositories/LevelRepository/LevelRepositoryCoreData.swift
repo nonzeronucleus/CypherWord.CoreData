@@ -10,6 +10,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
                     levelMO.number = try fetchHighestNumber(levelType: level.levelType) + 1 //Int64(level.number)
                     levelMO.gridText = level.gridText
                     levelMO.letterMap = level.letterMap
+                    levelMO.attemptedLetters = level.attemptedLetters
                     save()
                 }
             }
@@ -26,7 +27,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
             let savedEntities = try container.viewContext.fetch(fetchRequest)
             
             let levels = savedEntities.map( {
-                entity in Level(id: entity.id ?? UUID(), number: Int(entity.number), gridText: entity.gridText, letterMap: entity.letterMap)
+                entity in Level(id: entity.id ?? UUID(), number: Int(entity.number), gridText: entity.gridText, letterMap: entity.letterMap, attemptedLetters: entity.attemptedLetters)
             })
             completion(.success(levels))
         } catch let error {

@@ -11,9 +11,9 @@ struct CrosswordView: View {
     
     init(grid: Grid2D<Cell>,
          viewMode: ViewMode,
-         letterValues: CharacterIntMap? = nil,
+         letterValues: CharacterIntMap?,
          selectedNumber:Int? = nil ,
-         attemptedletterValues: [Character]? = nil,
+         attemptedletterValues: [Character]?,
          checking:Bool = false,
          performAction: @escaping (UUID) -> Void)
     {
@@ -73,25 +73,25 @@ struct CrosswordView: View {
         }
     }
 }
-
-#Preview("Attempted Value blank") {
-    var crossword = Grid2D(rows: 15, columns: 15, elementGenerator: { row, column in
-        Cell(pos: Pos(row: row, column: column))
-    })
-    
-    crossword[0, 0].letter = "A"
-    
-    return CrosswordView(grid: crossword, viewMode: .attemptedValue,  performAction: { _ in } )
-        .padding(.all, 10)
-}
-
-#Preview("Actual Value") {
-    var crossword = Grid2D(rows: 10, columns: 10, elementGenerator: { row, column in
-        Cell(pos: Pos(row: row, column: column))
-    })
-    
-    crossword[0, 0].letter = "A"
-    
-    return CrosswordView(grid: crossword, viewMode: .actualValue, performAction: { _ in })
-        .padding(.all, 10)
-}
+//
+//#Preview("Attempted Value blank") {
+//    var crossword = Grid2D(rows: 15, columns: 15, elementGenerator: { row, column in
+//        Cell(pos: Pos(row: row, column: column))
+//    })
+//    
+//    crossword[0, 0].letter = "A"
+//    
+//    return CrosswordView(grid: crossword, viewMode: .attemptedValue,  performAction: { _ in } )
+//        .padding(.all, 10)
+//}
+//
+//#Preview("Actual Value") {
+//    var crossword = Grid2D(rows: 10, columns: 10, elementGenerator: { row, column in
+//        Cell(pos: Pos(row: row, column: column))
+//    })
+//    
+//    crossword[0, 0].letter = "A"
+//    
+//    return CrosswordView(grid: crossword, viewMode: .actualValue, performAction: { _ in })
+//        .padding(.all, 10)
+//}

@@ -26,6 +26,9 @@ class GameViewModel: ObservableObject {
     @Published var selectedNumber: Int?
     @Published var hasChanged: Bool = false
     @Published var selectedLevel : Level?
+    @Published var attemptedValues: [Character] = []
+    @Published var completed: Bool = false
+    @Published var checking: Bool = false
     private let navigationViewModel: NavigationViewModel
     
     
@@ -61,17 +64,31 @@ class GameViewModel: ObservableObject {
         crossword = newCrossword!
         
         size = newCrossword!.columns
+        
+        attemptedValues = Array(level.attemptedLetters)
+        
+        revealLetter(letter: "X")
+        revealLetter(letter: "Z")
+    }
+    
+    
+    func revealLetter(letter:Character) {
+        let val = letterValues![letter]
+        
+        if let val {
+            attemptedValues[val] = letter
+        }
     }
     
     func onCellClick(id:UUID) {
-        //        if completed {
-        //            return
-        //        }
-        //
-        //        checking = false
-        //
+        if completed {
+            return
+        }
+        
+        checking = false
+        
         let cell = crossword.findElement(byID: id)
-        //
+        
         if let cell = cell {
             if let letter = cell.letter {
                 if let number = letterValues?[letter] {
@@ -79,6 +96,27 @@ class GameViewModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    
+    func onLetterPressed(letter: Character) {
+//        if completed {
+//            return
+//        }
+
+//        checking = false
+        if let selectedNumber {
+            attemptedValues[selectedNumber] = letter
+//            saveProgress()
+        }
+    }
+    
+    func onDeletePressed() {
+        print("Delete")
+    }
+    
+    var usedLetters: Set<Character> {
+        Set(attemptedValues.filter { $0 != " " })
     }
     
     func handleBackButtonTap() {
