@@ -11,6 +11,9 @@ struct ContentView: View {
 
     var body: some View {
         Group {
+            if let error = model.error {
+                Text(error)
+            }
             if model.isInitialized {
                 NavigationView(/*listViewModel*/)
             } else {
@@ -18,7 +21,7 @@ struct ContentView: View {
             }
         }
         .onAppear {
-            model.start()
+//            model.start()
         }
         //
     }

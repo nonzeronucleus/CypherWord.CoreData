@@ -4,11 +4,15 @@
     "gridText" : "AMAZE..E.ISLES.|.O..APPLET.A...|BIGHT..M...P...|...Y......ASHES|...E.......E..P|...N...S......A|..DAMASK..LIVER|....A..I..O....|LIVER..FLEXED..|E......F...R...|F..E.......E...|TWIXT......C...|...P...J..STONY|...E.UNIQUE..I.|.ZILCH.B..WRYLY|",
     "number" : 1,
     "id" : "A345DFA2-737E-4228-8AB0-ACAA60E73802",
+    "attemptedLetters": "                          "
+
   },
   {
       "letterMap" :"{\"V\":21,\"H\":7,\"X\":23,\"F\":5,\"W\":22,\"M\":12,\"E\":4,\"Y\":24,\"B\":1,\"Z\":25,\"G\":6,\"R\":17,\"T\":19,\"P\":15,\"L\":11,\"K\":10,\"D\":3,\"S\":18,\"U\":20,\"N\":13,\"A\":0,\"I\":8,\"J\":9,\"C\":2,\"O\":14,\"Q\":16}",
     "number" : 2,
     "id" : "F5D58983-4231-49BC-B934-2B31461B5109",
     "gridText" : "FAKES..A.TRACE.|.W..UTOPIA.D...|VENOM..T...A...|...X......OGLES|...I.......E..W|...D...F......I|..SEQUEL..HERTZ|....U..Y..A....|CONGA..BANJOS..|H......Y...F...|O..G.......F...|PIERS......A...|...O...A..ALIBI|...S.MISSES..U.|.PASTY.H..PADDY|",
+    "attemptedLetters": "                          "
+
   }
 ]
