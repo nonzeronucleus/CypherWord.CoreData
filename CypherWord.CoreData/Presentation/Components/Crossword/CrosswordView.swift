@@ -74,16 +74,34 @@ struct CrosswordView: View {
     }
 }
 //
-//#Preview("Attempted Value blank") {
-//    var crossword = Grid2D(rows: 15, columns: 15, elementGenerator: { row, column in
-//        Cell(pos: Pos(row: row, column: column))
-//    })
-//    
-//    crossword[0, 0].letter = "A"
-//    
+#Preview("Attempted Value blank") {
+    var crossword = Grid2D(rows: 15, columns: 15, elementGenerator: { row, column in
+        Cell(pos: Pos(row: row, column: column))
+    })
+    
+    crossword[0, 0].letter = "A"
+    crossword[0, 1].letter = "X"
+    crossword[1, 0].letter = "X"
+    crossword[1, 1].letter = "Y"
+
+    return CrosswordView(
+        grid: crossword,
+        viewMode: .actualValue,
+        letterValues: CharacterIntMap(),
+        selectedNumber: nil,
+        attemptedletterValues: nil,
+        checking: false,
+        performAction:
+            { _ in }
+        )
+//        .frame(width: geometry.size.width * 0.98, height: geometry.size.width * 0.98) // Lock height to 98% of the screen
+//        .border(.gray)
+//        .padding(.top,10)
+    
+    
 //    return CrosswordView(grid: crossword, viewMode: .attemptedValue,  performAction: { _ in } )
 //        .padding(.all, 10)
-//}
+}
 //
 //#Preview("Actual Value") {
 //    var crossword = Grid2D(rows: 10, columns: 10, elementGenerator: { row, column in

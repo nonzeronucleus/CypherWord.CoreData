@@ -20,7 +20,7 @@ class FetchLevelByIDUseCase : FetchLevelByIDUseCaseProtocol {
             }
         }
     }
-
+  
 
     func execute(id: UUID) async throws -> Level {
         return try await withCheckedThrowingContinuation { continuation in

@@ -24,8 +24,8 @@ struct CellView: View {
     var body: some View {
         GeometryReader { geometry in
             let squareSize = min(geometry.size.width, geometry.size.height)
-            let numberFontSize = CGFloat(squareSize * 0.2)
-            let characterFontSize = CGFloat(squareSize * 0.5)
+            let numberFontSize = CGFloat(squareSize * 0.25)
+            let characterFontSize = CGFloat(squareSize * 0.75)
             let cellColor = calcColor()
             
             ZStack(alignment: .topLeading) {
@@ -47,22 +47,25 @@ struct CellView: View {
                             .border(.black)
                     }
                     // Number in the top left corner
+                    
                     if let number {
                         Text(String(number+1))
-                            .font(.system(size: numberFontSize)) // Explicitly setting font
+                            .font(.system(size: numberFontSize))
                             .padding(4)
                             .foregroundColor(.black)
                             .frame(maxWidth: .infinity, alignment: .topLeading)
+                            .offset(x: -squareSize * 0.10, y: -squareSize * 0.1) // Push number slightly up and left
                     }
                     
                     // Character in the center
                     let character = String(letter)
                     
                     Text(character)
-                        .font(.system(size: characterFontSize)) // Explicitly setting font
+                        .font(.system(size: characterFontSize))
                         .foregroundColor(.black)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .padding(squareSize * 0.2) // Center by padding
+                        .padding(squareSize * 0.05)
+                        .offset(x: squareSize * 0.08, y: squareSize * 0.08)
                 }
             }
         }
@@ -83,7 +86,7 @@ struct CellView: View {
 
 #Preview("Normal") {
     VStack {
-        CellView(letter:"A", number: 2)
+        CellView(letter:"Z", number: 25)
             .frame(width: 60, height: 60, alignment: .center)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity) // 1
@@ -93,7 +96,7 @@ struct CellView: View {
 
 #Preview("Unselected correct") {
     VStack {
-        CellView(letter:"A", number: 2, selected: false, checkStatus: .correct)
+        CellView(letter:"B", number: 2, selected: false, checkStatus: .correct)
             .frame(width: 60, height: 60, alignment: .center)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity) // 1
@@ -103,7 +106,7 @@ struct CellView: View {
 
 #Preview("Unselected wrong") {
     VStack {
-        CellView(letter:"A", number: 2, selected: false, checkStatus: .incorrect)
+        CellView(letter:"C", number: 2, selected: false, checkStatus: .incorrect)
             .frame(width: 60, height: 60, alignment: .center)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity) // 1
@@ -114,7 +117,7 @@ struct CellView: View {
 
 #Preview("Unselected correct") {
     VStack {
-    CellView(letter:"A", number: 2, selected: true, checkStatus: .correct)
+    CellView(letter:"D", number: 2, selected: true, checkStatus: .correct)
         .frame(width: 60, height: 60, alignment: .center)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity) // 1
