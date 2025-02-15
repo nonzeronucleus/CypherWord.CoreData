@@ -6,6 +6,8 @@ class NavigationViewModel: ObservableObject {
     @Dependency(\.fetchLevelByIDUseCase) private var fetchLevelByIDUseCase: FetchLevelByIDUseCaseProtocol
 
     @Published var path: NavigationPath = NavigationPath()
+    @Published var error: Error?
+    
     var level: Level? = nil
     
     func navigateTo(level:Level) {

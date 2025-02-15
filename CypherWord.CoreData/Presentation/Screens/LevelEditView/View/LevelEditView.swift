@@ -74,6 +74,7 @@ public struct LevelEditView: View {
                 }
             }
         }
+        .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("< Back") {

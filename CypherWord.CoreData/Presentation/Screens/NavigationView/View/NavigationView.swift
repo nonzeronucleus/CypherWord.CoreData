@@ -1,43 +1,47 @@
 import SwiftUI
 import Dependencies
 
+
+enum Tab: String, CaseIterable, Identifiable {
+    case level
+    case layout
+
+    var id: Self { self }
+}
+
 struct NavigationView : View {
-//    @ObservedObject var viewModel: LevelListViewModel
     @StateObject private var viewModel = NavigationViewModel()
-    
-//    @ObservedObject var navigationViwModel: NavigationViewModel = NavigationViewModel()
-
-    init(/*_  viewModel: LevelListViewModel*/) {
-//        self.viewModel = viewModel
-//        var navigationViewModel = NavigationViewModel()
-        
-//        self.viewModel = .init(navigationViewModel: navigationViewModel)
-//        self.navigationViewModel = navigationViewModel
-//        self.viewModel.navigationViewModel = self.navigationViewModel
-
-//        self.viewModel.reload()
-    }
-    
+    @State var selection: Tab = .level
+   
     var body: some View {
         NavigationStack(path: $viewModel.path) {
             VStack {
-//                if let error = viewModel.error {
-//                    Text("Error: \(error)")
-//                }
-                TabsView(tab1: LevelListView(LevelListViewModel(navigationViewModel: viewModel, levelType: .playable)),
-                         tab2: LevelListView(LevelListViewModel(navigationViewModel: viewModel, levelType: .layout)))
-                    .navigationDestination(for: Level.LevelType.self) { destination in
-                        switch destination {
-                            case .layout:
-                            LevelEditView(viewModel.createLayoutViewModel())
-                                    .navigationBarBackButtonHidden(true)
-                            case .playable:
-//                                Text("Not yet implemented")
-                            GameView(viewModel.createGameViewModel())
-                                    .navigationBarBackButtonHidden(true)
+                if let error = viewModel.error {
+                    Text("Error: \(error)")
+                }
+                TabView(selection: $selection) {
+                    LevelListView(LevelListViewModel(navigationViewModel: viewModel, levelType: .playable))
+                        .tabItem {
+                            Image(systemName: "books.vertical")
+                            Text("Levels")
                         }
+                        .tag(Tab.level)
+                    
+                    LevelListView(LevelListViewModel(navigationViewModel: viewModel, levelType: .layout))
+                        .tabItem {
+                            Image(systemName: "person")
+                            Text("Layout")
+                        }
+                        .tag(Tab.layout)
+                }
+                .navigationDestination(for: Level.LevelType.self) { destination in
+                    switch destination {
+                        case .layout:
+                            LevelEditView(viewModel.createLayoutViewModel())
+                        case .playable:
+                            GameView(viewModel.createGameViewModel())
                     }
-//                    .environmentObject(LevelListViewModel(navigationViewModel: viewModel))
+                }
             }
         }
     }
