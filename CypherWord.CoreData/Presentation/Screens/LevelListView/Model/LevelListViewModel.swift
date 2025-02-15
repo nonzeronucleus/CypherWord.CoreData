@@ -14,12 +14,12 @@ class LevelListViewModel: ObservableObject {
     @Published var levels: [Level] = []
     @Published var error:String?
     @Published private(set) var selectedLevel: Level?
-    @Published var levelType: Level.LevelType
+    @Published var levelType: LevelType
 
     private var navigationViewModel: NavigationViewModel?
     private var cancellables = Set<AnyCancellable>()
 
-    init(navigationViewModel:NavigationViewModel, levelType: Level.LevelType){
+    init(navigationViewModel:NavigationViewModel, levelType: LevelType){
         self.navigationViewModel = navigationViewModel
         self.levelType = levelType
         reload()

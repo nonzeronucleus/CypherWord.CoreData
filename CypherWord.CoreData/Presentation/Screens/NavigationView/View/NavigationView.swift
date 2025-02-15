@@ -2,16 +2,9 @@ import SwiftUI
 import Dependencies
 
 
-enum Tab: String, CaseIterable, Identifiable {
-    case level
-    case layout
-
-    var id: Self { self }
-}
-
 struct NavigationView : View {
     @StateObject private var viewModel = NavigationViewModel()
-    @State var selection: Tab = .level
+    @State var selection: LevelType = .playable
    
     var body: some View {
         NavigationStack(path: $viewModel.path) {
@@ -21,25 +14,18 @@ struct NavigationView : View {
                 }
                 TabView(selection: $selection) {
                     LevelListView(LevelListViewModel(navigationViewModel: viewModel, levelType: .playable))
-                        .tabItem {
-                            Image(systemName: "books.vertical")
-                            Text("Levels")
-                        }
-                        .tag(Tab.level)
                     
                     LevelListView(LevelListViewModel(navigationViewModel: viewModel, levelType: .layout))
-                        .tabItem {
-                            Image(systemName: "person")
-                            Text("Layout")
-                        }
-                        .tag(Tab.layout)
                 }
-                .navigationDestination(for: Level.LevelType.self) { destination in
+                .navigationDestination(for: LevelType.self) { destination in
                     switch destination {
                         case .layout:
                             LevelEditView(viewModel.createLayoutViewModel())
+                                .navigationBarBackButtonHidden(true)
                         case .playable:
                             GameView(viewModel.createGameViewModel())
+                                .navigationBarBackButtonHidden(true)
+
                     }
                 }
             }

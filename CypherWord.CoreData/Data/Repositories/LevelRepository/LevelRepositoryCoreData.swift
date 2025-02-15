@@ -21,7 +21,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         
     }
     
-    func fetchLevels(levelType: Level.LevelType, completion: @escaping (Result<[Level], Error>) -> Void) {
+    func fetchLevels(levelType: LevelType, completion: @escaping (Result<[Level], Error>) -> Void) {
         do {
             let fetchRequest: NSFetchRequest<LevelMO> = createFetchLevelsRequest(resultType: LevelMO.self, levelType: levelType)
             let savedEntities = try container.viewContext.fetch(fetchRequest)
@@ -85,7 +85,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         }
     }
     
-    func deleteAll(levelType: Level.LevelType, completion: @escaping (Result<Void, any Error>) -> Void) {
+    func deleteAll(levelType: LevelType, completion: @escaping (Result<Void, any Error>) -> Void) {
         do {
             try deleteAll(levelType: levelType)
             try container.viewContext.save()
@@ -161,7 +161,7 @@ class LevelStorageCoreData {
     
     private let entityName: String = "LevelMO"
     
-    private func createFetchLevelsRequest<T>(resultType: T.Type, levelType: Level.LevelType) -> NSFetchRequest<T> where T: NSFetchRequestResult {
+    private func createFetchLevelsRequest<T>(resultType: T.Type, levelType: LevelType) -> NSFetchRequest<T> where T: NSFetchRequestResult {
         let request = NSFetchRequest<T>(entityName: entityName)
         if levelType == .playable {
             request.predicate = NSPredicate(format: "letterMap != nil")
@@ -181,7 +181,7 @@ class LevelStorageCoreData {
     }
 
     
-    private func fetchHighestNumber(levelType: Level.LevelType) throws -> Int64 {
+    private func fetchHighestNumber(levelType: LevelType) throws -> Int64 {
         // Create a fetch request for dictionaries (so we get a dictionary result, not full managed objects)
         let fetchRequest = NSFetchRequest<NSDictionary>(entityName: "LevelMO")
         fetchRequest.resultType = .dictionaryResultType
@@ -219,7 +219,7 @@ class LevelStorageCoreData {
     }
     
     
-    func deleteAll(levelType: Level.LevelType) throws {
+    func deleteAll(levelType: LevelType) throws {
         let request: NSFetchRequest<NSFetchRequestResult> = createFetchLevelsRequest(resultType: NSFetchRequestResult.self, levelType: levelType)
         
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)

@@ -5,7 +5,7 @@ class ImportLevelsUseCase : ImportLevelsUseCaseProtocol {
     @Dependency(\.fileRepository) private var fileRepository: FileRepositoryProtocol
     @Dependency(\.levelRepository) private var levelRepository: LevelRepositoryProtocol
 
-    func execute(levelType: Level.LevelType, completion: @escaping (Result<Void, Error>) -> Void) {
+    func execute(levelType: LevelType, completion: @escaping (Result<Void, Error>) -> Void) {
         fileRepository.fetchLevels(levelType:levelType, completion: { [weak self] result in
             DispatchQueue.main.async {
                 switch result {

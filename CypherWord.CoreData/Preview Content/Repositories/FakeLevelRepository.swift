@@ -17,7 +17,7 @@ class FakeLevelRepository: LevelRepositoryProtocol {
         fatalError("To Implement - saveLevels")
     }
     
-    func fetchLevels(levelType: Level.LevelType, completion: @escaping (Result<[Level], any Error>) -> Void) {
+    func fetchLevels(levelType: LevelType, completion: @escaping (Result<[Level], any Error>) -> Void) {
         if levelType == .playable {
             completion(.success(testPlayableLevels))
         }
@@ -26,7 +26,7 @@ class FakeLevelRepository: LevelRepositoryProtocol {
         }
     }
     
-    func deleteAll(levelType: Level.LevelType, completion: @escaping (Result<Void, any Error>) -> Void) {
+    func deleteAll(levelType: LevelType, completion: @escaping (Result<Void, any Error>) -> Void) {
         if levelType == .playable {
             self.testPlayableLevels = []
         }

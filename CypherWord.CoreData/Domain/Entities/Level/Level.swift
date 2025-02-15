@@ -1,5 +1,13 @@
 import Foundation
 
+
+enum LevelType: String, CaseIterable, Identifiable, Hashable {
+    case playable = "Games"
+    case layout = "Layouts"
+
+    var id: Self { self }
+}
+
 class Level: Identifiable, Codable {
     var id: UUID
     var number: Int
@@ -11,11 +19,6 @@ class Level: Identifiable, Codable {
         get {
             return letterMap == nil ? .layout : .playable
         }
-    }
-
-    enum LevelType: String, Codable {
-        case layout = "layout"
-        case playable = "playable"
     }
 
     init(id: UUID, number: Int, gridText: String? =  nil, letterMap: String? =  nil, attemptedLetters: String?) { 

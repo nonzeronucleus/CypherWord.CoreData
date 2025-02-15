@@ -15,7 +15,7 @@ final class ContentViewModel: ObservableObject {
     }
     
 
-    private func saveLevels(levelType: Level.LevelType, levels: [Level]) {
+    private func saveLevels(levelType: LevelType, levels: [Level]) {
         
     }
     
@@ -46,7 +46,7 @@ final class ContentViewModel: ObservableObject {
     }
     
     
-    func loadLevels(levelType: Level.LevelType, completion: @escaping (Result<Void, any Error>) -> Void) {
+    func loadLevels(levelType: LevelType, completion: @escaping (Result<Void, any Error>) -> Void) {
         importLeveslUseCase.execute(levelType: levelType) { /*[weak self]*/ result in
             DispatchQueue.main.async {
                 switch result {

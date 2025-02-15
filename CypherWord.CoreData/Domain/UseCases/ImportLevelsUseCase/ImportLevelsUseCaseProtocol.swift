@@ -1,3 +1,3 @@
 protocol ImportLevelsUseCaseProtocol {
-    func execute(levelType: Level.LevelType, completion: @escaping (Result<Void, Error>) -> Void)
+    func execute(levelType: LevelType, completion: @escaping (Result<Void, Error>) -> Void)
 }

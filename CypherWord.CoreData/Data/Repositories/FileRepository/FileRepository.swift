@@ -13,7 +13,7 @@ extension FileRepository : FileRepositoryProtocol {
         print("Save Level")
     }
     
-    func fetchLevels(levelType: Level.LevelType, completion: @escaping (Result<[Level], any Error>) -> Void) {
+    func fetchLevels(levelType: LevelType, completion: @escaping (Result<[Level], any Error>) -> Void) {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
 
@@ -45,11 +45,11 @@ extension FileRepository {
                                     create: false)
     }
     
-    func resourceBundleName(levelType: Level.LevelType) -> URL? {
+    func resourceBundleName(levelType: LevelType) -> URL? {
         return Bundle.main.url(forResource: getFileName(levelType: levelType), withExtension: "json")
     }
     
-    func getFileName(levelType: Level.LevelType) -> String {
+    func getFileName(levelType: LevelType) -> String {
         switch(levelType) {
             case .playable:
                 return "Level"

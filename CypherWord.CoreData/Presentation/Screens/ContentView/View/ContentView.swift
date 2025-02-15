@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject var model = ContentViewModel()
-    @State var selection:Tab = .level
+    @State var selection:LevelType = .playable
 //    let listViewModel:LevelListViewModel
 
     init () {
