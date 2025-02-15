@@ -24,7 +24,8 @@ struct NavigationView : View {
 //                if let error = viewModel.error {
 //                    Text("Error: \(error)")
 //                }
-                TabsView()
+                TabsView(tab1: LevelListView(LevelListViewModel(navigationViewModel: viewModel, levelType: .playable)),
+                         tab2: LevelListView(LevelListViewModel(navigationViewModel: viewModel, levelType: .layout)))
                     .navigationDestination(for: Level.LevelType.self) { destination in
                         switch destination {
                             case .layout:
@@ -36,7 +37,7 @@ struct NavigationView : View {
                                     .navigationBarBackButtonHidden(true)
                         }
                     }
-                    .environmentObject(LevelListViewModel(navigationViewModel: viewModel))
+//                    .environmentObject(LevelListViewModel(navigationViewModel: viewModel))
             }
         }
     }

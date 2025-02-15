@@ -4,7 +4,7 @@ import Dependencies
 import Combine
 
 
-class LevelListViewModel: ObservableObject {
+class OldLevelListViewModel: ObservableObject {
     @Dependency(\.importLevelsUseCase) private var importLeveslUseCase: ImportLevelsUseCaseProtocol
     @Dependency(\.fetchLayoutsUseCase) private var fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
     @Dependency(\.fetchPlayableLevelsUseCase) private var fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol
@@ -12,26 +12,23 @@ class LevelListViewModel: ObservableObject {
     @Dependency(\.addLayoutUseCase) private var addLayoutUseCase: AddLayoutUseCaseProtocol
 
     @Published var levels: [Level] = []
+    @Published var layouts: [Level] = []
     @Published var error:String?
-    @Published private(set) var selectedLevel: Level?
-    @Published var levelType: Level.LevelType
+    @Published private(set) var selectedLayout: Level?
+    @Published private(set) var selectedPlayableLevel: Level?
+    @Published var showDetail: Bool = false
 
     private var navigationViewModel: NavigationViewModel?
     private var cancellables = Set<AnyCancellable>()
 
-    init(navigationViewModel:NavigationViewModel, levelType: Level.LevelType){
+    init(navigationViewModel:NavigationViewModel){
         self.navigationViewModel = navigationViewModel
-        self.levelType = levelType
         reload()
     }
     
     func reload() {
-        switch levelType {
-            case .layout:
-                fetchLayouts()
-            case .playable:
-                fetchLevels()
-        }
+        fetchLevels()
+        fetchLayouts()
     }
     
 
@@ -54,21 +51,21 @@ class LevelListViewModel: ObservableObject {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let levels):
-                    self?.levels = levels
+                    self?.layouts = levels
                 case .failure(let error):
                     self?.error = error.localizedDescription
                 }
             }
         }
     }
-//
+
     
     func addLayout() {
         addLayoutUseCase.execute { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                     case .success(let levels):
-                        self?.levels = levels
+                        self?.layouts = levels
                     case .failure(let error):
                         self?.error = error.localizedDescription
                 }
@@ -76,18 +73,16 @@ class LevelListViewModel: ObservableObject {
         }
     }
 
-    func deleteAll() {
+    func deleteAll(levelType: Level.LevelType) {
         deleteAllLevelsUseCase.execute(levelType: levelType, completion: { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                     case .success(let levels):
-                        switch self?.levelType {
+                        switch levelType {
                             case .playable:
                                 self?.levels = levels
                             case .layout:
-                                break
-                            case .none:
-                                break
+                                self?.layouts = levels
                         }
                         
                     case .failure(let error):
