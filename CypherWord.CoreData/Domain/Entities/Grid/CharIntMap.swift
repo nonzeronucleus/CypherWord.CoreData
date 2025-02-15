@@ -26,7 +26,7 @@ struct CharacterIntMap: Codable {
         
         let alphabet = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
         
-        // Shuffle the array to get a random order
+        // SShuffle the array to get a random order
         if shuffle {
             let shuffledAlphabet = alphabet.shuffled()
             for (index, letter) in shuffledAlphabet.enumerated() {
