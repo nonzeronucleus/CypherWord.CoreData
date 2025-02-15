@@ -214,8 +214,11 @@ class LevelEditViewModel: ObservableObject {
     
     
     // Call this function from your UI button
-    func cancelPopulation() {
-        populateTask?.cancel()
+    func cancel() {
+        if let populateTask = populateTask {
+            populateTask.cancel()
+        }
+//        populateTask?.cancel()
         isBusy = false // Update UI to remove spinner
     }
     

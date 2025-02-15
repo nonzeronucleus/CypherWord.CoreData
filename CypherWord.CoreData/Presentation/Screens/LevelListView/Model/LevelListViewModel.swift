@@ -10,11 +10,13 @@ class LevelListViewModel: ObservableObject {
     @Dependency(\.fetchPlayableLevelsUseCase) private var fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol
     @Dependency(\.deleteAllLevelsUseCase) private var deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol
     @Dependency(\.addLayoutUseCase) private var addLayoutUseCase: AddLayoutUseCaseProtocol
+    @Dependency(\.exportAllUseCase) private var exportAllUseCase: ExportAllUseCaseProtocol
 
     @Published var levels: [Level] = []
     @Published var error:String?
     @Published private(set) var selectedLevel: Level?
     @Published var levelType: LevelType
+    @Published var isBusy: Bool = false
 
     private var navigationViewModel: NavigationViewModel?
     private var cancellables = Set<AnyCancellable>()
@@ -61,7 +63,7 @@ class LevelListViewModel: ObservableObject {
             }
         }
     }
-//
+
     
     func addLayout() {
         addLayoutUseCase.execute { [weak self] result in
@@ -81,14 +83,15 @@ class LevelListViewModel: ObservableObject {
             DispatchQueue.main.async {
                 switch result {
                     case .success(let levels):
-                        switch self?.levelType {
-                            case .playable:
-                                self?.levels = levels
-                            case .layout:
-                                break
-                            case .none:
-                                break
-                        }
+                        self?.levels = levels
+//                        switch self?.levelType {
+//                            case .playable:
+//                                self?.levels = levels
+//                            case .layout:
+//                                self?.levels = levels
+//                            case .none:
+//                                break
+//                        }
                         
                     case .failure(let error):
                         self?.error = error.localizedDescription
@@ -99,5 +102,25 @@ class LevelListViewModel: ObservableObject {
     
     func onSelectLevel(level:Level) {
         navigationViewModel?.navigateTo(level:level)
+    }
+    
+    func exportAll() {
+        isBusy = true
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            exportAllUseCase.execute(levels: levels, completion:  { [weak self] result in
+                DispatchQueue.main.async {
+                    switch result {
+                        case .success():
+                            self?.isBusy = false
+                        case .failure(let error):
+                            self?.error = error.localizedDescription
+                            self?.isBusy = false
+                    }
+                }
+            })
+        }
     }
 }

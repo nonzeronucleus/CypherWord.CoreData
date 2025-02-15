@@ -9,8 +9,26 @@ class FileRepository {
 }
 
 extension FileRepository : FileRepositoryProtocol {
-    func saveLevels(_ levels: [Level], completion: @escaping (Result<Void, any Error>) -> Void) {
-        print("Save Level")
+    func saveLevels(levels: [Level], completion: @escaping (Result<Void, any Error>) -> Void) {
+        if levels.isEmpty {
+            completion(.success(()))
+        }
+        
+        let levelType = levels.first!.levelType
+        
+        do {
+            
+            let fileName = levelType.rawValue + ".json"
+            let url = try FileRepository.exportFilePath().appendingPathComponent(fileName)
+            print(url.description)
+            let jsonData = try JSONEncoder().encode(levels)
+            try jsonData.write(to: url)
+            completion(.success(()))
+        }
+        catch {
+            print("Error")
+            completion(.failure(error))
+        }
     }
     
     func fetchLevels(levelType: LevelType, completion: @escaping (Result<[Level], any Error>) -> Void) {
@@ -46,20 +64,23 @@ extension FileRepository {
     }
     
     func resourceBundleName(levelType: LevelType) -> URL? {
-        return Bundle.main.url(forResource: getFileName(levelType: levelType), withExtension: "json")
+        return Bundle.main.url(forResource: getFileName(levelType:levelType), withExtension: "json")
     }
     
     func getFileName(levelType: LevelType) -> String {
-        switch(levelType) {
-            case .playable:
-                return "Level"
-            case .layout:
-                return "Layout"
-        }
+        return levelType.rawValue
     }
 }
 
 // For output to directory
 
 extension FileRepository {
+    private static func exportFilePath() throws -> URL {
+        try FileManager.default.url(for: .documentDirectory,
+                                    in: .userDomainMask,
+                                    appropriateFor: nil,
+                                    create: false)
+    }
+    
+    
 }

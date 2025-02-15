@@ -152,4 +152,17 @@ private enum DeleteLevelUseCaseKey: DependencyKey {
     static let liveValue: DeleteLevelUseCaseProtocol = DeleteLevelUseCase()
 }
 
+// Mark - Export
+
+extension DependencyValues {
+    var exportAllUseCase: ExportAllUseCaseProtocol {
+        get { self[ExportAllUseCaseKey.self] }
+        set { self[ExportAllUseCaseKey.self] = newValue }
+    }
+}
+
+private enum ExportAllUseCaseKey: DependencyKey {
+    static let liveValue: ExportAllUseCaseProtocol = ExportAllUseCase()
+}
+
 

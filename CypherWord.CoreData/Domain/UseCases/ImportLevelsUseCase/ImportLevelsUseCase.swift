@@ -10,7 +10,7 @@ class ImportLevelsUseCase : ImportLevelsUseCaseProtocol {
             DispatchQueue.main.async {
                 switch result {
                     case .success(let levels):
-                        self?.levelRepository.saveLevels(levels, completion: completion)
+                        self?.levelRepository.saveLevels(levels:levels, completion: completion)
 //                        completion(.success(()))
                     case .failure(let error):
                         completion(.failure(error))

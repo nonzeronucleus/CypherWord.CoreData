@@ -68,7 +68,7 @@ public struct LevelEditView: View {
                             .scaleEffect(2.5)
                         
                         Button("Cancel") {
-                            model.cancelPopulation()
+                            model.cancel()
                         }
                     }
                 }

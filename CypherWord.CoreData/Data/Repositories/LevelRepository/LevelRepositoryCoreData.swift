@@ -1,7 +1,7 @@
 import CoreData
 
 extension LevelStorageCoreData:LevelRepositoryProtocol {
-    func saveLevels(_ levels: [Level], completion: @escaping (Result<Void, any Error>) -> Void) {
+    func saveLevels(levels: [Level], completion: @escaping (Result<Void, any Error>) -> Void) {
         do {
             for level in levels {
                 if try findLevel(id: level.id) == nil {
