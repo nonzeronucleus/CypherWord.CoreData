@@ -42,7 +42,7 @@ class LevelListViewModel: ObservableObject {
 
     init(navigationViewModel:NavigationViewModel){
         self.navigationViewModel = navigationViewModel
-        start()
+        reload()
     }
     
     func reload() {
@@ -128,51 +128,5 @@ class LevelListViewModel: ObservableObject {
     
     func onSelectLevel(level:Level) {
         navigationViewModel?.navigateTo(level:level)
-//        selectedLevelID = id
-//        print(id)
     }
-    
-    func start() {
-        loadLevels(levelType: .layout, completion: { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                    case .success:
-                        self?.loadLevels(levelType: .playable, completion: { [weak self] result in
-                            DispatchQueue.main.async {
-                                switch result {
-                                    case .success:
-//                                        self?.isInitialized = true
-                                        self?.reload()
-                                    case .failure(let error):
-                                        self?.error = error.localizedDescription
-//                                        self?.isInitialized = true
-                                }
-                            }
-                        })
-
-                    case .failure(let error):
-                        self?.error = error.localizedDescription
-//                        self?.isInitialized = true
-                }
-            }
-        })
-//        isInitialized = true
-    }
-    
-    
-    func loadLevels(levelType: Level.LevelType, completion: @escaping (Result<Void, any Error>) -> Void) {
-        importLeveslUseCase.execute(levelType: levelType) { /*[weak self]*/ result in
-            DispatchQueue.main.async {
-                switch result {
-                    case .success: //(let levels):
-//                        self?.saveLevels(levelType: levelType, levels: levels)
-                        completion(.success(()))
-                    case .failure(let error):
-                        completion(.failure(error))
-                }
-            }
-        }
-    }
-    
-    
 }

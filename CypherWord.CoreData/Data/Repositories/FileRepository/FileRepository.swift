@@ -5,7 +5,14 @@ enum FileError: Error {
     case other(Error)
 }
 
+class FileRepository {
+}
+
 extension FileRepository : FileRepositoryProtocol {
+    func saveLevels(_ levels: [Level], completion: @escaping (Result<Void, any Error>) -> Void) {
+        print("Save Level")
+    }
+    
     func fetchLevels(levelType: Level.LevelType, completion: @escaping (Result<[Level], any Error>) -> Void) {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
@@ -26,25 +33,11 @@ extension FileRepository : FileRepositoryProtocol {
         }
 
     }
-    
-//    func addLayout(completion: @escaping (Result<Void, any Error>) -> Void) {
-//        fatalError("Not implemented")
-//    }
-//    
-//    func save(completion: @escaping (Result<Void, any Error>) -> Void) {
-//        fatalError("Not implemented")
-//    }
-//    
-//    func deleteAll(levelType: Level.LevelType, completion: @escaping (Result<Void, any Error>) -> Void) {
-//        fatalError("Not implemented")
-//    }
-//    
-//    func saveLevel(level: Level, completion: @escaping (Result<Void, any Error>) -> Void) {
-//        
-//    }
 }
 
-class FileRepository {
+
+// For input from bundle
+extension FileRepository {
     private func filePath() throws -> URL {
         try FileManager.default.url(for: .documentDirectory,
                                     in: .userDomainMask,
@@ -64,4 +57,9 @@ class FileRepository {
                 return "Layout"
         }
     }
+}
+
+// For output to directory
+
+extension FileRepository {
 }

@@ -15,13 +15,13 @@ struct ContentView: View {
                 Text(error)
             }
             if model.isInitialized {
-                NavigationView(/*listViewModel*/)
+                LazyView(NavigationView())
             } else {
                 StartupLoadingView()
             }
         }
         .onAppear {
-//            model.start()
+            model.start()
         }
         //
     }
