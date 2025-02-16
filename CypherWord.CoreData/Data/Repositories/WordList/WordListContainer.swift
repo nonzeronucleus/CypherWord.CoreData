@@ -3,17 +3,31 @@ import Foundation
 class WordListContainer : WordListContainerProtocol {
     let words: [String]
     var wordsByLength: [Int:[String]]
+    var origWordsByLength: [Int:[String]]
     var count:Int { words.count }
     
     init() {
         let name = "ukenglish"
         self.words = WordListContainer.loadFile(name)
         self.wordsByLength = WordListContainer.groupWordsByLength(words: words)
+        self.origWordsByLength = wordsByLength
     }
     
     func getWordsByLength(length:Int) -> [String] {
         let words = wordsByLength[length] ?? []
         return words
+    }
+    
+    func removeWord(word:String) {
+        wordsByLength[word.count]?.removeAll { $0 == word }
+    }
+    
+    func reset(forLength length:Int) {
+        wordsByLength[length] = origWordsByLength[length]
+    }
+    
+    func addWord(word:String) {
+        wordsByLength[word.count]?.append(word)
     }
     
     static func groupWordsByLength(words: [String]) -> [Int:[String]] {

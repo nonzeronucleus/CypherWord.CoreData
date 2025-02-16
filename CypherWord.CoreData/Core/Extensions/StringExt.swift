@@ -17,7 +17,7 @@ extension String {
             return self[index]
         }
         set(newCharacter) {
-            let stringIndex = self.index(self.startIndex, offsetBy: index)
+//            let stringIndex = self.index(self.startIndex, offsetBy: index)
             var charArray = Array(self)  // Convert string to an array of characters
             charArray[index] = newCharacter  // Modify the character at the specified index
             self = String(charArray)  // Convert the array back to a string

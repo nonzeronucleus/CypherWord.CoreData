@@ -5,6 +5,7 @@ class Entry:InstanceEquatable, CustomStringConvertible {
     private(set) var length: Int
     private(set) var direction: Direction
     private(set) var linkedEntries: [Entry] = []
+    var word:String?
     
     
     

@@ -1,10 +1,19 @@
 import Foundation
 
+enum PopulatorError: Error {
+    case cantPopulate
+}
+
 class CrosswordPopulatorUseCase:CrosswordPopulatorUseCaseProtocol {
     func execute(initCrossword: Crossword, completion: @escaping (Result<(Crossword, CharacterIntMap) , any Error>) -> Void) {
-        let crosswordPopulator = CrosswordPopulator(crossword: initCrossword)
-        let res = crosswordPopulator.populateCrossword()
-        completion(.success(res))
+        do {
+            let crosswordPopulator = CrosswordPopulator(crossword: initCrossword)
+            let res = try crosswordPopulator.populateCrossword()
+            completion(.success(res))
+        }
+        catch {
+            completion(.failure(error))
+        }
     }
     
     func executeAsync(initCrossword: Crossword) async -> Result<(Crossword, CharacterIntMap), Error> {
@@ -52,13 +61,15 @@ class CrosswordPopulator {
         }
     }
 
-    func populateCrossword() -> (crossword:Crossword, characterIntMap:CharacterIntMap) {
+    func populateCrossword() throws -> (crossword:Crossword, characterIntMap:CharacterIntMap) {
         let entryTree = EntryTree.init(rootEntry: entries.randomElement()!)
         var populated = false
 
         while !populated {
             if populateNode(node: entryTree.root) {
-                populated = true
+                if areAllWordsUnique() {
+                    populated = true
+                }
             }
             else {
                 entryTree.resetCount()
@@ -67,6 +78,19 @@ class CrosswordPopulator {
         }
         
         return (crossword:crossword, characterIntMap:CharacterIntMap(shuffle: true))
+    }
+    
+    private func areAllWordsUnique() -> Bool {
+        var seenWords:[String] = []
+        
+        for entry in entries {
+            let word = getWord(entry: entry)
+            if seenWords.contains(word) {
+                return false
+            }
+            seenWords.append(word)
+        }
+        return true
     }
 
     private func populateNode(node:EntryNode) -> Bool{
@@ -84,9 +108,17 @@ class CrosswordPopulator {
             childrenPopulated = true
             upateLettersWithFoundWords()
             
-            let wordsByLength = wordlist.getWordsByLength(length: mask.count)
+            var wordsByLength = wordlist.getWordsByLength(length: mask.count)
             
-            let matchingWords = wordsByLength.filterByMask(mask: mask)
+            var matchingWords = wordsByLength.filterByMask(mask: mask)
+            
+            if matchingWords.count == 0 {
+                wordlist.reset(forLength: mask.count)
+                wordsByLength = wordlist.getWordsByLength(length: mask.count)
+                
+                matchingWords = wordsByLength.filterByMask(mask: mask)
+            }
+            
             var finalWordList: [String] = []
             var tempLetters = letters
             
@@ -148,6 +180,9 @@ class CrosswordPopulator {
         guard word.count == entry.length else { return }
         
         let iter = entry.direction == .across ? (0,1) : (1,0)
+        
+        wordlist.removeWord(word: word)
+        entry.word = word
         
         for i in 0...entry.length-1 {
             let index = word.index(word.startIndex, offsetBy: i)
