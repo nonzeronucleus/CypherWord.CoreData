@@ -1,0 +1,1 @@
+let Alphabet = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ")

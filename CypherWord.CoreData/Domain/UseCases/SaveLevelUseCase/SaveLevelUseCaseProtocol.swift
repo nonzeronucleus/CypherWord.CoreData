@@ -1,3 +1,3 @@
 protocol SaveLevelUseCaseProtocol {
-    func execute(level:Level, completion: @escaping (Result<Void, any Error>) -> Void)
+    func execute(level:LevelDefinition, completion: @escaping (Result<Void, any Error>) -> Void)
 }

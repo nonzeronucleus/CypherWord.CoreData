@@ -1,44 +1,40 @@
 import Foundation
 
-
-enum LevelType: String, CaseIterable, Identifiable, Hashable {
-    case playable = "Games"
-    case layout = "Layouts"
-
-    var id: Self { self }
-}
-
-class Level: Identifiable, Codable {
+class Level {
     var id: UUID
-    var number: Int
-    var gridText: String?
-    var letterMap: String?
-    var attemptedLetters: String
-    
-    var levelType: LevelType {
+    var number: Int?
+    var crossword: Crossword
+    var letterMap: CharacterIntMap?
+    var letterGuesses: String?
+    var attemptedLetters: [Character]
+    var numCorrectLetters: Int {
         get {
-            return letterMap == nil ? .layout : .playable
+            guard let letterMap else { return 0}
+            guard let letterGuesses else { return 0}
+            
+            return letterMap.countCorrectlyPlacedLetters(in: letterGuesses)
         }
     }
+    
+    init(definition: LevelDefinition) {
+        self.id = definition.id
+        self.number = definition.number
+        let transformer = CrosswordTransformer()
+        
+        guard let gridText = definition.gridText else {
+            fatalError( "Could not load crossword grid")
+        }
 
-    init(id: UUID, number: Int, gridText: String? =  nil, letterMap: String? =  nil, attemptedLetters: String?) { 
-        self.id = id
-        self.number = number
-        self.gridText = gridText
-        self.letterMap = letterMap
-        self.attemptedLetters = attemptedLetters ?? String(repeating: " ", count: 26)
-    }
+        guard let crossword = transformer.reverseTransformedValue(gridText) as? Crossword else {
+            fatalError( "Could not configure crossword grid")
+        }
+        
+        self.crossword = crossword
 
-    var name: String {
-        return "Level \(number), \(levelType)"
-    }
-
-    func toLevelMO() -> LevelMO {
-        let model = LevelMO()
-        model.id = id
-        model.number = Int64(number)
-        model.gridText = gridText
-        model.letterMap = letterMap
-        return model
+        if let letterMap = definition.letterMap {
+            self.letterMap = CharacterIntMap(from: letterMap)
+        }
+        self.letterGuesses = definition.letterGuesses
+        self.attemptedLetters = Array(definition.attemptedLetters)
     }
 }

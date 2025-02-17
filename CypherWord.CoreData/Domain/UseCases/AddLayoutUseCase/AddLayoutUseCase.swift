@@ -5,7 +5,7 @@ class AddLayoutUseCase: AddLayoutUseCaseProtocol {
     @Dependency(\.levelRepository) private var repository: LevelRepositoryProtocol
 //    @Dependency(\.fetchLayoutsUseCase) private var fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
     
-    func execute(completion: @escaping (Result<[Level], Error>) -> Void) {
+    func execute(completion: @escaping (Result<[LevelDefinition], Error>) -> Void) {
         repository.addLayout { [weak self] result in
             DispatchQueue.main.async {
                 guard let self = self else {

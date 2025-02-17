@@ -15,7 +15,7 @@ final class ContentViewModel: ObservableObject {
     }
     
 
-    private func saveLevels(levelType: LevelType, levels: [Level]) {
+    private func saveLevels(levelType: LevelType, levels: [LevelDefinition]) {
         
     }
     

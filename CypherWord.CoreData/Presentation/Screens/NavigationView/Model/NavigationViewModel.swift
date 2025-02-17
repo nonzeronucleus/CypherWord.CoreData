@@ -8,9 +8,9 @@ class NavigationViewModel: ObservableObject {
     @Published var path: NavigationPath = NavigationPath()
     @Published var error: Error?
     
-    var level: Level? = nil
+    var level: LevelDefinition? = nil
     
-    func navigateTo(level:Level) {
+    func navigateTo(level:LevelDefinition) {
         self.level = level
         path.append(level.levelType)
     }

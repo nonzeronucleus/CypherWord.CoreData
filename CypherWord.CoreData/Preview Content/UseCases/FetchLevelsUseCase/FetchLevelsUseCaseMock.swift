@@ -1,9 +1,9 @@
 class FetchLevelsUseCaseMock: FetchLevelsUseCaseProtocol {
-    var levels : [Level] = []
-    init(levels:[Level]) {
+    var levels : [LevelDefinition] = []
+    init(levels:[LevelDefinition]) {
         self.levels = levels
     }
-    func execute(completion: @escaping (Result<[Level], any Error>) -> Void) {
+    func execute(completion: @escaping (Result<[LevelDefinition], any Error>) -> Void) {
         completion(.success(levels))
     }
 }

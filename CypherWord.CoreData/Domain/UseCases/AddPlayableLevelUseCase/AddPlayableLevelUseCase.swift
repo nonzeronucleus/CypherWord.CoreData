@@ -4,7 +4,7 @@ import Dependencies
 class AddPlayableLevelUseCase : AddPlayableLevelUseCaseProtocol {
     @Dependency(\.levelRepository) private var repository: LevelRepositoryProtocol
     
-    func execute(level: Level, completion: @escaping (Result<Void, any Error>) -> Void) {
+    func execute(level: LevelDefinition, completion: @escaping (Result<Void, any Error>) -> Void) {
         repository.addPlayableLevel(level: level, completion: { /*[weak self]*/ result in
             DispatchQueue.main.async {
 //                guard let self = self else {

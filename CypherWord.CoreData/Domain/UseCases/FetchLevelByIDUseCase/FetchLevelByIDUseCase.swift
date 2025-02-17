@@ -4,7 +4,7 @@ import Dependencies
 class FetchLevelByIDUseCase : FetchLevelByIDUseCaseProtocol {
     @Dependency(\.levelRepository) private var repository: LevelRepositoryProtocol
 
-    func execute(id: UUID, completion: @escaping (Result<Level?, any Error>) -> Void) {
+    func execute(id: UUID, completion: @escaping (Result<LevelDefinition?, any Error>) -> Void) {
         repository.fetchLevelByID(id:id) { /*[weak self] */result in
             DispatchQueue.main.async {
                 switch result {
@@ -22,7 +22,7 @@ class FetchLevelByIDUseCase : FetchLevelByIDUseCaseProtocol {
     }
   
 
-    func execute(id: UUID) async throws -> Level {
+    func execute(id: UUID) async throws -> LevelDefinition {
         return try await withCheckedThrowingContinuation { continuation in
             execute(id: id) { result in
                 switch result {

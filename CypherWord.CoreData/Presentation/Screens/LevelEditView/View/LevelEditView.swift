@@ -57,12 +57,8 @@ public struct LevelEditView: View {
             }
             .padding(20)
             if model.isBusy {
-                ZStack {
-                    Color.black.opacity(0.7)
-                        .edgesIgnoringSafeArea(.all)
-                
+                OverlayView(
                     VStack {
-                        // A progress spinner centered on the overlay.
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
                             .scaleEffect(2.5)
@@ -71,7 +67,7 @@ public struct LevelEditView: View {
                             model.cancel()
                         }
                     }
-                }
+                )
             }
         }
         .toolbar {
@@ -92,7 +88,7 @@ public struct LevelEditView: View {
 
 #Preview {
     let navigationViewModel = NavigationViewModel()
-    let level = Level(id: UUID(), number: 1, gridText: " ...|.. .|. ..|. ..|", letterMap: nil, attemptedLetters: nil)
+    let level = LevelDefinition(id: UUID(), number: 1, gridText: " ...|.. .|. ..|. ..|", letterMap: nil, attemptedLetters: nil)
     let viewModel = LevelEditViewModel(level: level, navigationViewModel: navigationViewModel)
     
     LevelEditView(viewModel)

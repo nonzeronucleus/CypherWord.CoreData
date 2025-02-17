@@ -5,7 +5,7 @@ class DeleteAllLevelsUseCase :DeleteAllLevelsUseCaseProtocol {
     @Dependency(\.levelRepository) private var repository: LevelRepositoryProtocol
     @Dependency(\.fetchLayoutsUseCase) private var fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
 
-    func execute(levelType: LevelType, completion: @escaping (Result<[Level], any Error>) -> Void) {
+    func execute(levelType: LevelType, completion: @escaping (Result<[LevelDefinition], any Error>) -> Void) {
         repository.deleteAll (levelType: levelType, completion: { [weak self] result in
             DispatchQueue.main.async {
                 guard let self = self else {

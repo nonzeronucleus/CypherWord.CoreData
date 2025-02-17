@@ -9,7 +9,7 @@ class FileRepository {
 }
 
 extension FileRepository : FileRepositoryProtocol {
-    func saveLevels(levels: [Level], completion: @escaping (Result<Void, any Error>) -> Void) {
+    func saveLevels(levels: [LevelDefinition], completion: @escaping (Result<Void, any Error>) -> Void) {
         if levels.isEmpty {
             completion(.success(()))
         }
@@ -31,7 +31,7 @@ extension FileRepository : FileRepositoryProtocol {
         }
     }
     
-    func fetchLevels(levelType: LevelType, completion: @escaping (Result<[Level], any Error>) -> Void) {
+    func fetchLevels(levelType: LevelType, completion: @escaping (Result<[LevelDefinition], any Error>) -> Void) {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
 
@@ -39,7 +39,7 @@ extension FileRepository : FileRepositoryProtocol {
             let fName = getFileName(levelType: levelType)
             if let pathURL = Bundle.main.url(forResource: fName, withExtension: "json") {
                 let jsonData = try Data(contentsOf: pathURL)
-                let levels = try decoder.decode([Level].self, from: jsonData)
+                let levels = try decoder.decode([LevelDefinition].self, from: jsonData)
                 
                 completion(.success(levels))
             }

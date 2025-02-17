@@ -20,7 +20,7 @@ struct GameViewModelTests {
             
             var expectedAttemptedValues = "                       X Z"
 
-            let level = Level(id: uuid(), number: 1, gridText:gridText, letterMap: letterMap, attemptedLetters: attemptedLetters)
+            let level = LevelDefinition(id: uuid(), number: 1, gridText:gridText, letterMap: letterMap, attemptedLetters: attemptedLetters)
             let gameViewModel = GameViewModel(level: level)
             
             #expect(String(gameViewModel.attemptedValues) == expectedAttemptedValues)

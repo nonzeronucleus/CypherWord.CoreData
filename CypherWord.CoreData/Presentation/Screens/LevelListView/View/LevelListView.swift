@@ -9,12 +9,33 @@ struct LevelListView : View {
         self.viewModel = viewModel
     }
     
-    var primaryColor: Color {
-        viewModel.levelType == .layout ? .green : .blue
+    func primaryColor(level:LevelDefinition? = nil) -> Color {
+        if viewModel.levelType == .layout {
+            return .orange
+        }
+        else {
+            if let level = level {
+                if level.numCorrectLetters == 26 {
+                    return .green
+                }
+            }
+        }
+        return .blue
     }
     
-    var secondaryColor: Color {
-        viewModel.levelType == .layout ? .teal : .cyan
+    
+    func secondaryColor(level:LevelDefinition? = nil) -> Color {
+        if viewModel.levelType == .layout {
+            return .red
+        }
+        else {
+            if let level = level {
+                if level.numCorrectLetters == 26 {
+                    return .mint
+                }
+            }
+        }
+        return .cyan
     }
     
     var body: some View {
@@ -23,14 +44,19 @@ struct LevelListView : View {
                 .frame(maxWidth: .infinity)
                 .padding(CGFloat(integerLiteral: 20))
                 .font(.system(size: 32, weight: .bold, design: .rounded))
-                .background(primaryColor)
+                .background(primaryColor())
             
             ScrollView {
                 LazyVGrid(columns: gridItemLayout, spacing: 20) {
                     let levels = viewModel.levels
                     ForEach(levels) { level in
-                        CartoonButton(levelNumber:level.number, gradient:Gradient(colors: [primaryColor, secondaryColor])) {
-                            viewModel.onSelectLevel(level: level)
+                        if let number = level.number {
+                            CartoonButton(levelNumber:number, gradient:Gradient(colors: [primaryColor(level: level), secondaryColor(level: level)])) {
+                                viewModel.onSelectLevel(level: level)
+                            }
+                        }
+                        else {
+                            fatalError("No Number for Level \(level.id)")
                         }
                     }
                 }
@@ -60,15 +86,15 @@ struct LevelListView : View {
 
 #Preview("Layout") {
     let testLayouts = [
-        Level(id: UUID(), number: 1, attemptedLetters: nil),
-        Level(id: UUID(), number: 2, attemptedLetters: nil)
+        LevelDefinition(id: UUID(), number: 1, attemptedLetters: nil),
+        LevelDefinition(id: UUID(), number: 2, attemptedLetters: nil)
     ]
     
     let testPlayableLevels = [
-        Level(id: UUID(), number: 1, attemptedLetters: nil),
-        Level(id: UUID(), number: 2, attemptedLetters: nil),
-        Level(id: UUID(), number: 3, attemptedLetters: nil),
-        Level(id: UUID(), number: 5, attemptedLetters: nil)
+        LevelDefinition(id: UUID(), number: 1, attemptedLetters: nil),
+        LevelDefinition(id: UUID(), number: 2, attemptedLetters: nil),
+        LevelDefinition(id: UUID(), number: 3, attemptedLetters: nil),
+        LevelDefinition(id: UUID(), number: 5, attemptedLetters: nil)
     ]
     
     withDependencies {
@@ -82,15 +108,15 @@ struct LevelListView : View {
 
 #Preview("Playable") {
     let testLayouts = [
-        Level(id: UUID(), number: 1, attemptedLetters: nil),
-        Level(id: UUID(), number: 2, attemptedLetters: nil)
+        LevelDefinition(id: UUID(), number: 1, attemptedLetters: nil),
+        LevelDefinition(id: UUID(), number: 2, attemptedLetters: nil)
     ]
     
     let testPlayableLevels = [
-        Level(id: UUID(), number: 1, attemptedLetters: nil),
-        Level(id: UUID(), number: 2, attemptedLetters: nil),
-        Level(id: UUID(), number: 3, attemptedLetters: nil),
-        Level(id: UUID(), number: 5, attemptedLetters: nil)
+        LevelDefinition(id: UUID(), number: 1, attemptedLetters: nil),
+        LevelDefinition(id: UUID(), number: 2, attemptedLetters: nil),
+        LevelDefinition(id: UUID(), number: 3, attemptedLetters: nil),
+        LevelDefinition(id: UUID(), number: 5, attemptedLetters: nil)
     ]
     
     withDependencies {

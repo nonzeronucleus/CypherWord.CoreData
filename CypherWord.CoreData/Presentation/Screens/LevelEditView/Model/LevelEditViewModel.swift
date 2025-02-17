@@ -16,7 +16,7 @@ class LevelEditViewModel: ObservableObject {
     private let navigationViewModel: NavigationViewModel
 
     static let defaultSize = 11
-    @Published private(set) var level: Level
+    @Published private(set) var level: LevelDefinition
     @Published var size: Int
     @Published var crossword: Crossword
     @Published private(set) var error:String?
@@ -28,7 +28,7 @@ class LevelEditViewModel: ObservableObject {
     
     private var populateTask: Task<Void, Never>? // Stores the running task
     
-    init(level:Level, navigationViewModel:NavigationViewModel) {
+    init(level:LevelDefinition, navigationViewModel:NavigationViewModel) {
         self.level = level
         self.navigationViewModel = navigationViewModel
         var newCrossword:Crossword?

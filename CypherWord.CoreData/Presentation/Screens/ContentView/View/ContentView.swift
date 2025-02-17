@@ -12,7 +12,7 @@ struct ContentView: View {
     var body: some View {
         Group {
             if let error = model.error {
-                Text(error)
+                Text("Content Error:" + error)
             }
             if model.isInitialized {
                 LazyView(NavigationView())

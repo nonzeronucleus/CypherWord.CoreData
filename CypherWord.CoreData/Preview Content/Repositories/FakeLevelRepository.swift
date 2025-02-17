@@ -9,15 +9,15 @@ class FakeLevelRepository: LevelRepositoryProtocol {
         fatalError("To Implement - addPlayableLevel")
     }
     
-    func addPlayableLevel(level: Level, completion: @escaping (Result<Void, any Error>) -> Void) {
+    func addPlayableLevel(level: LevelDefinition, completion: @escaping (Result<Void, any Error>) -> Void) {
         fatalError("To Implement - addPlayableLevel")
     }
     
-    func saveLevels(levels: [Level], completion: @escaping (Result<Void, any Error>) -> Void) {
+    func saveLevels(levels: [LevelDefinition], completion: @escaping (Result<Void, any Error>) -> Void) {
 //        fatalError("To Implement - saveLevels")
     }
     
-    func fetchLevels(levelType: LevelType, completion: @escaping (Result<[Level], any Error>) -> Void) {
+    func fetchLevels(levelType: LevelType, completion: @escaping (Result<[LevelDefinition], any Error>) -> Void) {
         if levelType == .playable {
             completion(.success(testPlayableLevels))
         }
@@ -37,10 +37,10 @@ class FakeLevelRepository: LevelRepositoryProtocol {
     }
     
     
-    var testLayouts: [Level]
-    var testPlayableLevels: [Level]
+    var testLayouts: [LevelDefinition]
+    var testPlayableLevels: [LevelDefinition]
     
-    init(testLayouts: [Level] = [], testPlayableLevels: [Level] = []) {
+    init(testLayouts: [LevelDefinition] = [], testPlayableLevels: [LevelDefinition] = []) {
         self.testLayouts = testLayouts
         self.testPlayableLevels = testPlayableLevels
     }
@@ -53,7 +53,7 @@ class FakeLevelRepository: LevelRepositoryProtocol {
         completion(.success(()))
     }
     
-    func saveLevel(level: Level, completion: @escaping (Result<Void, any Error>) -> Void) {
+    func saveLevel(level: LevelDefinition, completion: @escaping (Result<Void, any Error>) -> Void) {
         fatalError("To Implement - saveLevel")
     }
 }

@@ -4,7 +4,7 @@ import Dependencies
 class ExportAllUseCase : ExportAllUseCaseProtocol {
     @Dependency(\.fileRepository) private var fileRepository: FileRepositoryProtocol
 
-    func execute(levels: [Level], completion: @escaping (Result<Void, any Error>) -> Void) {
+    func execute(levels: [LevelDefinition], completion: @escaping (Result<Void, any Error>) -> Void) {
         fileRepository.saveLevels(levels: levels, completion: {/* [weak self] */ result in
             DispatchQueue.main.async {
                 switch result {

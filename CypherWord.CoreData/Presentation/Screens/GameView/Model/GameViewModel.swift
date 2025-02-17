@@ -9,10 +9,11 @@ class GameViewModel: ObservableObject {
 
     @Published private(set) var error:String?
     
+    @Published private(set) var levelDefinition: LevelDefinition
     @Published private(set) var level: Level
-    @Published var letterValues: CharacterIntMap?
-    @Published var attemptedValues: [Character] = []
-    @Published var crossword: Crossword?
+//    @Published var letterValues: CharacterIntMap?
+//    @Published var attemptedValues: [Character] = []
+//    @Published var crossword: Crossword?
  
     @Published var selectedNumber: Int?
     
@@ -20,11 +21,15 @@ class GameViewModel: ObservableObject {
     @Published var showingConfirmation: Bool = false
     @Published var completed: Bool = false
     @Published var checking: Bool = false
+    @Published var numCorrectLetters: Int = 0
+    @Published var showCompletedDialog: Bool = false
+    
     private let navigationViewModel: NavigationViewModel?
     
     
-    init(level:Level, navigationViewModel:NavigationViewModel? = nil) {
-        self.level = level
+    init(level:LevelDefinition, navigationViewModel:NavigationViewModel? = nil) {
+        self.levelDefinition = level
+        self.level = Level(definition: level)
         self.navigationViewModel = navigationViewModel
         
         let transformer = CrosswordTransformer()
@@ -33,34 +38,40 @@ class GameViewModel: ObservableObject {
             error = "Could not load crossword grid"
             return
         }
-        crossword = transformer.reverseTransformedValue(gridText) as? Crossword
+//        crossword = transformer.reverseTransformedValue(gridText) as? Crossword
+//        
+//        if let letterValuesText = level.letterMap
+//        {
+//            let letterValues = CharacterIntMap(from: letterValuesText)
+//            self.letterValues = letterValues
+//        }
+//        
+//        attemptedValues = Array(level.attemptedLetters)
         
-        if let letterValuesText = level.letterMap
-        {
-            let letterValues = CharacterIntMap(from: letterValuesText)
-            self.letterValues = letterValues
-        }
+        numCorrectLetters = level.numCorrectLetters
         
-        attemptedValues = Array(level.attemptedLetters)
+        
         
         revealLetter(letter: "X")
         revealLetter(letter: "Z")
+        
+//        print(level.letterMap) // TODO
     }
     
     
     func revealLetter(letter:Character) {
-        let val = letterValues![letter]
+        let val = level.letterMap![letter]
         
         if let val {
-            attemptedValues[val] = letter
+            setAttemptedValue(idx: val, char: letter)
         }
     }
     
     func onCellClick(id:UUID) {
-        guard let crossword else {
-            error = "Could not find crossword grid"
-            return
-        }
+//        guard let crossword = level.crossword else {
+//            error = "Could not find crossword grid"
+//            return
+//        }
         
         if completed {
             return
@@ -68,11 +79,11 @@ class GameViewModel: ObservableObject {
         
         checking = false
         
-        let cell = crossword.findElement(byID: id)
+        let cell = level.crossword.findElement(byID: id)
         
         if let cell = cell {
             if let letter = cell.letter {
-                if let number = letterValues?[letter] {
+                if let number = level.letterMap?[letter] {
                     selectedNumber = number
                 }
             }
@@ -87,8 +98,7 @@ class GameViewModel: ObservableObject {
 
         checking = false
         if let selectedNumber {
-            attemptedValues[selectedNumber] = letter
-            save()
+            setAttemptedValue(idx: selectedNumber, char: letter)
         }
     }
     
@@ -98,14 +108,15 @@ class GameViewModel: ObservableObject {
         
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            level.attemptedLetters = String(self.attemptedValues)
+//            levelDefinition.attemptedLetters = String(self.attemptedValues)
+            levelDefinition = LevelDefinition(from: level)
             saveProgress()
         }
     }
 
     
     private func saveProgress() {
-        saveLevelUseCase.execute(level: level, completion: { [weak self] result in
+        saveLevelUseCase.execute(level: levelDefinition, completion: { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                     case .success():
@@ -125,9 +136,19 @@ class GameViewModel: ObservableObject {
 
         checking = false
         if let selectedNumber {
-            attemptedValues[selectedNumber] = " "
-            save()
+            setAttemptedValue(idx: selectedNumber, char: " ")
         }
+    }
+    
+    func setAttemptedValue(idx: Int, char:Character) {
+        let prevNumCorrectLetters = level.numCorrectLetters
+        level.attemptedLetters[idx] = char
+//        levelDefinition.attemptedLetters = String(attemptedValues)
+//        numCorrectLetters = levelDefinition.numCorrectLetters
+        if prevNumCorrectLetters < 26 && level.numCorrectLetters == 26 {
+            showCompletedDialog = true
+        }
+        save()
     }
     
     func checkLetters() {
@@ -135,18 +156,20 @@ class GameViewModel: ObservableObject {
     }
     
     func revealLetter() {
-        if let letterValues {
-            for mappedLetter in letterValues.characterIntMap {
-                if !usedLetters.contains(mappedLetter.key) {
-                    revealLetter(letter: mappedLetter.key)
-                    return
-                }
+        guard let letterMap = level.letterMap else {
+            return
+        }
+        
+        for mappedLetter in letterMap.characterIntMap {
+            if !usedLetters.contains(mappedLetter.key) {
+                revealLetter(letter: mappedLetter.key)
+                return
             }
         }
     }
     
     var usedLetters: Set<Character> {
-        Set(attemptedValues.filter { $0 != " " })
+        Set(level.attemptedLetters.filter { $0 != " " })
     }
     
     func handleBackButtonTap() {

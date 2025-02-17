@@ -73,7 +73,7 @@ struct CrosswordView: View {
         }
     }
 }
-//
+
 #Preview("Attempted Value blank") {
     var crossword = Grid2D(rows: 15, columns: 15, elementGenerator: { row, column in
         Cell(pos: Pos(row: row, column: column))
@@ -94,13 +94,7 @@ struct CrosswordView: View {
         performAction:
             { _ in }
         )
-//        .frame(width: geometry.size.width * 0.98, height: geometry.size.width * 0.98) // Lock height to 98% of the screen
-//        .border(.gray)
-//        .padding(.top,10)
-    
-    
-//    return CrosswordView(grid: crossword, viewMode: .attemptedValue,  performAction: { _ in } )
-//        .padding(.all, 10)
+
 }
 //
 //#Preview("Actual Value") {

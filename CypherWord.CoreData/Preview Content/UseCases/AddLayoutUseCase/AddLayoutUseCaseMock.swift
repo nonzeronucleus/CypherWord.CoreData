@@ -1,6 +1,6 @@
 class AddLayoutUseCaseMock : AddLayoutUseCaseProtocol {
     
-    func execute(completion: @escaping (Result<[Level], Error>) -> Void) {
+    func execute(completion: @escaping (Result<[LevelDefinition], Error>) -> Void) {
         
     }
 }

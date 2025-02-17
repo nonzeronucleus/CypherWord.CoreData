@@ -12,9 +12,9 @@ class LevelListViewModel: ObservableObject {
     @Dependency(\.addLayoutUseCase) private var addLayoutUseCase: AddLayoutUseCaseProtocol
     @Dependency(\.exportAllUseCase) private var exportAllUseCase: ExportAllUseCaseProtocol
 
-    @Published var levels: [Level] = []
+    @Published var levels: [LevelDefinition] = []
     @Published var error:String?
-    @Published private(set) var selectedLevel: Level?
+    @Published private(set) var selectedLevel: LevelDefinition?
     @Published var levelType: LevelType
     @Published var isBusy: Bool = false
 
@@ -100,7 +100,7 @@ class LevelListViewModel: ObservableObject {
         })
     }
     
-    func onSelectLevel(level:Level) {
+    func onSelectLevel(level:LevelDefinition) {
         navigationViewModel?.navigateTo(level:level)
     }
     

@@ -24,9 +24,9 @@ struct CharacterIntMap: Codable {
     init(shuffle: Bool = false) {
         var letterValues: [Character:Int] = [:]
         
-        let alphabet = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+        let alphabet = Alphabet
         
-        // SShuffle the array to get a random order
+        // Shuffle the array to get a random order
         if shuffle {
             let shuffledAlphabet = alphabet.shuffled()
             for (index, letter) in shuffledAlphabet.enumerated() {
@@ -44,6 +44,19 @@ struct CharacterIntMap: Codable {
         
         data = Dictionary(uniqueKeysWithValues: letterValues.map { (String($0.key), $0.value) })
     }
+    
+    
+    func countCorrectlyPlacedLetters(in attemptedLetters: String) -> Int {
+        guard attemptedLetters.count == 26 else {
+            print("Error: attemptedLetters must be exactly 26 characters long.")
+            return 0
+        }
+        
+        return attemptedLetters.enumerated().filter { index, letter in
+            data[String(letter)] == index
+        }.count
+    }
+
     
     // Convert back to `[Character: Int]`
     var characterIntMap: [Character: Int] {
