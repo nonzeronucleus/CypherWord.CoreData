@@ -14,6 +14,7 @@ struct GameView: View {
                     VStack {
                         VStack {
                             ZStack {
+                                
                                 CrosswordView(
                                     grid: model.level.crossword,
                                     viewMode: .attemptedValue,

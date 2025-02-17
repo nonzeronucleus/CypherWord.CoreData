@@ -1,18 +1,17 @@
 import Foundation
 
-class Level {
+struct Level {
     var id: UUID
     var number: Int?
     var crossword: Crossword
     var letterMap: CharacterIntMap?
-    var letterGuesses: String?
     var attemptedLetters: [Character]
+    
     var numCorrectLetters: Int {
         get {
-            guard let letterMap else { return 0}
-            guard let letterGuesses else { return 0}
+            guard let letterMap else { return -1}
             
-            return letterMap.countCorrectlyPlacedLetters(in: letterGuesses)
+            return letterMap.countCorrectlyPlacedLetters(in: String(attemptedLetters))
         }
     }
     
@@ -34,7 +33,6 @@ class Level {
         if let letterMap = definition.letterMap {
             self.letterMap = CharacterIntMap(from: letterMap)
         }
-        self.letterGuesses = definition.letterGuesses
         self.attemptedLetters = Array(definition.attemptedLetters)
     }
 }

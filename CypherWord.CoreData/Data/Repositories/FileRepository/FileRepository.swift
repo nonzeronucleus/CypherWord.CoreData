@@ -13,15 +13,20 @@ extension FileRepository : FileRepositoryProtocol {
         if levels.isEmpty {
             completion(.success(()))
         }
-        
-        let levelType = levels.first!.levelType
+
+        let levelsToSave = levels.map { level in
+            var newLevel = level // Create a copy
+            newLevel.attemptedLetters = String(repeating: " ", count: 26)
+            return newLevel
+        }
+
+        let levelType = levelsToSave.first!.levelType
         
         do {
-            
             let fileName = levelType.rawValue + ".json"
             let url = try FileRepository.exportFilePath().appendingPathComponent(fileName)
             print(url.description)
-            let jsonData = try JSONEncoder().encode(levels)
+            let jsonData = try JSONEncoder().encode(levelsToSave)
             try jsonData.write(to: url)
             completion(.success(()))
         }

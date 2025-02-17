@@ -8,12 +8,11 @@ enum LevelType: String, CaseIterable, Identifiable, Hashable {
     var id: Self { self }
 }
 
-class LevelDefinition: Identifiable, Codable {
+struct LevelDefinition: Identifiable, Codable {
     var id: UUID
     var number: Int?
     var gridText: String?
     var letterMap: String?
-    var letterGuesses: String?
     var attemptedLetters: String
     var numCorrectLetters: Int
     
@@ -41,12 +40,11 @@ class LevelDefinition: Identifiable, Codable {
         if let letterMap = level.letterMap {
             self.letterMap = letterMap.toJSON()
         }
-        self.letterGuesses = level.letterGuesses
         self.attemptedLetters = String(level.attemptedLetters)
         self.numCorrectLetters = level.numCorrectLetters
     }
     
-    required init(from decoder: any Decoder) throws {
+    init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decode(UUID.self, forKey: .id)
         self.number = try container.decodeIfPresent(Int.self, forKey: .number)
@@ -56,27 +54,10 @@ class LevelDefinition: Identifiable, Codable {
         self.numCorrectLetters = 0
     }
     
-//    func encode(to encoder: any Encoder) throws {
-//        var container = encoder.container(keyedBy: CodingKeys.self)
-//        try container.encode(id, forKey: .id)
-//        try container.encodeIfPresent(number, forKey: .number)
-//        try container.encodeIfPresent(gridText, forKey: .gridText)
-//    }
-
     var name: String {
         if let number = number {
             return "Level \(number)"
         }
         return "Level \(id.uuidString), \(levelType)"
     }
-
-//    func toLevelMO() -> LevelMO {
-//        let model = LevelMO()
-//        model.id = id
-//        model.number = Int64(number)
-//        model.gridText = gridText
-//        model.letterMap = letterMap
-//        model.numCorrectLetters = Int16(numCorrectLetters)
-//        return model
-//    }
 }

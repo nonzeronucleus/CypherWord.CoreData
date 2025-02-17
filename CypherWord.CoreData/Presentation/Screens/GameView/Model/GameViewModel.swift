@@ -11,9 +11,6 @@ class GameViewModel: ObservableObject {
     
     @Published private(set) var levelDefinition: LevelDefinition
     @Published private(set) var level: Level
-//    @Published var letterValues: CharacterIntMap?
-//    @Published var attemptedValues: [Character] = []
-//    @Published var crossword: Crossword?
  
     @Published var selectedNumber: Int?
     
@@ -21,8 +18,8 @@ class GameViewModel: ObservableObject {
     @Published var showingConfirmation: Bool = false
     @Published var completed: Bool = false
     @Published var checking: Bool = false
-    @Published var numCorrectLetters: Int = 0
     @Published var showCompletedDialog: Bool = false
+    @Published var numCorrectLetters: Int = 0
     
     private let navigationViewModel: NavigationViewModel?
     
@@ -32,30 +29,8 @@ class GameViewModel: ObservableObject {
         self.level = Level(definition: level)
         self.navigationViewModel = navigationViewModel
         
-        let transformer = CrosswordTransformer()
-        
-        guard let gridText = level.gridText else {
-            error = "Could not load crossword grid"
-            return
-        }
-//        crossword = transformer.reverseTransformedValue(gridText) as? Crossword
-//        
-//        if let letterValuesText = level.letterMap
-//        {
-//            let letterValues = CharacterIntMap(from: letterValuesText)
-//            self.letterValues = letterValues
-//        }
-//        
-//        attemptedValues = Array(level.attemptedLetters)
-        
-        numCorrectLetters = level.numCorrectLetters
-        
-        
-        
         revealLetter(letter: "X")
         revealLetter(letter: "Z")
-        
-//        print(level.letterMap) // TODO
     }
     
     
@@ -68,11 +43,6 @@ class GameViewModel: ObservableObject {
     }
     
     func onCellClick(id:UUID) {
-//        guard let crossword = level.crossword else {
-//            error = "Could not find crossword grid"
-//            return
-//        }
-        
         if completed {
             return
         }
@@ -108,7 +78,6 @@ class GameViewModel: ObservableObject {
         
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-//            levelDefinition.attemptedLetters = String(self.attemptedValues)
             levelDefinition = LevelDefinition(from: level)
             saveProgress()
         }
@@ -143,11 +112,10 @@ class GameViewModel: ObservableObject {
     func setAttemptedValue(idx: Int, char:Character) {
         let prevNumCorrectLetters = level.numCorrectLetters
         level.attemptedLetters[idx] = char
-//        levelDefinition.attemptedLetters = String(attemptedValues)
-//        numCorrectLetters = levelDefinition.numCorrectLetters
         if prevNumCorrectLetters < 26 && level.numCorrectLetters == 26 {
             showCompletedDialog = true
         }
+        numCorrectLetters = level.numCorrectLetters
         save()
     }
     

@@ -5,16 +5,10 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         do {
             for level in levels {
                 if try findLevel(id: level.id) == nil {
-                    let _ = try LevelMapper.map(context: container.viewContext, level: level) {
+                    let _ = try LevelMapper.map(context: container.viewContext, levelDefinition: level) {
                         return try fetchHighestNumber(levelType: level.levelType) + 1
                     }
-//                    
-//                    LevelMO(context: container.viewContext)
-//                    levelMO.id = level.id
-//                    levelMO.number = try fetchHighestNumber(levelType: level.levelType) + 1 //Int64(level.number)
-//                    levelMO.gridText = level.gridText
-//                    levelMO.letterMap = level.letterMap
-//                    levelMO.attemptedLetters = level.attemptedLetters
+
                     save()
                 }
             }
@@ -65,13 +59,12 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
     }
     
     func addPlayableLevel(level: LevelDefinition, completion: @escaping (Result<Void, Error>) -> Void) {
-        let levelMO = LevelMO(context: container.viewContext)
+        var levelMO = LevelMO(context: container.viewContext)
 
         do {
             levelMO.id = UUID()
             levelMO.number = try self.fetchHighestNumber(levelType: .playable) + 1
-            levelMO.gridText = level.gridText
-            levelMO.letterMap = level.letterMap
+            LevelMapper.map(from: level, to: &levelMO)
             save()
             completion(.success(()))
         } catch let error {
@@ -126,10 +119,12 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
 //                levelMO.id = level.id
             }
             
-            if let levelMO = levelMO {
-                levelMO.gridText = level.gridText
-                levelMO.letterMap = level.letterMap
-                levelMO.attemptedLetters = level.attemptedLetters
+            if var levelMO = levelMO {
+                LevelMapper.map(from: level, to: &levelMO)
+
+//                levelMO.gridText = level.gridText
+//                levelMO.letterMap = level.letterMap
+//                levelMO.attemptedLetters = level.attemptedLetters
                 save()
                 completion(.success(()))
             }
