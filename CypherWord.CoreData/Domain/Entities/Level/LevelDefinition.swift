@@ -60,4 +60,8 @@ struct LevelDefinition: Identifiable, Codable {
         }
         return "Level \(id.uuidString), \(levelType)"
     }
+    
+    var percentComplete: Double {
+        return (Double(numCorrectLetters-2) / 24.0)
+    }
 }

@@ -16,11 +16,12 @@ class LevelEditViewModel: ObservableObject {
     private let navigationViewModel: NavigationViewModel
 
     static let defaultSize = 11
-    @Published private(set) var level: LevelDefinition
+//    @Published private(set) var levelDefinition: LevelDefinition
+    @Published var level: Level
     @Published var size: Int
-    @Published var crossword: Crossword
+//    @Published var crossword: Crossword
     @Published private(set) var error:String?
-    @Published var letterValues: CharacterIntMap?
+//    @Published var letterValues: CharacterIntMap?
     @Published var isBusy: Bool = false
     @Published var showAlert: Bool = false
     
@@ -28,30 +29,33 @@ class LevelEditViewModel: ObservableObject {
     
     private var populateTask: Task<Void, Never>? // Stores the running task
     
-    init(level:LevelDefinition, navigationViewModel:NavigationViewModel) {
-        self.level = level
+    init(levelDefinition:LevelDefinition, navigationViewModel:NavigationViewModel) {
+//        self.levelDefinition = levelDefinition
         self.navigationViewModel = navigationViewModel
-        var newCrossword:Crossword?
+//        var newCrossword:Crossword?
+//        
+//        let transformer = CrosswordTransformer()
         
-        let transformer = CrosswordTransformer()
+//        if let gridText = levelDefinition.gridText {
+//            newCrossword = transformer.reverseTransformedValue(gridText) as? Crossword
+//        }
+//        
+//        if let letterValuesText = levelDefinition.letterMap
+//        {
+//            let letterValues = CharacterIntMap(from: letterValuesText)
+//            self.letterValues = letterValues
+//        }
+//        
+//        if newCrossword == nil {
+//            newCrossword = Crossword(rows: 15, columns: 15)
+//        }
+//        
+//        crossword = newCrossword!
+//
+        let level = Level(definition: levelDefinition)
+        self.level = level
         
-        if let gridText = level.gridText {
-            newCrossword = transformer.reverseTransformedValue(gridText) as? Crossword
-        }
-        
-        if let letterValuesText = level.letterMap
-        {
-            let letterValues = CharacterIntMap(from: letterValuesText)
-            self.letterValues = letterValues
-        }
-        
-        if newCrossword == nil {
-            newCrossword = Crossword(rows: 15, columns: 15)
-        }
-        
-        crossword = newCrossword!
-        
-        size = newCrossword!.columns
+        self.size = level.crossword.columns
     }
     
     func toggleCell(id: UUID) {
@@ -60,15 +64,15 @@ class LevelEditViewModel: ObservableObject {
             return
         }
         
-        if let location = crossword.locationOfElement(byID: id) {
-            crossword.updateElement(byPos: location) { cell in
+        if let location = level.crossword.locationOfElement(byID: id) {
+            level.crossword.updateElement(byPos: location) { cell in
                 cell.toggle()
                 currentState = .changed
             }
-            let opposite = Pos(row: crossword.columns - 1 - location.row, column: crossword.rows - 1 - location.column)
+            let opposite = Pos(row: level.crossword.columns - 1 - location.row, column: level.crossword.rows - 1 - location.column)
             
             if opposite != location {
-                crossword.updateElement(byPos: opposite) { cell in
+                level.crossword.updateElement(byPos: opposite) { cell in
                     cell.toggle()
                 }
             }
@@ -76,13 +80,13 @@ class LevelEditViewModel: ObservableObject {
     }
     
     func reset() {
-        for row in 0..<crossword.rows {
-            for col in 0..<crossword.columns {
-                var cell = crossword[row, col]
+        for row in 0..<level.crossword.rows {
+            for col in 0..<level.crossword.columns {
+                var cell = level.crossword[row, col]
                 if cell.letter != nil {
                     cell.letter = " "
                 }
-                crossword[row, col] = cell
+                level.crossword[row, col] = cell
             }
         }
         currentState = .clean
@@ -114,15 +118,15 @@ class LevelEditViewModel: ObservableObject {
         
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            let crosswordTransformer = CrosswordTransformer()
-            
-            level.gridText = crosswordTransformer.transformedValue(crossword) as? String
+//            let crosswordTransformer = CrosswordTransformer()
+//            
+//            levelDefinition.gridText = crosswordTransformer.transformedValue(crossword) as? String
             
             switch currentState {
                 case .clean:
                     break
                 case .populated:
-                    level.letterMap = letterValues?.toJSON()
+//                    levelDefinition.letterMap = letterValues?.toJSON()
                     savePlayableLevel()
                     currentState = .clean
                     isBusy = false
@@ -137,7 +141,9 @@ class LevelEditViewModel: ObservableObject {
     }
     
     private func saveLayout() {
-        saveLevelUseCase.execute(level: level, completion: { [weak self] result in
+        let levelDefinition = LevelDefinition(from: level)
+        
+        saveLevelUseCase.execute(level: levelDefinition, completion: { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                     case .success():
@@ -150,7 +156,9 @@ class LevelEditViewModel: ObservableObject {
     }
     
     private func savePlayableLevel() {
-        addPlayableLevelUseCase.execute(level: level, completion: { [weak self] result in
+        let levelDefinition = LevelDefinition(from: level)
+        
+        addPlayableLevelUseCase.execute(level: levelDefinition, completion: { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                     case .success():
@@ -175,15 +183,15 @@ class LevelEditViewModel: ObservableObject {
             guard let self else { return } // Swift 5.9 shorthand for `guard let self = self else { return }`
             
             let populator = CrosswordPopulatorUseCase()
-            let result = await populator.executeAsync(initCrossword: self.crossword)
+            let result = await populator.executeAsync(initCrossword: self.level.crossword)
 
             guard !Task.isCancelled else { return }
 
             await MainActor.run { // Ensure UI updates happen on the main thread
                 switch result {
                     case .success(let (newCrossword, characterIntMap)):
-                        self.crossword = newCrossword
-                        self.letterValues = characterIntMap
+                        self.level.crossword = newCrossword
+                        self.level.letterMap = characterIntMap
                         self.currentState = .populated
                     case .failure(let error):
                         self.error = error.localizedDescription

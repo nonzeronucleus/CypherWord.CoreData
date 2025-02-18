@@ -51,8 +51,13 @@ struct LevelListView : View {
                     let levels = viewModel.levels
                     ForEach(levels) { level in
                         if let number = level.number {
-                            CartoonButton(levelNumber:number, gradient:Gradient(colors: [primaryColor(level: level), secondaryColor(level: level)])) {
-                                viewModel.onSelectLevel(level: level)
+                            ZStack {
+                                CartoonButton(levelNumber:number, gradient:Gradient(colors: [primaryColor(level: level), secondaryColor(level: level)])) {
+                                    viewModel.onSelectLevel(level: level)
+                                }
+                                if level.levelType == .playable && level.percentComplete < 1.0 {
+                                    PercentageCircleView(percentage: level.percentComplete)
+                                }
                             }
                         }
                         else {

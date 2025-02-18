@@ -28,9 +28,9 @@ public struct LevelEditView: View {
                     step: 2.0
                 )
                 Text("\(model.size)")
-                CrosswordView(grid: model.crossword,
+                CrosswordView(grid: model.level.crossword,
                               viewMode: .actualValue,
-                              letterValues: model.letterValues,
+                              letterValues: model.level.letterMap,
                               attemptedletterValues: nil,
                               performAction: { id in
                     model.toggleCell(id: id)
@@ -45,7 +45,7 @@ public struct LevelEditView: View {
                     model.delete()
                 }
 
-                if (model.crossword.isPopulated) {
+                if (model.level.crossword.isPopulated) {
                     Button("Reset") {
                         model.reset()
                     }
@@ -89,7 +89,7 @@ public struct LevelEditView: View {
 #Preview {
     let navigationViewModel = NavigationViewModel()
     let level = LevelDefinition(id: UUID(), number: 1, gridText: " ...|.. .|. ..|. ..|", letterMap: nil, attemptedLetters: nil)
-    let viewModel = LevelEditViewModel(level: level, navigationViewModel: navigationViewModel)
+    let viewModel = LevelEditViewModel(levelDefinition: level, navigationViewModel: navigationViewModel)
     
     LevelEditView(viewModel)
 }

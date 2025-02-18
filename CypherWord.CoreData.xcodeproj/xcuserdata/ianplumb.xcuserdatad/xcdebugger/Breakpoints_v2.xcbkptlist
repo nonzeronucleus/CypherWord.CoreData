@@ -98,6 +98,36 @@
             endingLineNumber = "52"
             landmarkName = "fetchLevels(levelType:completion:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "EE26DC55-2226-47DB-B15D-EC51B7A88B6E - 89b9773e138814a8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "CypherWord_CoreData.FileRepository.fetchLevels(levelType: CypherWord_CoreData.LevelType, completion: (Swift.Result&lt;Swift.Array&lt;CypherWord_CoreData.LevelDefinition&gt;, Swift.Error&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "CypherWord.CoreData.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ianplumb/Development/swift/CypherWord.CoreData/CypherWord.CoreData/Data/Repositories/FileRepository/FileRepository.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "52"
+                  endingLineNumber = "52">
+               </Location>
+               <Location
+                  uuid = "EE26DC55-2226-47DB-B15D-EC51B7A88B6E - 89b9773e138814a8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "CypherWord_CoreData.FileRepository.fetchLevels(levelType: CypherWord_CoreData.LevelType, completion: (Swift.Result&lt;Swift.Array&lt;CypherWord_CoreData.LevelDefinition&gt;, Swift.Error&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "CypherWord.CoreData.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ianplumb/Development/swift/CypherWord.CoreData/CypherWord.CoreData/Data/Repositories/FileRepository/FileRepository.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "52"
+                  endingLineNumber = "52">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

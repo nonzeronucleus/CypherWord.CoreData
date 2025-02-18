@@ -20,15 +20,16 @@ struct Level {
         self.number = definition.number
         let transformer = CrosswordTransformer()
         
-        guard let gridText = definition.gridText else {
-            fatalError( "Could not load crossword grid")
+        if let gridText = definition.gridText {
+            guard let crossword = transformer.reverseTransformedValue(gridText) as? Crossword else {
+                fatalError( "Could not configure crossword grid")
+            }
+            
+            self.crossword = crossword
         }
-
-        guard let crossword = transformer.reverseTransformedValue(gridText) as? Crossword else {
-            fatalError( "Could not configure crossword grid")
+        else {
+            self.crossword = Crossword(rows: 15, columns: 15)
         }
-        
-        self.crossword = crossword
 
         if let letterMap = definition.letterMap {
             self.letterMap = CharacterIntMap(from: letterMap)
