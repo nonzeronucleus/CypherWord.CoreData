@@ -3,7 +3,6 @@ import Dependencies
 
 struct LevelListView : View {
     private var gridItemLayout = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
-    @State private var showThoughtsView = false
     @ObservedObject var viewModel: LevelListViewModel
     init(_ viewModel: LevelListViewModel) {
         self.viewModel = viewModel
@@ -46,9 +45,23 @@ struct LevelListView : View {
                 .font(.system(size: 32, weight: .bold, design: .rounded))
                 .background(primaryColor())
             
+            if viewModel.levelType == .playable {
+                HStack {
+                    Toggle("Show Completed", isOn: $viewModel.showCompleted)
+                         .toggleStyle(SwitchToggleStyle()) // Default iOS switch style
+                         .padding()
+                         .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6))) // Light gray background
+                         .shadow(radius: 3)
+                         .padding()
+                 }
+                 .frame(maxWidth: .infinity) // Center vertically & horizontally
+                 .background(Color(.systemBackground)) // Match system theme
+            }
+
+            
             ScrollView {
                 LazyVGrid(columns: gridItemLayout, spacing: 20) {
-                    let levels = viewModel.levels
+                    let levels = viewModel.displayableLevels
                     ForEach(levels) { level in
                         if let number = level.number {
                             ZStack {
@@ -66,6 +79,8 @@ struct LevelListView : View {
                     }
                 }
             }
+            
+            Spacer()
 
             if viewModel.levelType == .layout {
                 Button("Add") {

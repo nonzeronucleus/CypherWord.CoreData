@@ -1,7 +1,5 @@
 import SwiftUI
 
-
-
 struct ZoomableScrollView<Content: View>: View   {
     @State private var scale: CGFloat = 1.0
     @State private var lastScale: CGFloat = 1.0
@@ -24,8 +22,8 @@ struct ZoomableScrollView<Content: View>: View   {
                     MagnificationGesture()
                         .onChanged { value in
                             let newScale = lastScale * value
-                            let clampedScale = min(max(newScale, 1.0), 5.0)
-                            
+                            let clampedScale = min(max(newScale, 1.0), 3.0)
+
                             // Calculate the scaled content size
                             let scaledWidth = geometry.size.width * clampedScale
                             let scaledHeight = geometry.size.height * clampedScale

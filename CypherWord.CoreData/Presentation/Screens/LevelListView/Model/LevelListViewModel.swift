@@ -12,11 +12,14 @@ class LevelListViewModel: ObservableObject {
     @Dependency(\.addLayoutUseCase) private var addLayoutUseCase: AddLayoutUseCaseProtocol
     @Dependency(\.exportAllUseCase) private var exportAllUseCase: ExportAllUseCaseProtocol
 
-    @Published var levels: [LevelDefinition] = []
+    @Published var allLevels: [LevelDefinition] = []
+    @Published var displayableLevels: [LevelDefinition] = []
     @Published var error:String?
     @Published private(set) var selectedLevel: LevelDefinition?
     @Published var levelType: LevelType
     @Published var isBusy: Bool = false
+    
+    @Published var showCompleted: Bool = false
 
     private var navigationViewModel: NavigationViewModel?
     private var cancellables = Set<AnyCancellable>()
@@ -24,6 +27,26 @@ class LevelListViewModel: ObservableObject {
     init(navigationViewModel:NavigationViewModel, levelType: LevelType){
         self.navigationViewModel = navigationViewModel
         self.levelType = levelType
+        
+        $allLevels
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newLevels in
+                if let showCompleted = self?.showCompleted {
+                    self?.updateDisplayableLevels(levels: newLevels, showCompleted: showCompleted)
+                }
+            }
+            .store(in: &cancellables)
+        
+        $showCompleted
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newShowCompleted in
+                if let levels = self?.allLevels {
+                    self?.updateDisplayableLevels(levels: levels, showCompleted: newShowCompleted)
+                }
+            }
+            .store(in: &cancellables)
+        
+        
         reload()
     }
     
@@ -36,13 +59,29 @@ class LevelListViewModel: ObservableObject {
         }
     }
     
+    func updateDisplayableLevels(levels: [LevelDefinition], showCompleted: Bool) {
+        objectWillChange.send()
+        
+        displayableLevels = levels.filter {
+            switch levelType {
+                case .layout:
+                    return true
+                case .playable:
+                    if (self.showCompleted) {
+                        return true
+                    }
+                    return $0.percentComplete < 1
+            }
+        }
+    }
+    
 
     func fetchLevels() {
         fetchPlayableLevelsUseCase.execute { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let levels):
-                    self?.levels = levels
+                    self?.allLevels = levels
                 case .failure(let error):
                     self?.error = error.localizedDescription
                 }
@@ -56,7 +95,7 @@ class LevelListViewModel: ObservableObject {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let levels):
-                    self?.levels = levels
+                    self?.allLevels = levels
                 case .failure(let error):
                     self?.error = error.localizedDescription
                 }
@@ -70,7 +109,7 @@ class LevelListViewModel: ObservableObject {
             DispatchQueue.main.async {
                 switch result {
                     case .success(let levels):
-                        self?.levels = levels
+                        self?.allLevels = levels
                     case .failure(let error):
                         self?.error = error.localizedDescription
                 }
@@ -83,16 +122,7 @@ class LevelListViewModel: ObservableObject {
             DispatchQueue.main.async {
                 switch result {
                     case .success(let levels):
-                        self?.levels = levels
-//                        switch self?.levelType {
-//                            case .playable:
-//                                self?.levels = levels
-//                            case .layout:
-//                                self?.levels = levels
-//                            case .none:
-//                                break
-//                        }
-                        
+                        self?.allLevels = levels
                     case .failure(let error):
                         self?.error = error.localizedDescription
                 }
@@ -110,7 +140,7 @@ class LevelListViewModel: ObservableObject {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             
-            exportAllUseCase.execute(levels: levels, completion:  { [weak self] result in
+            exportAllUseCase.execute(levels: allLevels, completion:  { [weak self] result in
                 DispatchQueue.main.async {
                     switch result {
                         case .success():
