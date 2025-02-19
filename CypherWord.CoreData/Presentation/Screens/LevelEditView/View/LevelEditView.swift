@@ -36,27 +36,29 @@ public struct LevelEditView: View {
                                   performAction: { id in
                         model.toggleCell(id: id)
                     })
-                    Button("Save") {
-                        model.save()
-                    }
-                    Button("Populate") {
-                        model.populate()
-                    }
-                    Button("Delete") {
-                        model.delete()
-                    }
-                    
-                    if (model.level.crossword.isPopulated) {
-                        Button("Reset") {
-                            model.reset()
-                        }
-                    }
                     
                     if let error = model.error {
                         Text(error)
                     }
                 }
                 .padding(20)
+                
+                Button("Save") {
+                    model.save()
+                }
+                Button("Populate") {
+                    model.populate()
+                }
+                Button("Delete") {
+                    model.delete()
+                }
+                
+                if (model.level.crossword.isPopulated) {
+                    Button("Reset") {
+                        model.reset()
+                    }
+                }
+                
                 if model.isBusy {
                     OverlayView(
                         VStack {

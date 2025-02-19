@@ -42,7 +42,7 @@ struct Level {
             return nil
         }
         
-        for mappedLetter in letterMap.data {
+        for mappedLetter in letterMap {
             if !usedLetters.contains(mappedLetter.key) {
                 return mappedLetter.key
             }
