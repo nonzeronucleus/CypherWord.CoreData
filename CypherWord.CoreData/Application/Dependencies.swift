@@ -165,4 +165,17 @@ private enum ExportAllUseCaseKey: DependencyKey {
     static let liveValue: ExportAllUseCaseProtocol = ExportAllUseCase()
 }
 
+// Mark - Resize
+
+extension DependencyValues {
+    var resizeGridUseCase: ResizeGridUseCaseProtocol {
+        get { self[ResizeGridUseCaseKey.self] }
+        set { self[ResizeGridUseCaseKey.self] = newValue }
+    }
+}
+
+private enum ResizeGridUseCaseKey: DependencyKey {
+    static let liveValue: ResizeGridUseCaseProtocol = ResizeGridUseCase()
+}
+
 

@@ -30,28 +30,8 @@ class LevelEditViewModel: ObservableObject {
     private var populateTask: Task<Void, Never>? // Stores the running task
     
     init(levelDefinition:LevelDefinition, navigationViewModel:NavigationViewModel) {
-//        self.levelDefinition = levelDefinition
         self.navigationViewModel = navigationViewModel
-//        var newCrossword:Crossword?
-//        
-//        let transformer = CrosswordTransformer()
-        
-//        if let gridText = levelDefinition.gridText {
-//            newCrossword = transformer.reverseTransformedValue(gridText) as? Crossword
-//        }
-//        
-//        if let letterValuesText = levelDefinition.letterMap
-//        {
-//            let letterValues = CharacterIntMap(from: letterValuesText)
-//            self.letterValues = letterValues
-//        }
-//        
-//        if newCrossword == nil {
-//            newCrossword = Crossword(rows: 15, columns: 15)
-//        }
-//        
-//        crossword = newCrossword!
-//
+
         let level = Level(definition: levelDefinition)
         self.level = level
         

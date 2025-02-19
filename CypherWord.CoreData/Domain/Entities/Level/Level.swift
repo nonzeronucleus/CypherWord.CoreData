@@ -36,4 +36,25 @@ struct Level {
         }
         self.attemptedLetters = Array(definition.attemptedLetters)
     }
+    
+    func getNextLetterToReveal() -> Character? {
+        guard let letterMap = letterMap else {
+            return nil
+        }
+        
+        for mappedLetter in letterMap.data {
+            if !usedLetters.contains(mappedLetter.key) {
+                return mappedLetter.key
+            }
+        }
+        
+        return nil
+    }
+    
+    var usedLetters: Set<Character> {
+        Set(attemptedLetters.filter { $0 != " " })
+    }
+    
+
+    
 }

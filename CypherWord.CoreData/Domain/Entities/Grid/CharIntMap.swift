@@ -1,16 +1,18 @@
 import Foundation
 
-struct CharacterIntMap: Codable {
-    private var data: [String: Int]
+
+
+struct CharacterIntMap: Codable, Hashable {
+    private(set) var data: [Character: Int]
     
     init(_ map: [Character: Int]) {
-        self.data = Dictionary(uniqueKeysWithValues: map.map { (String($0.key), $0.value) })
+        self.data = map
     }
     
     init(from json: String) {
         if let jsonData = json.data(using: .utf8) {
             if let decodedData = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Int] {
-                data = decodedData
+                data = Dictionary(uniqueKeysWithValues: decodedData.map { (Character($0.key), $0.value) }) 
             }
             else {
                 fatalError("Failed to decode JSON \(json)")
@@ -42,7 +44,7 @@ struct CharacterIntMap: Codable {
 
         // Iterate over each letter and call the function
         
-        data = Dictionary(uniqueKeysWithValues: letterValues.map { (String($0.key), $0.value) })
+        data = Dictionary(uniqueKeysWithValues: letterValues.map { ($0.key, $0.value) })
     }
     
     
@@ -53,25 +55,31 @@ struct CharacterIntMap: Codable {
         }
         
         return attemptedLetters.enumerated().filter { index, letter in
-            data[String(letter)] == index
+            data[letter] == index
         }.count
     }
 
     
     // Convert back to `[Character: Int]`
-    var characterIntMap: [Character: Int] {
-        Dictionary(uniqueKeysWithValues: data.map { (Character($0.key), $0.value) })
-    }
+//    var characterIntMap: [Character: Int] {
+//        data
+////        var characterIntMap: [Character: Int] {
+////        Dictionary(uniqueKeysWithValues: data.map { (Character($0.key), $0.value) })
+//    }
     
     func toJSON() -> String {
-        if let jsonData = try? JSONSerialization.data(withJSONObject: data, options: []),
+        let stringKeyedData = data.reduce(into: [String: Int]()) { result, entry in
+            result[String(entry.key)] = entry.value
+        }
+
+        if let jsonData = try? JSONSerialization.data(withJSONObject: stringKeyedData, options: []),
            let jsonString = String(data: jsonData, encoding: .utf8) {
             return jsonString
         }
         return ""
     }
     
-    subscript(char:String?) -> Int? {
+    subscript(char:Character?) -> Int? {
         get {
             if let char {
                 if char != " " {
@@ -83,17 +91,17 @@ struct CharacterIntMap: Codable {
     }
     
     
-    func charFromInt(for value: Int) -> String? {
+    func charFromInt(for value: Int) -> Character? {
         return  data.filter { $0.value == value }.map { $0.key }.first
     }
     
     // Subscript to get and set values by Character
     subscript(character: Character) -> Int? {
         get {
-            data[String(character)]
+            data[character]
         }
         set {
-            data[String(character)] = newValue
+            data[character] = newValue
         }
     }
 }

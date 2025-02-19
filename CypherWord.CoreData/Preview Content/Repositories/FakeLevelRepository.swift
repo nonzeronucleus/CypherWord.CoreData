@@ -1,6 +1,10 @@
 import Foundation
 
 class FakeLevelRepository: LevelRepositoryProtocol {
+    var testLayouts: Dictionary<UUID, LevelDefinition>
+//    var testPlayableLevels: [LevelDefinition]
+    var testPlayableLevels: Dictionary<UUID, LevelDefinition>
+    
     func delete(levelID: UUID, completion: @escaping (Result<Void, any Error>) -> Void) {
         fatalError("To Implement - addPlayableLevel")
     }
@@ -19,33 +23,34 @@ class FakeLevelRepository: LevelRepositoryProtocol {
     
     func fetchLevels(levelType: LevelType, completion: @escaping (Result<[LevelDefinition], any Error>) -> Void) {
         if levelType == .playable {
-            completion(.success(testPlayableLevels))
+            completion(.success(testPlayableLevels.map { $0.value }))
         }
         else {
-            completion(.success(testLayouts))
+//            completion(.success(testLayouts))
         }
     }
     
     func deleteAll(levelType: LevelType, completion: @escaping (Result<Void, any Error>) -> Void) {
         if levelType == .playable {
-            self.testPlayableLevels = []
+            self.testPlayableLevels.removeAll()
         }
         else {
-            self.testLayouts = []
+            self.testLayouts.removeAll()
         }
         completion(.success(()))
     }
     
     
-    var testLayouts: [LevelDefinition]
-    var testPlayableLevels: [LevelDefinition]
-    
     init(testLayouts: [LevelDefinition] = [], testPlayableLevels: [LevelDefinition] = []) {
-        self.testLayouts = testLayouts
-        self.testPlayableLevels = testPlayableLevels
+        self.testLayouts = Dictionary(uniqueKeysWithValues: testLayouts.map { ($0.id, $0) })
+        self.testPlayableLevels = Dictionary(uniqueKeysWithValues: testPlayableLevels.map { ($0.id, $0) })
+
     }
     
+    
     func addLayout(completion: @escaping (Result<Void, Error>) -> Void) {
+        let levelDefinition = LevelDefinition(id: UUID(), number: 1, attemptedLetters: nil, numCorrectLetters: 0)
+        testLayouts[levelDefinition.id] = levelDefinition
         completion(.success(()))
     }
     
@@ -54,6 +59,12 @@ class FakeLevelRepository: LevelRepositoryProtocol {
     }
     
     func saveLevel(level: LevelDefinition, completion: @escaping (Result<Void, any Error>) -> Void) {
-        fatalError("To Implement - saveLevel")
+        if level.levelType == .layout {
+            testLayouts[level.id] = level
+        }
+        else {
+            testPlayableLevels[level.id] = level
+        }
+        completion(.success(()))
     }
 }

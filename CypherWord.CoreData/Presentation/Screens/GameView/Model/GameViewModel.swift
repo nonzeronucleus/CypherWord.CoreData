@@ -123,17 +123,21 @@ class GameViewModel: ObservableObject {
         checking.toggle()
     }
     
-    func revealLetter() {
-        guard let letterMap = level.letterMap else {
-            return
+    func revealNextLetter() {
+        if let letter = level.getNextLetterToReveal() {
+            revealLetter(letter: letter)
+            
         }
-        
-        for mappedLetter in letterMap.characterIntMap {
-            if !usedLetters.contains(mappedLetter.key) {
-                revealLetter(letter: mappedLetter.key)
-                return
-            }
-        }
+//        guard let letterMap = level.letterMap else {
+//            return
+//        }
+//        
+//        for mappedLetter in letterMap.characterIntMap {
+//            if !usedLetters.contains(mappedLetter.key) {
+//                revealLetter(letter: mappedLetter.key)
+//                return
+//            }
+//        }
     }
     
     var usedLetters: Set<Character> {

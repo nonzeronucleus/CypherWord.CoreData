@@ -65,7 +65,7 @@ struct GameView: View {
                             Spacer()
                             
                             Button("Reveal Letter") {
-                                model.revealLetter()
+                                model.revealNextLetter()
                             }
                             
                             Spacer()
