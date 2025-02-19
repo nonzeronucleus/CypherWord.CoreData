@@ -28,62 +28,63 @@ public struct LevelEditView: View {
                     step: 2.0
                 )
                 Text("\(model.size)")
-                CrosswordView(grid: model.level.crossword,
-                              viewMode: .actualValue,
-                              letterValues: model.level.letterMap,
-                              attemptedletterValues: nil,
-                              performAction: { id in
-                    model.toggleCell(id: id)
-                })
-                Button("Save") {
-                    model.save()
-                }
-                Button("Populate") {
-                    model.populate()
-                }
-                Button("Delete") {
-                    model.delete()
-                }
-
-                if (model.level.crossword.isPopulated) {
-                    Button("Reset") {
-                        model.reset()
+                ZoomableScrollView {
+                    CrosswordView(grid: model.level.crossword,
+                                  viewMode: .actualValue,
+                                  letterValues: model.level.letterMap,
+                                  attemptedletterValues: nil,
+                                  performAction: { id in
+                        model.toggleCell(id: id)
+                    })
+                    Button("Save") {
+                        model.save()
                     }
-                }
-                
-                if let error = model.error {
-                    Text(error)
-                }
-            }
-            .padding(20)
-            if model.isBusy {
-                OverlayView(
-                    VStack {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            .scaleEffect(2.5)
-                        
-                        Button("Cancel") {
-                            model.cancel()
+                    Button("Populate") {
+                        model.populate()
+                    }
+                    Button("Delete") {
+                        model.delete()
+                    }
+                    
+                    if (model.level.crossword.isPopulated) {
+                        Button("Reset") {
+                            model.reset()
                         }
                     }
-                )
+                    
+                    if let error = model.error {
+                        Text(error)
+                    }
+                }
+                .padding(20)
+                if model.isBusy {
+                    OverlayView(
+                        VStack {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .scaleEffect(2.5)
+                            
+                            Button("Cancel") {
+                                model.cancel()
+                            }
+                        }
+                    )
+                }
             }
-        }
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("< Back") {
-                    model.handleBackButtonTap()
-                }  // showAlert = true
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("< Back") {
+                        model.handleBackButtonTap()
+                    }  // showAlert = true
+                }
             }
-        }
-        .alert("Save changes?", isPresented: $model.showAlert) {
-            Button("Yes", role: .destructive) { model.handleSaveChangesButtonTap() }
-            Button("No", role: .destructive) { model.goBack() }
-            Button("Cancel", role: .cancel) {}
+            .alert("Save changes?", isPresented: $model.showAlert) {
+                Button("Yes", role: .destructive) { model.handleSaveChangesButtonTap() }
+                Button("No", role: .destructive) { model.goBack() }
+                Button("Cancel", role: .cancel) {}
+            }
         }
     }
-    
 }
 
 #Preview {

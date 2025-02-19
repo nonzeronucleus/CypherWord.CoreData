@@ -28,48 +28,50 @@ struct CrosswordView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            VStack(spacing: 0) {
-                ForEach(grid.getRows(), id: \.self) { row in
-                    HStack(spacing: 0) {
-                        ForEach(row, id: \.self) { cell in
-                            var checkingStatus:CellView.Status = .normal
-                            var number:Int? = nil
-                            
-                            var letter = cell.letter
-                            
-                            if let letterValues, let letter {
-                                number = letterValues[letter]
-                            }
-                            
-                            if let number, let attemptedletterValues {
-                                if viewMode == .attemptedValue && letter != nil {
-                                    letter = attemptedletterValues[number]
+            ZoomableScrollView {
+                VStack(spacing: 0) {
+                    ForEach(grid.getRows(), id: \.self) { row in
+                        HStack(spacing: 0) {
+                            ForEach(row, id: \.self) { cell in
+                                var checkingStatus:CellView.Status = .normal
+                                var number:Int? = nil
+                                
+                                var letter = cell.letter
+                                
+                                if let letterValues, let letter {
+                                    number = letterValues[letter]
                                 }
                                 
-                                if checking && letter != " " {
-                                    if attemptedletterValues[number] == cell.letter {
-                                        checkingStatus = .correct
+                                if let number, let attemptedletterValues {
+                                    if viewMode == .attemptedValue && letter != nil {
+                                        letter = attemptedletterValues[number]
                                     }
-                                    else {
-                                        checkingStatus = .incorrect
+                                    
+                                    if checking && letter != " " {
+                                        if attemptedletterValues[number] == cell.letter {
+                                            checkingStatus = .correct
+                                        }
+                                        else {
+                                            checkingStatus = .incorrect
+                                        }
                                     }
                                 }
-                            }
-
-                            return CellView(letter:letter,
-                                            number: number,
-                                            selected:number == selectedNumber,
-                                            checkStatus: checkingStatus)
+                                
+                                return CellView(letter:letter,
+                                                number: number,
+                                                selected:number == selectedNumber,
+                                                checkStatus: checkingStatus)
                                 .onTapGesture {
                                     performAction(cell.id)
                                 }
+                            }
                         }
                     }
                 }
+                .aspectRatio(1, contentMode: .fit)
+                .border(.green)
+                .background(content: { Color.gray.opacity(0.2) })
             }
-            .aspectRatio(1, contentMode: .fit)
-            .border(.green)
-            .background(content: { Color.gray.opacity(0.2) })
         }
     }
 }
