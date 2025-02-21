@@ -28,20 +28,37 @@ public struct LevelEditView: View {
                     step: 2.0
                 )
                 Text("\(model.size)")
-                ZoomableScrollView {
-                    CrosswordView(grid: model.level.crossword,
-                                  viewMode: .actualValue,
-                                  letterValues: model.level.letterMap,
-                                  attemptedletterValues: nil,
-                                  performAction: { id in
-                        model.toggleCell(id: id)
-                    })
+                
+                ZStack {
+                    ZoomableScrollView {
+                        CrosswordView(grid: model.level.crossword,
+                                      viewMode: .actualValue,
+                                      letterValues: model.level.letterMap,
+                                      attemptedletterValues: nil,
+                                      performAction: { id in
+                            model.toggleCell(id: id)
+                        })
+                        
+                        if let error = model.error {
+                            Text(error)
+                        }
+                    }
+                    .padding(20)
                     
-                    if let error = model.error {
-                        Text(error)
+                    if model.isBusy {
+                        OverlayView(
+                            VStack {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .scaleEffect(2.5)
+                                
+                                Button("Cancel") {
+                                    model.cancel()
+                                }
+                            }
+                        )
                     }
                 }
-                .padding(20)
                 
                 Button("Save") {
                     model.save()
@@ -57,20 +74,6 @@ public struct LevelEditView: View {
                     Button("Reset") {
                         model.reset()
                     }
-                }
-                
-                if model.isBusy {
-                    OverlayView(
-                        VStack {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                .scaleEffect(2.5)
-                            
-                            Button("Cancel") {
-                                model.cancel()
-                            }
-                        }
-                    )
                 }
             }
             .toolbar {

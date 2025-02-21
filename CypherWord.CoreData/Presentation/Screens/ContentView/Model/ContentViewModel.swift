@@ -4,9 +4,14 @@ import Dependencies
 final class ContentViewModel: ObservableObject {
     @Published var isInitialized = false
     @Published var error: String?
-    @Dependency(\.importLevelsUseCase) private var importLeveslUseCase: ImportLevelsUseCaseProtocol
+    private var importLeveslUseCase: ImportLevelsUseCaseProtocol
 
-    init() {
+    init(
+        importLeveslUseCase: ImportLevelsUseCaseProtocol = ImportLevelsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue,
+                                                                               fileRepository:  Dependency(\.fileRepository).wrappedValue)
+    )
+    {
+        self.importLeveslUseCase = importLeveslUseCase
         start()
     }
     
@@ -29,7 +34,6 @@ final class ContentViewModel: ObservableObject {
                                 switch result {
                                     case .success:
                                         self?.isInitialized = true
-//                                        self?.reload()
                                     case .failure(let error):
                                         self?.error = error.localizedDescription
                                         self?.isInitialized = true
@@ -50,8 +54,7 @@ final class ContentViewModel: ObservableObject {
         importLeveslUseCase.execute(levelType: levelType) { /*[weak self]*/ result in
             DispatchQueue.main.async {
                 switch result {
-                    case .success: //(let levels):
-//                        self?.saveLevels(levelType: levelType, levels: levels)
+                    case .success: 
                         completion(.success(()))
                     case .failure(let error):
                         completion(.failure(error))

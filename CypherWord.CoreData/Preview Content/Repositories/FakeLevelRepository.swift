@@ -2,7 +2,6 @@ import Foundation
 
 class FakeLevelRepository: LevelRepositoryProtocol {
     var testLayouts: Dictionary<UUID, LevelDefinition>
-//    var testPlayableLevels: [LevelDefinition]
     var testPlayableLevels: Dictionary<UUID, LevelDefinition>
     
     func delete(levelID: UUID, completion: @escaping (Result<Void, any Error>) -> Void) {
@@ -23,10 +22,20 @@ class FakeLevelRepository: LevelRepositoryProtocol {
     
     func fetchLevels(levelType: LevelType, completion: @escaping (Result<[LevelDefinition], any Error>) -> Void) {
         if levelType == .playable {
-            completion(.success(testPlayableLevels.map { $0.value }))
+            completion(.success(testPlayableLevels.map { $0.value }.sorted(by: { level1, level2 in
+                guard let number1 = level1.number else { return false }
+                guard let number2 = level2.number else { return true }
+
+                return (number1 < number2)
+            })))
         }
         else {
-//            completion(.success(testLayouts))
+            completion(.success(testLayouts.map { $0.value }.sorted(by: { level1, level2 in
+                guard let number1 = level1.number else { return false }
+                guard let number2 = level2.number else { return true }
+
+                return (number1 < number2)
+            })))
         }
     }
     

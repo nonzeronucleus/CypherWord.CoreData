@@ -1,11 +1,8 @@
 import Foundation
 import Dependencies
 
-
-
 class GameViewModel: ObservableObject {
-    @Dependency(\.fetchLevelByIDUseCase) private var fetchLevelByIDUseCase: FetchLevelByIDUseCaseProtocol
-    @Dependency(\.saveLevelUseCase) private var saveLevelUseCase: SaveLevelUseCaseProtocol
+    private var saveLevelUseCase: SaveLevelUseCaseProtocol
 
     @Published private(set) var error:String?
     
@@ -24,7 +21,11 @@ class GameViewModel: ObservableObject {
     private let navigationViewModel: NavigationViewModel?
     
     
-    init(level:LevelDefinition, navigationViewModel:NavigationViewModel? = nil) {
+    init(level:LevelDefinition,
+         navigationViewModel:NavigationViewModel? = nil,
+         saveLevelUseCase: SaveLevelUseCaseProtocol = SaveLevelUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue)
+    ) {
+        self.saveLevelUseCase = saveLevelUseCase
         self.levelDefinition = level
         self.level = Level(definition: level)
         self.navigationViewModel = navigationViewModel
@@ -128,16 +129,6 @@ class GameViewModel: ObservableObject {
             revealLetter(letter: letter)
             
         }
-//        guard let letterMap = level.letterMap else {
-//            return
-//        }
-//        
-//        for mappedLetter in letterMap.characterIntMap {
-//            if !usedLetters.contains(mappedLetter.key) {
-//                revealLetter(letter: mappedLetter.key)
-//                return
-//            }
-//        }
     }
     
     var usedLetters: Set<Character> {

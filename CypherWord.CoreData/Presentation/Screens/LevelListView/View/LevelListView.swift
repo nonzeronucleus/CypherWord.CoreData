@@ -1,6 +1,57 @@
 import SwiftUI
 import Dependencies
 
+
+struct TitleBarView: View {
+    var title: String
+    var color: Color
+    var action: () -> Void
+    
+    var body: some View {
+        ZStack {
+            // Background color extending to the top edge
+            color
+                .ignoresSafeArea(edges: .top)
+
+            ZStack {
+                HStack {
+                    Spacer()
+                    
+                    // Centered Title
+                    Text(title)
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                    
+                    Spacer()
+                }
+                
+                HStack {
+                    Spacer()
+                    
+                    // Settings Button (Gear Icon)
+                    Button(action: {
+                        action()
+                    }) {
+                        Image(systemName: "gearshape.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
+                            .foregroundColor(.white)
+                    }
+                    .padding(.trailing, 16) // Add some right padding
+                }
+            }
+            .frame(height: 30) // Set a fixed height for the title bar
+        }
+        .frame(height: 60) // Total height of the title bar
+        .padding(.bottom, 8)
+    }
+}
+
+
+
+
 struct LevelListView : View {
     private var gridItemLayout = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
     @ObservedObject var viewModel: LevelListViewModel
@@ -39,11 +90,10 @@ struct LevelListView : View {
     
     var body: some View {
         VStack {
-            Text(viewModel.levelType.rawValue)
-                .frame(maxWidth: .infinity)
-                .padding(CGFloat(integerLiteral: 20))
-                .font(.system(size: 32, weight: .bold, design: .rounded))
-                .background(primaryColor())
+            TitleBarView(title: viewModel.levelType.rawValue, color: primaryColor()) {
+                viewModel.navigateToSettings()
+            }
+
             
             if viewModel.levelType == .playable {
                 HStack {
@@ -64,8 +114,9 @@ struct LevelListView : View {
                     let levels = viewModel.displayableLevels
                     ForEach(levels) { level in
                         if let number = level.number {
+                            let gradient = Gradient(colors: [primaryColor(level: level), secondaryColor(level: level)])
                             ZStack {
-                                CartoonButton(levelNumber:number, gradient:Gradient(colors: [primaryColor(level: level), secondaryColor(level: level)])) {
+                                LevelButtonView(number: number,gradient: gradient) {
                                     viewModel.onSelectLevel(level: level)
                                 }
                                 if level.levelType == .playable && level.percentComplete < 1.0 {

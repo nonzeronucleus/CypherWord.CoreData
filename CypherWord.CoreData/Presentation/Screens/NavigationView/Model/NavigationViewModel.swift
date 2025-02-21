@@ -2,17 +2,30 @@ import SwiftUI
 import Dependencies
 
 
-class NavigationViewModel: ObservableObject {
-    @Dependency(\.fetchLevelByIDUseCase) private var fetchLevelByIDUseCase: FetchLevelByIDUseCaseProtocol
+enum NavigationDestination {
+    case detail
+    case settings
+}
 
+class NavigationViewModel: ObservableObject {
+    private var fetchLevelByIDUseCase: FetchLevelByIDUseCaseProtocol
     @Published var path: NavigationPath = NavigationPath()
     @Published var error: Error?
+    
+    init(fetchLevelByIDUseCase: FetchLevelByIDUseCaseProtocol = FetchLevelByIDUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue))
+    {
+        self.fetchLevelByIDUseCase = fetchLevelByIDUseCase
+    }
     
     var level: LevelDefinition? = nil
     
     func navigateTo(level:LevelDefinition) {
         self.level = level
-        path.append(level.levelType)
+        path.append(NavigationDestination.detail)
+    }
+    
+    func navigateToSettings() {
+        path.append(NavigationDestination.settings)
     }
 
     func goBack() {
@@ -28,11 +41,25 @@ class NavigationViewModel: ObservableObject {
 
     
     func createGameViewModel() -> GameViewModel {
-        return GameViewModel(level: level!, navigationViewModel: self)
+        guard let level else {
+            fatalError(#function + ": level not set")
+        }
+        return GameViewModel(level: level, navigationViewModel: self)
     }
 
     func createLayoutViewModel() -> LevelEditViewModel {
-        return LevelEditViewModel(levelDefinition: level!, navigationViewModel: self)
+        guard let level else {
+            fatalError(#function + ": level not set")
+        }
+        return LevelEditViewModel(levelDefinition: level, navigationViewModel: self)
+    }
+    
+    func createLevelListViewModel(levelType: LevelType) -> LevelListViewModel {
+        LevelListViewModel(navigationViewModel: self, levelType: levelType)
+    }
+    
+    func createSettingsViewModel() -> SettingsViewModel {
+        SettingsViewModel()
     }
     
 }

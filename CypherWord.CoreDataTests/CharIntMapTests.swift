@@ -6,13 +6,13 @@ import Dependencies
 struct CharIntMapTests {
     
     @Test func testCountCorrectlyPlacedLetters() async throws {
-        let letterPositionMap: [Character: Int] = [
+        let charIntMap: [Character: Int] = [
             "T": 13, "P": 0, "S": 23, "G": 19, "A": 18, "U": 6, "F": 11, "W": 10, "Z": 14,
             "V": 24, "K": 17, "J": 9, "H": 22, "O": 7, "E": 16, "B": 8, "D": 2, "C": 12,
             "R": 3, "M": 4, "Q": 15, "N": 20, "Y": 25, "L": 21, "X": 5, "I": 1
         ]
         
-        let charIntMap = CharacterIntMap(letterPositionMap)
+//        let charIntMap = CharacterIntMap(letterPositionMap)
 
         // All chars in right position
         var attemptedLetters = "PIDRMXUOBJWFCTZQEKAGNLHSVY"  // Some letters in correct positions

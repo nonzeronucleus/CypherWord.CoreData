@@ -5,12 +5,11 @@ import Combine
 
 
 class LevelListViewModel: ObservableObject {
-    @Dependency(\.importLevelsUseCase) private var importLeveslUseCase: ImportLevelsUseCaseProtocol
-    @Dependency(\.fetchLayoutsUseCase) private var fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
-    @Dependency(\.fetchPlayableLevelsUseCase) private var fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol
-    @Dependency(\.deleteAllLevelsUseCase) private var deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol
-    @Dependency(\.addLayoutUseCase) private var addLayoutUseCase: AddLayoutUseCaseProtocol
-    @Dependency(\.exportAllUseCase) private var exportAllUseCase: ExportAllUseCaseProtocol
+    private var fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
+    private var fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol
+    private var deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol
+    private var addLayoutUseCase: AddLayoutUseCaseProtocol
+    private var exportAllUseCase: ExportAllUseCaseProtocol
 
     @Published var allLevels: [LevelDefinition] = []
     @Published var displayableLevels: [LevelDefinition] = []
@@ -24,7 +23,20 @@ class LevelListViewModel: ObservableObject {
     private var navigationViewModel: NavigationViewModel?
     private var cancellables = Set<AnyCancellable>()
 
-    init(navigationViewModel:NavigationViewModel, levelType: LevelType){
+    init(navigationViewModel:NavigationViewModel, levelType: LevelType,
+         fetchLayoutsUseCase: FetchLevelsUseCaseProtocol = FetchLayoutsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
+         fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol = FetchPlayableLevelsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
+         deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol = DeleteAllLevelsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
+         addLayoutUseCase: AddLayoutUseCaseProtocol = AddLayoutUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
+         exportAllUseCase: ExportAllUseCaseProtocol = ExportAllUseCase(fileRepository: Dependency(\.levelRepository).wrappedValue)
+
+    ){
+        self.fetchLayoutsUseCase = fetchLayoutsUseCase
+        self.fetchPlayableLevelsUseCase = fetchPlayableLevelsUseCase
+        self.deleteAllLevelsUseCase = deleteAllLevelsUseCase
+        self.addLayoutUseCase = addLayoutUseCase
+        self.exportAllUseCase = exportAllUseCase
+        
         self.navigationViewModel = navigationViewModel
         self.levelType = levelType
         
@@ -50,59 +62,6 @@ class LevelListViewModel: ObservableObject {
         reload()
     }
     
-    func reload() {
-        switch levelType {
-            case .layout:
-                fetchLayouts()
-            case .playable:
-                fetchLevels()
-        }
-    }
-    
-    func updateDisplayableLevels(levels: [LevelDefinition], showCompleted: Bool) {
-        objectWillChange.send()
-        
-        displayableLevels = levels.filter {
-            switch levelType {
-                case .layout:
-                    return true
-                case .playable:
-                    if (self.showCompleted) {
-                        return true
-                    }
-                    return $0.percentComplete < 1
-            }
-        }
-    }
-    
-
-    func fetchLevels() {
-        fetchPlayableLevelsUseCase.execute { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let levels):
-                    self?.allLevels = levels
-                case .failure(let error):
-                    self?.error = error.localizedDescription
-                }
-            }
-        }
-    }
-
-        
-    func fetchLayouts() {
-        fetchLayoutsUseCase.execute { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let levels):
-                    self?.allLevels = levels
-                case .failure(let error):
-                    self?.error = error.localizedDescription
-                }
-            }
-        }
-    }
-
     
     func addLayout() {
         addLayoutUseCase.execute { [weak self] result in
@@ -151,6 +110,64 @@ class LevelListViewModel: ObservableObject {
                     }
                 }
             })
+        }
+    }
+    
+    func navigateToSettings() {
+        navigationViewModel?.navigateToSettings()
+    }
+    
+    
+    private func reload() {
+        switch levelType {
+            case .layout:
+                fetchLayouts()
+            case .playable:
+                fetchLevels()
+        }
+    }
+    
+    private func updateDisplayableLevels(levels: [LevelDefinition], showCompleted: Bool) {
+        objectWillChange.send()
+        
+        displayableLevels = levels.filter {
+            switch levelType {
+                case .layout:
+                    return true
+                case .playable:
+                    if (self.showCompleted) {
+                        return true
+                    }
+                    return $0.percentComplete < 1
+            }
+        }
+    }
+    
+
+    private func fetchLevels() {
+        fetchPlayableLevelsUseCase.execute { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let levels):
+                    self?.allLevels = levels
+                case .failure(let error):
+                    self?.error = error.localizedDescription
+                }
+            }
+        }
+    }
+
+        
+    private func fetchLayouts() {
+        fetchLayoutsUseCase.execute { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let levels):
+                    self?.allLevels = levels
+                case .failure(let error):
+                    self?.error = error.localizedDescription
+                }
+            }
         }
     }
 }

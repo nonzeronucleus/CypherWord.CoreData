@@ -22,7 +22,7 @@ struct LevelDefinition: Identifiable, Codable {
         }
     }
 
-    init(id: UUID, number: Int, gridText: String? =  nil, letterMap: String? =  nil, attemptedLetters: String?, numCorrectLetters: Int = 0) {
+    init(id: UUID, number: Int, gridText: String? =  nil, letterMap: String? =  nil, attemptedLetters: String? = nil, numCorrectLetters: Int = 0) {
         self.id = id
         self.number = number
         self.gridText = gridText

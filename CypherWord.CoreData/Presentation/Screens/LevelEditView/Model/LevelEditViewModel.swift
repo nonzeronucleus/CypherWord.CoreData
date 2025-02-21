@@ -10,27 +10,37 @@ class LevelEditViewModel: ObservableObject {
         case populated
     }
 
-    @Dependency(\.saveLevelUseCase) private var saveLevelUseCase: SaveLevelUseCaseProtocol
-    @Dependency(\.deleteLevelUseCase) private var deleteLevelUseCase: DeleteLevelUseCaseProtocol
-    @Dependency(\.addPlayableLevelUseCase) private var addPlayableLevelUseCase: AddPlayableLevelUseCaseProtocol
+    private var saveLevelUseCase: SaveLevelUseCaseProtocol
+    private var deleteLevelUseCase: DeleteLevelUseCaseProtocol
+    private var addPlayableLevelUseCase: AddPlayableLevelUseCaseProtocol
+    private var resizeGridUseCase: ResizeGridUseCaseProtocol
+    
     private let navigationViewModel: NavigationViewModel
 
     static let defaultSize = 11
-//    @Published private(set) var levelDefinition: LevelDefinition
     @Published var level: Level
     @Published var size: Int
-//    @Published var crossword: Crossword
     @Published private(set) var error:String?
-//    @Published var letterValues: CharacterIntMap?
     @Published var isBusy: Bool = false
     @Published var showAlert: Bool = false
     
     var currentState = EditState.clean
     
     private var populateTask: Task<Void, Never>? // Stores the running task
-    
-    init(levelDefinition:LevelDefinition, navigationViewModel:NavigationViewModel) {
+    private var resizeTask: Task<Void, Never>? // Stores the running task
+
+    init(levelDefinition:LevelDefinition,
+         navigationViewModel:NavigationViewModel,
+         saveLevelUseCase: SaveLevelUseCaseProtocol = SaveLevelUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
+         deleteLevelUseCase: DeleteLevelUseCaseProtocol = DeleteLevelUseCase(repository: Dependency(\.levelRepository).wrappedValue),
+         addPlayableLevelUseCase: AddPlayableLevelUseCaseProtocol = AddPlayableLevelUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
+         resizeGridUseCase: ResizeGridUseCaseProtocol = ResizeGridUseCase()
+    ) {
+        self.saveLevelUseCase = saveLevelUseCase
+        self.deleteLevelUseCase = deleteLevelUseCase
+        self.addPlayableLevelUseCase = addPlayableLevelUseCase
         self.navigationViewModel = navigationViewModel
+        self.resizeGridUseCase = resizeGridUseCase
 
         let level = Level(definition: levelDefinition)
         self.level = level
@@ -98,15 +108,11 @@ class LevelEditViewModel: ObservableObject {
         
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-//            let crosswordTransformer = CrosswordTransformer()
-//            
-//            levelDefinition.gridText = crosswordTransformer.transformedValue(crossword) as? String
-            
             switch currentState {
                 case .clean:
+                    isBusy = false
                     break
                 case .populated:
-//                    levelDefinition.letterMap = letterValues?.toJSON()
                     savePlayableLevel()
                     currentState = .clean
                     isBusy = false
@@ -213,10 +219,29 @@ class LevelEditViewModel: ObservableObject {
     func resize(newSize: Int) {
         guard size != newSize else { return }
 
-//        let resizer = Resizer(newSize: newSize)
+//        size = newSize
+        
+//        isBusy = true
+        resizeTask?.cancel() // Cancel any existing task
 
-        size = newSize
-//        crossword = resizer.perform(inputGrid: crossword)
+        resizeTask = Task { [weak self] in
+            guard let self else { return } // Swift 5.9 shorthand for `guard let self = self else { return }`
+            
+            let result = await resizeGridUseCase.executeAsync(inputGrid: level.crossword, newSize: newSize)
+            
+            guard !Task.isCancelled else { return }
+
+            await MainActor.run { // Ensure UI updates happen on the main thread
+                switch result {
+                    case .success(let (newCrossword)):
+                        self.level.crossword = newCrossword
+                        self.size = newSize
+                    case .failure(let error):
+                        self.error = error.localizedDescription
+                }
+//                self.isBusy = false
+            }
+        }
     }
 }
 
