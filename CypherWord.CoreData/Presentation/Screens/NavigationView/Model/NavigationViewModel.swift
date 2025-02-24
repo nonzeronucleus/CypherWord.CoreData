@@ -8,16 +8,22 @@ enum NavigationDestination {
 }
 
 class NavigationViewModel: ObservableObject {
+    var settingsViewModel: SettingsViewModel
     private var fetchLevelByIDUseCase: FetchLevelByIDUseCaseProtocol
+    
     @Published var path: NavigationPath = NavigationPath()
     @Published var error: Error?
+    var level: LevelDefinition? = nil
     
-    init(fetchLevelByIDUseCase: FetchLevelByIDUseCaseProtocol = FetchLevelByIDUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue))
+    
+    init(
+        settingsViewModel: SettingsViewModel,
+        fetchLevelByIDUseCase: FetchLevelByIDUseCaseProtocol = FetchLevelByIDUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue)
+   )
     {
+        self.settingsViewModel = settingsViewModel
         self.fetchLevelByIDUseCase = fetchLevelByIDUseCase
     }
-    
-    var level: LevelDefinition? = nil
     
     func navigateTo(level:LevelDefinition) {
         self.level = level
@@ -55,13 +61,8 @@ class NavigationViewModel: ObservableObject {
     }
     
     func createLevelListViewModel(levelType: LevelType) -> LevelListViewModel {
-        LevelListViewModel(navigationViewModel: self, levelType: levelType)
+        LevelListViewModel(levelType: levelType, navigationViewModel: self, settingsViewModel: settingsViewModel)
     }
-    
-    func createSettingsViewModel() -> SettingsViewModel {
-        SettingsViewModel()
-    }
-    
 }
 
 enum Destination: Hashable {

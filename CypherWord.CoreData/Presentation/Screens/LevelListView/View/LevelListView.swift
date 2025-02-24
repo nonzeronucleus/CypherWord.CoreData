@@ -53,8 +53,10 @@ struct TitleBarView: View {
 
 
 struct LevelListView : View {
-    private var gridItemLayout = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
+    @EnvironmentObject var settingsViewModel: SettingsViewModel
     @ObservedObject var viewModel: LevelListViewModel
+
+    private var gridItemLayout = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
     init(_ viewModel: LevelListViewModel) {
         self.viewModel = viewModel
     }
@@ -93,20 +95,19 @@ struct LevelListView : View {
             TitleBarView(title: viewModel.levelType.rawValue, color: primaryColor()) {
                 viewModel.navigateToSettings()
             }
-
             
-            if viewModel.levelType == .playable {
-                HStack {
-                    Toggle("Show Completed", isOn: $viewModel.showCompleted)
-                         .toggleStyle(SwitchToggleStyle()) // Default iOS switch style
-                         .padding()
-                         .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6))) // Light gray background
-                         .shadow(radius: 3)
-                         .padding()
-                 }
-                 .frame(maxWidth: .infinity) // Center vertically & horizontally
-                 .background(Color(.systemBackground)) // Match system theme
-            }
+//            if viewModel.levelType == .playable {
+//                HStack {
+//                    Toggle("Show Completed", isOn: $viewModel.showCompleted)
+//                         .toggleStyle(SwitchToggleStyle()) // Default iOS switch style
+//                         .padding()
+//                         .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6))) // Light gray background
+//                         .shadow(radius: 3)
+//                         .padding()
+//                 }
+//                 .frame(maxWidth: .infinity) // Center vertically & horizontally
+//                 .background(Color(.systemBackground)) // Match system theme
+//            }
 
             
             ScrollView {
@@ -132,19 +133,21 @@ struct LevelListView : View {
             }
             
             Spacer()
-
-            if viewModel.levelType == .layout {
-                Button("Add") {
-                    viewModel.addLayout()
+            
+            if settingsViewModel.settings.editMode {
+                if viewModel.levelType == .layout {
+                    Button("Add") {
+                        viewModel.addLayout()
+                    }
                 }
+                Button("Delete all") {
+                    viewModel.deleteAll()
+                }
+                Button("Export") {
+                    viewModel.exportAll()
+                }
+                Spacer()
             }
-            Button("Delete all") {
-                viewModel.deleteAll()
-            }
-            Button("Export") {
-                viewModel.exportAll()
-            }
-            Spacer()
         }
         .tabItem {
             Image(systemName: viewModel.levelType == .layout ? "books.vertical" : "square.grid.3x3")
@@ -171,7 +174,10 @@ struct LevelListView : View {
     withDependencies {
         $0.levelRepository = FakeLevelRepository(testLayouts: testLayouts, testPlayableLevels: testPlayableLevels)
     } operation: {
-        let viewModel = LevelListViewModel(navigationViewModel: NavigationViewModel(), levelType: .layout)
+        let viewModel = LevelListViewModel(
+            levelType: .layout,
+            navigationViewModel: NavigationViewModel(settingsViewModel: SettingsViewModel(parentId: nil)),
+            settingsViewModel:SettingsViewModel(parentId: nil))
         
         return LevelListView(viewModel)
     }
@@ -193,8 +199,11 @@ struct LevelListView : View {
     withDependencies {
         $0.levelRepository = FakeLevelRepository(testLayouts: testLayouts, testPlayableLevels: testPlayableLevels)
     } operation: {
-        let viewModel = LevelListViewModel(navigationViewModel: NavigationViewModel(), levelType: .playable)
-        
+        let viewModel = LevelListViewModel(
+            levelType: .layout,
+            navigationViewModel: NavigationViewModel(settingsViewModel: SettingsViewModel(parentId: nil)),
+            settingsViewModel:SettingsViewModel(parentId: nil))
+
         return LevelListView(viewModel)
     }
 }

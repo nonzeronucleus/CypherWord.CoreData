@@ -96,9 +96,12 @@ struct GameView: View {
 
 
 
-#Preview {
-    let level = LevelDefinition(id: UUID(), number: 1, attemptedLetters: nil)
-    let navigationViewModel = NavigationViewModel()
-    let model = GameViewModel(level: level, navigationViewModel: navigationViewModel)
-    GameView(model)
-}
+// FIXME
+
+//#Preview {
+//    let level = LevelDefinition(id: UUID(), number: 1, attemptedLetters: nil)
+//    let navigationViewModel = NavigationViewModel()
+//    navigationViewModel.settingsViewModel = SettingsViewModel(parentId: nil)
+//    let model = GameViewModel(level: level, navigationViewModel: navigationViewModel)
+//    return GameView(model)
+//}

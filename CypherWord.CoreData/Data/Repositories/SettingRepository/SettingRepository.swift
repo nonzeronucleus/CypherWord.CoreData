@@ -5,9 +5,11 @@ final class SettingsRepository: SettingsRepositoryProtocol {
     private let settingsKey = "app_settings"
 
     func loadSettings() -> Settings {
-        if let data = userDefaults.data(forKey: settingsKey),
-           let settings = try? JSONDecoder().decode(Settings.self, from: data) {
-            return settings
+        if let data = userDefaults.data(forKey: settingsKey) {
+            if let settings = try? JSONDecoder().decode(Settings.self, from: data) {
+                return settings
+            }
+            return Settings(showCompletedLevels: true, editMode: true)
         }
         return Settings(showCompletedLevels: true, editMode: true)
     }

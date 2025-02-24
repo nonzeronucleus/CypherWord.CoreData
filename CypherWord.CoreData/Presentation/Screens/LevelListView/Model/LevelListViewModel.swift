@@ -5,6 +5,8 @@ import Combine
 
 
 class LevelListViewModel: ObservableObject {
+    var settingsViewModel: SettingsViewModel
+
     private var fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
     private var fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol
     private var deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol
@@ -23,7 +25,9 @@ class LevelListViewModel: ObservableObject {
     private var navigationViewModel: NavigationViewModel?
     private var cancellables = Set<AnyCancellable>()
 
-    init(navigationViewModel:NavigationViewModel, levelType: LevelType,
+    init(levelType: LevelType,
+         navigationViewModel:NavigationViewModel,
+         settingsViewModel: SettingsViewModel,
          fetchLayoutsUseCase: FetchLevelsUseCaseProtocol = FetchLayoutsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
          fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol = FetchPlayableLevelsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
          deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol = DeleteAllLevelsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
@@ -31,14 +35,16 @@ class LevelListViewModel: ObservableObject {
          exportAllUseCase: ExportAllUseCaseProtocol = ExportAllUseCase(fileRepository: Dependency(\.levelRepository).wrappedValue)
 
     ){
+        self.levelType = levelType
+        self.navigationViewModel = navigationViewModel
+        self.settingsViewModel = settingsViewModel
         self.fetchLayoutsUseCase = fetchLayoutsUseCase
         self.fetchPlayableLevelsUseCase = fetchPlayableLevelsUseCase
         self.deleteAllLevelsUseCase = deleteAllLevelsUseCase
         self.addLayoutUseCase = addLayoutUseCase
         self.exportAllUseCase = exportAllUseCase
-        
-        self.navigationViewModel = navigationViewModel
-        self.levelType = levelType
+
+        showCompleted = settingsViewModel.settings.showCompletedLevels
         
         $allLevels
             .receive(on: DispatchQueue.main)
@@ -57,7 +63,6 @@ class LevelListViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
-        
         
         reload()
     }

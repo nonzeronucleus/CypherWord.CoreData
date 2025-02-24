@@ -5,19 +5,29 @@ import Dependencies
 
 
 struct NavigationView : View {
-    @StateObject private var viewModel = NavigationViewModel()
+    @EnvironmentObject var applicationViewModel: ApplicationViewModel
+    @EnvironmentObject var settingsViewModel: SettingsViewModel
+    @EnvironmentObject private var viewModel: NavigationViewModel
     @State var selection: LevelType = .playable
-   
+    
     var body: some View {
         NavigationStack(path: $viewModel.path) {
             VStack {
                 if let error = viewModel.error {
                     Text("Error: \(error)")
                 }
-                TabView(selection: $selection) {
-                    LevelListView(viewModel.createLevelListViewModel(levelType: .playable))
-                    
-                    LevelListView(viewModel.createLevelListViewModel( levelType: .layout))
+                
+                VStack {
+                    if settingsViewModel.settings.editMode {
+                        TabView(selection: $selection) {
+                            LevelListView(viewModel.createLevelListViewModel(levelType: .playable))
+                            
+                            LevelListView(viewModel.createLevelListViewModel( levelType: .layout))
+                        }
+                    }
+                    else {
+                        LevelListView(viewModel.createLevelListViewModel(levelType: .playable))
+                    }
                 }
                 .navigationDestination(for: NavigationDestination.self) { destination in
                     switch destination {
@@ -33,7 +43,7 @@ struct NavigationView : View {
                                     Text("Error loading level")
                             }
                         case .settings:
-                            SettingsView(viewModel.createSettingsViewModel())
+                            SettingsView()
                     }
                 }
             }

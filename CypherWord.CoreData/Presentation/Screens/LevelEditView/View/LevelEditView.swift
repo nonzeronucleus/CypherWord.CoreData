@@ -93,7 +93,8 @@ public struct LevelEditView: View {
 }
 
 #Preview {
-    let navigationViewModel = NavigationViewModel()
+    let id = UUID()
+    let navigationViewModel = NavigationViewModel(settingsViewModel: SettingsViewModel(parentId: id))
     let level = LevelDefinition(id: UUID(), number: 1, gridText: " ...|.. .|. ..|. ..|", letterMap: nil, attemptedLetters: nil)
     let viewModel = LevelEditViewModel(levelDefinition: level, navigationViewModel: navigationViewModel)
     
