@@ -6,7 +6,7 @@ import Dependencies
 struct LevelTests {
     
     
-//    @Test func t1() async throws {
+    @Test func t1() async throws {
 //        func countCorrectlyPlacedLetters(in attemptedLetters: String, using positionMap: [Character: Int]) -> Int {
 //            guard attemptedLetters.count == 26 else {
 //                print("Error: attemptedLetters must be exactly 26 characters long.")
@@ -51,5 +51,5 @@ struct LevelTests {
 //            
 //            #expect(level.numCorrectLetters == 3)
 //        }
-//    }
+    }
 }
