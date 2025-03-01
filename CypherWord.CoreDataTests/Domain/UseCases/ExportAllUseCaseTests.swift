@@ -67,6 +67,10 @@ class ExportAllUseCaseTests {
 }
 
 final class MockFileRepository: FileRepositoryProtocol {
+    func listPacks(levelType: CypherWord_CoreData.LevelType, completion: @escaping (Result<[URL], any Error>) -> Void) {
+        print("\(#function) not implemented")
+    }
+    
     var savedPacks: [PackDefinition] = []
     var savedLevels: [LevelDefinition] = []
     var expectedSaveResult: Result<Void, Error> = .success(())

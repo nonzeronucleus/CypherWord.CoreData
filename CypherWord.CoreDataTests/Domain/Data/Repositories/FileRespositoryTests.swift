@@ -28,10 +28,20 @@ class FileRespositoryTests {
         }
         
         // Verify the file was saved
-        let fileName = LevelType.playable.rawValue + ".json"
+        let fileName = LevelType.playable.rawValue + ".1.json"
         let fileURL = temporaryDirectoryURL.appendingPathComponent(fileName)
         let fileExists = FileManager.default.fileExists(atPath: fileURL.path)
         #expect(fileExists == true)
+        
+        fileRepository.listPacks(levelType:LevelType.playable) {
+            switch $0 {
+                case .success(let packs):
+                    print(packs)
+                case .failure(let error):
+                    print(error)
+            }
+        }
+
     }
     
     @Test
@@ -80,7 +90,6 @@ func createTemporaryDirectory() throws -> URL {
     let temporaryDirectoryURL = FileManager.default.temporaryDirectory
     let temporaryFolderURL = temporaryDirectoryURL.appendingPathComponent(UUID().uuidString)
     try FileManager.default.createDirectory(at: temporaryFolderURL, withIntermediateDirectories: true)
-    print(temporaryFolderURL)
     return temporaryFolderURL
 }
 

@@ -1,6 +1,7 @@
-protocol FileRepositoryProtocol {
-    func fetchLevels(levelType: LevelType, completion: @escaping (Result<[LevelDefinition], Error>) -> Void)
-    func saveLevels(levels: [LevelDefinition], completion: @escaping (Result<Void, Error>) -> Void)
+import Foundation
 
+protocol FileRepositoryProtocol: SaveableRepositoryProtocol {
+    func listPacks(levelType: LevelType, completion: @escaping (Result<[URL], any Error>) -> Void)
+//    func loadPackManifest(completion: @escaping (Result<[PackDefinition], any Error>) -> Void)
+//    func savePackManifest(packs: [PackDefinition], completion: @escaping (Result<Void, any Error>) -> Void)
 }
-

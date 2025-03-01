@@ -12,18 +12,24 @@ class ImportLevelsUseCase : ImportLevelsUseCaseProtocol {
         self.fileRepository = fileRepository
     }
 
-    func execute(levelType: LevelType, completion: @escaping (Result<Void, Error>) -> Void) {
-        fileRepository.fetchLevels(levelType:levelType, completion: { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                    case .success(let levels):
-                        self?.levelRepository.saveLevels(levels:levels, completion: completion)
-                    case .failure(let error):
-                        completion(.failure(error))
-                }
-            }
-        })
-    }    
+//    func execute(levelType: LevelType, completion: @escaping (Result<Void, Error>) -> Void) {
+//        fileRepository.fetchLevels(levelType:levelType, completion: { [weak self] result in
+//            DispatchQueue.main.async {
+//                switch result {
+//                    case .success(let levels):
+//                        self?.levelRepository.saveLevels(levels:levels, completion: completion)
+//                    case .failure(let error):
+//                        completion(.failure(error))
+//                }
+//            }
+//        })
+//    }
+    
+    func execute(levelType: LevelType) async throws {
+        let levels = try await fileRepository.fetchLevels(levelType:levelType)
+        
+        try await levelRepository.saveLevels(levels:levels)
+    }
 }
 
 

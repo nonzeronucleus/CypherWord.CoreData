@@ -174,16 +174,18 @@ struct LevelListView : View {
     withDependencies {
         $0.levelRepository = FakeLevelRepository(testLayouts: testLayouts, testPlayableLevels: testPlayableLevels)
     } operation: {
+        let settingsViewModel = SettingsViewModel(parentId: nil)
         let viewModel = LevelListViewModel(
             levelType: .layout,
             navigationViewModel: NavigationViewModel(settingsViewModel: SettingsViewModel(parentId: nil)),
             settingsViewModel:SettingsViewModel(parentId: nil))
         
         return LevelListView(viewModel)
+            .environmentObject(settingsViewModel)
     }
 }
 
-#Preview("Playable") {
+#Preview("Playable - show completed") {
     let testLayouts = [
         LevelDefinition(id: UUID(), number: 1, attemptedLetters: nil),
         LevelDefinition(id: UUID(), number: 2, attemptedLetters: nil)
@@ -191,21 +193,53 @@ struct LevelListView : View {
     
     let testPlayableLevels = [
         LevelDefinition(id: UUID(), number: 1, attemptedLetters: nil),
-        LevelDefinition(id: UUID(), number: 2, attemptedLetters: nil),
-        LevelDefinition(id: UUID(), number: 3, attemptedLetters: nil),
-        LevelDefinition(id: UUID(), number: 5, attemptedLetters: nil)
+        LevelDefinition(id: UUID(), number: 2, attemptedLetters: nil, numCorrectLetters: 20),
+        LevelDefinition(id: UUID(), number: 3, attemptedLetters: nil, numCorrectLetters: 26),
+        LevelDefinition(id: UUID(), number: 4, attemptedLetters: nil)
     ]
     
     withDependencies {
         $0.levelRepository = FakeLevelRepository(testLayouts: testLayouts, testPlayableLevels: testPlayableLevels)
     } operation: {
+        let settingsViewModel = SettingsViewModel(parentId: nil)
+        settingsViewModel.settings.showCompletedLevels = true
+
         let viewModel = LevelListViewModel(
-            levelType: .layout,
+            levelType: .playable,
             navigationViewModel: NavigationViewModel(settingsViewModel: SettingsViewModel(parentId: nil)),
             settingsViewModel:SettingsViewModel(parentId: nil))
 
         return LevelListView(viewModel)
+            .environmentObject(settingsViewModel)
     }
 }
 
 
+#Preview("Playable - hide completed") {
+    let testLayouts = [
+        LevelDefinition(id: UUID(), number: 1, attemptedLetters: nil),
+        LevelDefinition(id: UUID(), number: 2, attemptedLetters: nil)
+    ]
+    
+    let testPlayableLevels = [
+        LevelDefinition(id: UUID(), number: 1, attemptedLetters: nil),
+        LevelDefinition(id: UUID(), number: 2, attemptedLetters: nil, numCorrectLetters: 20),
+        LevelDefinition(id: UUID(), number: 3, attemptedLetters: nil, numCorrectLetters: 26),
+        LevelDefinition(id: UUID(), number: 4, attemptedLetters: nil)
+    ]
+    
+    withDependencies {
+        $0.levelRepository = FakeLevelRepository(testLayouts: testLayouts, testPlayableLevels: testPlayableLevels)
+    } operation: {
+        let settingsViewModel = SettingsViewModel(parentId: nil)
+        settingsViewModel.settings.showCompletedLevels = false
+
+        let viewModel = LevelListViewModel(
+            levelType: .playable,
+            navigationViewModel: NavigationViewModel(settingsViewModel: SettingsViewModel(parentId: nil)),
+            settingsViewModel:SettingsViewModel(parentId: nil))
+
+        return LevelListView(viewModel)
+            .environmentObject(settingsViewModel)
+    }
+}

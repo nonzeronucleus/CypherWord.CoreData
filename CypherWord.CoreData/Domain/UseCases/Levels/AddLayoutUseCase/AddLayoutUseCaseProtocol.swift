@@ -1,3 +1,5 @@
 protocol AddLayoutUseCaseProtocol {
-    func execute(completion: @escaping (Result<[LevelDefinition], Error>) -> Void)
+    func execute() async throws -> [LevelDefinition]
+
+//    func execute(completion: @escaping (Result<[LevelDefinition], Error>) -> Void)
 }

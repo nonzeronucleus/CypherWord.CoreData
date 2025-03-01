@@ -64,6 +64,10 @@ class DeleteLevelUseCaseTests {
 
 
 final class MockLevelRepository: LevelRepositoryProtocol {
+    func listPacks(levelType: CypherWord_CoreData.LevelType, completion: @escaping (Result<[URL], any Error>) -> Void) {
+        
+    }
+    
     func fetchLevels(levelType: CypherWord_CoreData.LevelType, completion: @escaping (Result<[CypherWord_CoreData.LevelDefinition], any Error>) -> Void) {
         
     }

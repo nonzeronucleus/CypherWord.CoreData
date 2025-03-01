@@ -32,8 +32,7 @@ class LevelListViewModel: ObservableObject {
          fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol = FetchPlayableLevelsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
          deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol = DeleteAllLevelsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
          addLayoutUseCase: AddLayoutUseCaseProtocol = AddLayoutUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
-         exportAllUseCase: ExportAllUseCaseProtocol = ExportAllUseCase(fileRepository: Dependency(\.levelRepository).wrappedValue)
-
+         exportAllUseCase: ExportAllUseCaseProtocol = ExportAllUseCase(fileRepository: Dependency(\.fileRepository).wrappedValue)
     ){
         self.levelType = levelType
         self.navigationViewModel = navigationViewModel
@@ -68,31 +67,55 @@ class LevelListViewModel: ObservableObject {
     }
     
     
+    @MainActor
     func addLayout() {
-        addLayoutUseCase.execute { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                    case .success(let levels):
-                        self?.allLevels = levels
-                    case .failure(let error):
-                        self?.error = error.localizedDescription
+        Task {
+            allLevels = try await addLayoutUseCase.execute()
+        }
+//        addLayoutUseCase.execute { [weak self] result in
+//            DispatchQueue.main.async {
+//                switch result {
+//                    case .success(let levels):
+//                        self?.allLevels = levels
+//                    case .failure(let error):
+//                        self?.error = error.localizedDescription
+//                }
+//            }
+//        }
+    }
+
+    
+    func deleteAll() {
+        Task {
+            do {
+                let levels = try await deleteAllLevelsUseCase.execute(levelType: levelType)
+                await MainActor.run {
+                    self.allLevels = levels  // ✅ Ensures update happens on the main thread
+                }
+            } catch {
+                await MainActor.run {
+                    self.error = error.localizedDescription  // ✅ Ensures error updates on main thread
                 }
             }
         }
     }
-
-    func deleteAll() {
-        deleteAllLevelsUseCase.execute(levelType: levelType, completion: { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                    case .success(let levels):
-                        self?.allLevels = levels
-                    case .failure(let error):
-                        self?.error = error.localizedDescription
-                }
-            }
-        })
-    }
+    
+//    func deleteAll() {
+//        Task {
+//            allLevels = try await deleteAllLevelsUseCase.execute(levelType: levelType)
+//        }
+//    }
+//        deleteAllLevelsUseCase.execute(levelType: levelType, completion: { [weak self] result in
+//            DispatchQueue.main.async {
+//                switch result {
+//                    case .success(let levels):
+//                        self?.allLevels = levels
+//                    case .failure(let error):
+//                        self?.error = error.localizedDescription
+//                }
+//            }
+//        })
+//    }
     
     func onSelectLevel(level:LevelDefinition) {
         navigationViewModel?.navigateTo(level:level)
@@ -101,21 +124,37 @@ class LevelListViewModel: ObservableObject {
     func exportAll() {
         isBusy = true
         
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            
-            exportAllUseCase.execute(levels: allLevels, completion:  { [weak self] result in
-                DispatchQueue.main.async {
-                    switch result {
-                        case .success():
-                            self?.isBusy = false
-                        case .failure(let error):
-                            self?.error = error.localizedDescription
-                            self?.isBusy = false
-                    }
+        Task {
+            do {
+                try await exportAllUseCase.execute(levels: allLevels)
+                await MainActor.run {
+                    
+                    isBusy = false
                 }
-            })
+            } catch {
+                await MainActor.run {
+                    
+                    self.error = error.localizedDescription
+                    isBusy = false
+                }
+            }
         }
+        
+//        DispatchQueue.main.async { [weak self] in
+//            guard let self = self else { return }
+//            
+//            exportAllUseCase.execute(levels: allLevels, completion:  { [weak self] result in
+//                DispatchQueue.main.async {
+//                    switch result {
+//                        case .success():
+//                            self?.isBusy = false
+//                        case .failure(let error):
+//                            self?.error = error.localizedDescription
+//                            self?.isBusy = false
+//                    }
+//                }
+//            })
+//        }
     }
     
     func navigateToSettings() {
@@ -148,31 +187,79 @@ class LevelListViewModel: ObservableObject {
         }
     }
     
-
+    
     private func fetchLevels() {
-        fetchPlayableLevelsUseCase.execute { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let levels):
-                    self?.allLevels = levels
-                case .failure(let error):
-                    self?.error = error.localizedDescription
+        Task {
+            do {
+                let levels = try await self.fetchPlayableLevelsUseCase.execute()
+                await MainActor.run {
+                    self.allLevels = levels  // ✅ Runs on main thread
+                }
+            } catch {
+                await MainActor.run {
+                    self.error = error.localizedDescription  // ✅ Also ensure error updates on main thread
                 }
             }
         }
     }
 
-        
+//    private func fetchLevels() {
+//        Task {
+//            do {
+//                self.allLevels = try await self.fetchPlayableLevelsUseCase.execute()
+//            } catch {
+//                self.error = error.localizedDescription
+//            }
+//        }
+//    }
+//        fetchPlayableLevelsUseCase.execute { [weak self] result in
+//            DispatchQueue.main.async {
+//                switch result {
+//                case .success(let levels):
+//                    self?.allLevels = levels
+//                case .failure(let error):
+//                    self?.error = error.localizedDescription
+//                }
+//            }
+//        }
+//    }
+
+
     private func fetchLayouts() {
-        fetchLayoutsUseCase.execute { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let levels):
-                    self?.allLevels = levels
-                case .failure(let error):
-                    self?.error = error.localizedDescription
+        Task {
+            do {
+                let levels = try await self.fetchLayoutsUseCase.execute()
+                await MainActor.run {
+                    self.allLevels = levels  // ✅ Runs on main thread
+                }
+            } catch {
+                await MainActor.run {
+                    self.error = error.localizedDescription  // ✅ Also ensure error updates on main thread
                 }
             }
         }
     }
+    
+//    private func fetchLayouts() {
+//        DispatchQueue.global(qos: .background).async { [self] in
+//            Task {
+//                do {
+//                    self.allLevels = try await self.fetchLayoutsUseCase.execute()
+//                }
+//                catch {
+//                    self.error = error.localizedDescription
+//                }
+//            }
+//        }
+////        fetchLayoutsUseCase.execute { [weak self] result in
+////            DispatchQueue.main.async {
+////                switch result {
+////                case .success(let levels):
+////                    self?.allLevels = levels
+////                case .failure(let error):
+////                    self?.error = error.localizedDescription
+////                }
+////            }
+////        }
+//    }
 }
