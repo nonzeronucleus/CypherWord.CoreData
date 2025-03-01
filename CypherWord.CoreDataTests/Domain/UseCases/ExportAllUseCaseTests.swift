@@ -8,7 +8,7 @@ class ExportAllUseCaseTests {
     func testExportAll_Success() async throws {
         let mockRepository = MockFileRepository()
 
-        try await withDependencies { dependencies in
+        await withDependencies { dependencies in
             dependencies.fileRepository = mockRepository
             dependencies.uuid = .incrementing
         } operation: {
@@ -21,42 +21,47 @@ class ExportAllUseCaseTests {
                 LevelDefinition(id: uuid(), number: 1),
                 LevelDefinition(id: uuid(), number: 2)
             ]
-            mockRepository.expectedSaveResult = .success(())
-
-            try await withCheckedThrowingContinuation { continuation in
-                useCase.execute(levels: testLevels) { result in
-                    continuation.resume(with: result)
-                }
+            
+            do {
+                try await useCase.execute(levels: testLevels)
+                
+                //            mockRepository.expectedSaveResult = .success(())
+                
+                
+                
+                //            try await withCheckedThrowingContinuation { continuation in
+                //                useCase.execute(levels: testLevels) { result in
+                //                    continuation.resume(with: result)
+                //                }
+                //            }
+                
+                #expect(mockRepository.savedLevels == testLevels)
             }
-
-            #expect(mockRepository.savedLevels == testLevels)
+            catch {
+                #expect(error == nil)
+            }
         }
     }
 
     @Test("Fails to export levels due to repository error")
     func testExportAll_Failure() async {
         let mockRepository = MockFileRepository()
+        mockRepository.throwError = true
 
         await withDependencies { dependencies in
             dependencies.fileRepository = mockRepository
             dependencies.uuid = .incrementing
         } operation: {
             @Dependency(\.uuid) var uuid
-
-            let repository = Dependency(\.fileRepository).wrappedValue
-            let useCase = ExportAllUseCase(fileRepository: repository)
+            
+            let exportAllUseCase = ExportAllUseCase(fileRepository: mockRepository)
 
             let testLevels = [LevelDefinition(id: uuid(), number: 1)]
             let expectedError = NSError(domain: "TestError", code: 2, userInfo: nil)
 
-            mockRepository.expectedSaveResult = .failure(expectedError)
-
             do {
-                try await withCheckedThrowingContinuation { continuation in
-                    useCase.execute(levels: testLevels) { result in
-                        continuation.resume(with: result)
-                    }
-                }
+                try await exportAllUseCase.execute(levels: testLevels)
+                
                 #expect(Bool(false), "Expected an error but no error was thrown")
             } catch {
                 #expect((error as NSError).domain == expectedError.domain)
@@ -67,18 +72,25 @@ class ExportAllUseCaseTests {
 }
 
 final class MockFileRepository: FileRepositoryProtocol {
+    func fetchLevels(levelType: CypherWord_CoreData.LevelType) async throws -> [CypherWord_CoreData.LevelDefinition] {
+        return []
+    }
+    
+    func saveLevels(levels: [CypherWord_CoreData.LevelDefinition]) async throws {
+        if throwError {
+            throw NSError(domain: "TestError", code: 2, userInfo: nil)
+        }
+        savedLevels = levels
+    }
+    
     func listPacks(levelType: CypherWord_CoreData.LevelType, completion: @escaping (Result<[URL], any Error>) -> Void) {
         print("\(#function) not implemented")
     }
     
+    var throwError: Bool = false
     var savedPacks: [PackDefinition] = []
     var savedLevels: [LevelDefinition] = []
     var expectedSaveResult: Result<Void, Error> = .success(())
-
-    func saveLevels(levels: [LevelDefinition], completion: @escaping (Result<Void, Error>) -> Void) {
-        savedLevels = levels
-        completion(expectedSaveResult)
-    }
 
     // MARK: - Stubbed Protocol Methods
     func fetchLevels(levelType: LevelType, completion: @escaping (Result<[LevelDefinition], any Error>) -> Void) {

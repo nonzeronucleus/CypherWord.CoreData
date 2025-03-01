@@ -1,32 +1,3 @@
-//import SwiftUI
-//
-//
-//
-//@main
-//struct CypherWord_CoreDataApp: App {
-//    @StateObject var applicationViewModel = ApplicationViewModel()
-//
-//    init() {
-//        UserDefaults.standard.register(defaults: [
-//            "ShowCompletedLevels": false,
-//            "EditMode": true
-//            ])
-//    }
-//    
-//    var body: some Scene {
-//        let navigationViewModel = applicationViewModel.navigationViewModel
-//        let settingsViewModel = applicationViewModel.settingsViewModel
-//        WindowGroup {
-//            ContentView()
-//                .environmentObject(applicationViewModel)
-//                .environmentObject(navigationViewModel)
-//                .environmentObject(settingsViewModel)
-//        }
-//    }
-//}
-
-
-
 import SwiftUI
 
 @main

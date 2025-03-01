@@ -72,16 +72,6 @@ class LevelListViewModel: ObservableObject {
         Task {
             allLevels = try await addLayoutUseCase.execute()
         }
-//        addLayoutUseCase.execute { [weak self] result in
-//            DispatchQueue.main.async {
-//                switch result {
-//                    case .success(let levels):
-//                        self?.allLevels = levels
-//                    case .failure(let error):
-//                        self?.error = error.localizedDescription
-//                }
-//            }
-//        }
     }
 
     
@@ -99,23 +89,6 @@ class LevelListViewModel: ObservableObject {
             }
         }
     }
-    
-//    func deleteAll() {
-//        Task {
-//            allLevels = try await deleteAllLevelsUseCase.execute(levelType: levelType)
-//        }
-//    }
-//        deleteAllLevelsUseCase.execute(levelType: levelType, completion: { [weak self] result in
-//            DispatchQueue.main.async {
-//                switch result {
-//                    case .success(let levels):
-//                        self?.allLevels = levels
-//                    case .failure(let error):
-//                        self?.error = error.localizedDescription
-//                }
-//            }
-//        })
-//    }
     
     func onSelectLevel(level:LevelDefinition) {
         navigationViewModel?.navigateTo(level:level)
@@ -139,22 +112,6 @@ class LevelListViewModel: ObservableObject {
                 }
             }
         }
-        
-//        DispatchQueue.main.async { [weak self] in
-//            guard let self = self else { return }
-//            
-//            exportAllUseCase.execute(levels: allLevels, completion:  { [weak self] result in
-//                DispatchQueue.main.async {
-//                    switch result {
-//                        case .success():
-//                            self?.isBusy = false
-//                        case .failure(let error):
-//                            self?.error = error.localizedDescription
-//                            self?.isBusy = false
-//                    }
-//                }
-//            })
-//        }
     }
     
     func navigateToSettings() {
@@ -203,28 +160,6 @@ class LevelListViewModel: ObservableObject {
         }
     }
 
-//    private func fetchLevels() {
-//        Task {
-//            do {
-//                self.allLevels = try await self.fetchPlayableLevelsUseCase.execute()
-//            } catch {
-//                self.error = error.localizedDescription
-//            }
-//        }
-//    }
-//        fetchPlayableLevelsUseCase.execute { [weak self] result in
-//            DispatchQueue.main.async {
-//                switch result {
-//                case .success(let levels):
-//                    self?.allLevels = levels
-//                case .failure(let error):
-//                    self?.error = error.localizedDescription
-//                }
-//            }
-//        }
-//    }
-
-
     private func fetchLayouts() {
         Task {
             do {
@@ -239,27 +174,4 @@ class LevelListViewModel: ObservableObject {
             }
         }
     }
-    
-//    private func fetchLayouts() {
-//        DispatchQueue.global(qos: .background).async { [self] in
-//            Task {
-//                do {
-//                    self.allLevels = try await self.fetchLayoutsUseCase.execute()
-//                }
-//                catch {
-//                    self.error = error.localizedDescription
-//                }
-//            }
-//        }
-////        fetchLayoutsUseCase.execute { [weak self] result in
-////            DispatchQueue.main.async {
-////                switch result {
-////                case .success(let levels):
-////                    self?.allLevels = levels
-////                case .failure(let error):
-////                    self?.error = error.localizedDescription
-////                }
-////            }
-////        }
-//    }
 }

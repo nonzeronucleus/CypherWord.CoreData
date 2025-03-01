@@ -16,30 +16,27 @@ class FileRespositoryTests {
         ]
         
         // Test saving levels
-        try await withCheckedThrowingContinuation { continuation in
-            fileRepository.saveLevels(levels: levels) { result in
-                switch result {
-                    case .success:
-                        continuation.resume()
+
+        do {
+            try await fileRepository.saveLevels(levels: levels)
+            
+            // Verify the file was saved
+            let fileName = LevelType.playable.rawValue + ".json"
+            let fileURL = temporaryDirectoryURL.appendingPathComponent(fileName)
+            let fileExists = FileManager.default.fileExists(atPath: fileURL.path)
+            #expect(fileExists == true)
+            
+            fileRepository.listPacks(levelType:LevelType.playable) {
+                switch $0 {
+                    case .success(let packs):
+                        print(packs)
                     case .failure(let error):
-                        continuation.resume(throwing: error)
+                        print(error)
                 }
             }
         }
-        
-        // Verify the file was saved
-        let fileName = LevelType.playable.rawValue + ".1.json"
-        let fileURL = temporaryDirectoryURL.appendingPathComponent(fileName)
-        let fileExists = FileManager.default.fileExists(atPath: fileURL.path)
-        #expect(fileExists == true)
-        
-        fileRepository.listPacks(levelType:LevelType.playable) {
-            switch $0 {
-                case .success(let packs):
-                    print(packs)
-                case .failure(let error):
-                    print(error)
-            }
+        catch {
+            #expect(error == nil)
         }
 
     }
@@ -56,28 +53,12 @@ class FileRespositoryTests {
         let levels = [
             LevelDefinition(id: UUID(), number: 1, gridText: "Grid1", letterMap: "Map1", attemptedLetters: "abc", numCorrectLetters: 3)
         ]
-        try await withCheckedThrowingContinuation { continuation in
-            fileRepository.saveLevels(levels: levels) { result in
-                switch result {
-                    case .success:
-                        continuation.resume()
-                    case .failure(let error):
-                        continuation.resume(throwing: error)
-                }
-            }
-        }
+        
+        try await fileRepository.saveLevels(levels: levels)
         
         // Test fetching levels
-        let fetchedLevels: [LevelDefinition] = try await withCheckedThrowingContinuation { continuation in
-            fileRepository.fetchLevels(levelType: levelType) { result in
-                switch result {
-                    case .success(let levels):
-                        continuation.resume(returning: levels)
-                    case .failure(let error):
-                        continuation.resume(throwing: error)
-                }
-            }
-        }
+        
+        let fetchedLevels = try await fileRepository.fetchLevels(levelType: levelType)
         
         // Verify the fetched levels
         #expect(fetchedLevels.count == 1)

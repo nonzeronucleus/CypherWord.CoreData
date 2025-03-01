@@ -64,6 +64,22 @@ class DeleteLevelUseCaseTests {
 
 
 final class MockLevelRepository: LevelRepositoryProtocol {
+    func addLayout() async throws {
+        
+    }
+    
+    func deleteAll(levelType: LevelType) async throws {
+        
+    }
+    
+    func fetchLevels(levelType: CypherWord_CoreData.LevelType) async throws -> [LevelDefinition] {
+        return []
+    }
+    
+    func saveLevels(levels: [LevelDefinition]) async throws {
+        
+    }
+    
     func listPacks(levelType: CypherWord_CoreData.LevelType, completion: @escaping (Result<[URL], any Error>) -> Void) {
         
     }
@@ -89,19 +105,19 @@ final class MockLevelRepository: LevelRepositoryProtocol {
     func fetchLevelByID(id: UUID, completion: @escaping (Result<LevelMO?, Error>) -> Void) {
         completion(.success(nil))
     }
-
-    func addLayout(completion: @escaping (Result<Void, Error>) -> Void) {
-        completion(.success(()))
-    }
-
+//
+//    func addLayout(completion: @escaping (Result<Void, Error>) -> Void) {
+//        completion(.success(()))
+//    }
+//
     func addPlayableLevel(level: LevelDefinition, completion: @escaping (Result<Void, Error>) -> Void) {
         completion(.success(()))
     }
-
-    func deleteAll(levelType: LevelType, completion: @escaping (Result<Void, Error>) -> Void) {
-        completion(.success(()))
-    }
-
+//
+//    func deleteAll(levelType: LevelType, completion: @escaping (Result<Void, Error>) -> Void) {
+//        completion(.success(()))
+//    }
+//
     func saveLevel(level: LevelDefinition, completion: @escaping (Result<Void, Error>) -> Void) {
         completion(.success(()))
     }
