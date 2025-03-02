@@ -1,7 +1,6 @@
 import Foundation
 import Dependencies
 
-//@MainActor
 class GameViewModel: ObservableObject {
     private var saveLevelUseCase: SaveLevelUseCaseProtocol
 
@@ -34,7 +33,7 @@ class GameViewModel: ObservableObject {
     }
     
     
-    @MainActor func revealLetter(letter:Character) async {
+    func revealLetter(letter:Character) async {
         let val = level.letterMap![letter]
         
         if let val {
@@ -60,7 +59,6 @@ class GameViewModel: ObservableObject {
         }
     }
     
-    @MainActor
     func onLetterPressed(letter: Character) {
         if completed {
             return
@@ -74,19 +72,22 @@ class GameViewModel: ObservableObject {
         }
     }
     
-    
-    @MainActor
+//    @MainActor
     func save() async {
-        isBusy = true
-        
+        await MainActor.run {
+            isBusy = true
+        }
         do {
             try await saveProgress()
-            
-            isBusy = false
+            await MainActor.run {
+                isBusy = false
+            }
         }
         catch {
-            self.error = error.localizedDescription
-            isBusy = false
+            await MainActor.run {
+                self.error = error.localizedDescription
+                isBusy = false
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 import CoreData
 
+@MainActor
 extension LevelStorageCoreData:LevelRepositoryProtocol {
     func fetchLevelByID(id: UUID) async throws -> LevelMO? {
         return try findLevel(id: id)
