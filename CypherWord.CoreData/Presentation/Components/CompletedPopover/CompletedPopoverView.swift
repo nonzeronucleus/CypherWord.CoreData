@@ -8,7 +8,7 @@ struct CompletedPopover: View {
             HStack {
                 Button(action: close) {
                     Image(systemName: "xmark")
-                        .font(.headline)
+                        .font(.subheadline)
                         .foregroundColor(.white)
                         .padding(10)
                         .background(Color.gray.opacity(0.8))
@@ -19,12 +19,11 @@ struct CompletedPopover: View {
                 Spacer()
             }
             
-            Spacer()
-            
             Text("Completed")
                 .font(.title)
                 .fontWeight(.bold)
-                .padding()
+                .foregroundColor(.black)
+//                .padding()
             
             Spacer()
         }
@@ -33,4 +32,8 @@ struct CompletedPopover: View {
         .cornerRadius(15)
         .shadow(radius: 5)
     }
+}
+
+#Preview {
+    CompletedPopover(close: {})
 }

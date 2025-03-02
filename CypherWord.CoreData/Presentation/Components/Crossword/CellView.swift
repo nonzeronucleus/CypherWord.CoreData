@@ -73,14 +73,28 @@ struct CellView: View {
     }
     
     func calcColor() -> Color? {
+        var color:Color?
+        
+//        switch checkStatus {
+//            case .normal:
+//                color = (selected ? .gray : nil)
+//            case .correct:
+//                color = (selected ? .mint : .green)
+//            case .incorrect:
+//                color = (selected ? .orange : .red)
+//        }
+
         switch checkStatus {
             case .normal:
-                return (selected ? .gray : nil)
+                color = .white
             case .correct:
-                return (selected ? .mint : .green)
+                color = .green
             case .incorrect:
-                return (selected ? .orange : .red)
+                color = .red
         }
+        
+//        return color?.opacity(selected ? 0.8 : 1.0)
+        return color?.darkened(by: (selected ? 0.4 : 0.0))
     }
 }
 
@@ -115,7 +129,7 @@ struct CellView: View {
 }
 
 
-#Preview("Unselected correct") {
+#Preview("Selected correct") {
     VStack {
     CellView(letter:"D", number: 2, selected: true, checkStatus: .correct)
         .frame(width: 60, height: 60, alignment: .center)
