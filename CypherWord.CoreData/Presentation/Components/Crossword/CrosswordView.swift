@@ -77,7 +77,7 @@ struct CrosswordView: View {
 }
 
 #Preview("Attempted Value blank") {
-    var crossword = Grid2D(rows: 15, columns: 15, elementGenerator: { row, column in
+    var crossword = Crossword(rows: 15, columns: 15, elementGenerator: { row, column in
         Cell(pos: Pos(row: row, column: column))
     })
     
@@ -85,11 +85,15 @@ struct CrosswordView: View {
     crossword[0, 1].letter = "X"
     crossword[1, 0].letter = "X"
     crossword[1, 1].letter = "Y"
+    
+    let letterValues: CharacterIntMap = [
+        "A": 1, "X": 25, "Y": 3
+    ]
 
     return CrosswordView(
         grid: crossword,
         viewMode: .actualValue,
-        letterValues: CharacterIntMap(),
+        letterValues: letterValues,
         selectedNumber: nil,
         attemptedletterValues: nil,
         checking: false,

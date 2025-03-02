@@ -24,7 +24,7 @@ struct CellView: View {
     var body: some View {
         GeometryReader { geometry in
             let squareSize = min(geometry.size.width, geometry.size.height)
-            let numberFontSize = CGFloat(squareSize * 0.25)
+            let numberFontSize = CGFloat(squareSize * 0.20)
             let characterFontSize = CGFloat(squareSize * 0.75)
             let cellColor = calcColor()
             
@@ -54,7 +54,8 @@ struct CellView: View {
                             .padding(4)
                             .foregroundColor(.black)
                             .frame(maxWidth: .infinity, alignment: .topLeading)
-                            .offset(x: -squareSize * 0.10, y: -squareSize * 0.1) // Push number slightly up and left
+                            .offset(x: -squareSize * 0.010, y: -squareSize * 0.05) // Push number slightly up and
+//                            .offset(x: -squareSize * 0.10, y: -squareSize * 0.1) // Push number slightly up and left
                     }
                     
                     // Character in the center
@@ -74,15 +75,6 @@ struct CellView: View {
     
     func calcColor() -> Color? {
         var color:Color?
-        
-//        switch checkStatus {
-//            case .normal:
-//                color = (selected ? .gray : nil)
-//            case .correct:
-//                color = (selected ? .mint : .green)
-//            case .incorrect:
-//                color = (selected ? .orange : .red)
-//        }
 
         switch checkStatus {
             case .normal:
@@ -93,7 +85,6 @@ struct CellView: View {
                 color = .red
         }
         
-//        return color?.opacity(selected ? 0.8 : 1.0)
         return color?.darkened(by: (selected ? 0.4 : 0.0))
     }
 }
