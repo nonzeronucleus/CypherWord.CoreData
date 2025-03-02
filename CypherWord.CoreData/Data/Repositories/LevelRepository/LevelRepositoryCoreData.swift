@@ -1,6 +1,52 @@
 import CoreData
 
 extension LevelStorageCoreData:LevelRepositoryProtocol {
+    func fetchLevelByID(id: UUID) async throws -> LevelMO? {
+        return try findLevel(id: id)
+    }
+    
+    func addPlayableLevel(level: LevelDefinition) async throws {
+        var levelMO = LevelMO(context: container.viewContext)
+        
+        levelMO.id = UUID()
+        levelMO.number = try self.fetchHighestNumber(levelType: .playable) + 1
+        LevelMapper.map(from: level, to: &levelMO)
+        save()
+    }
+    
+    func delete(levelID: UUID) async throws {
+        let request: NSFetchRequest<NSFetchRequestResult> = createFetchLevelRequest(resultType: NSFetchRequestResult.self, levelID: levelID)
+        
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+        
+        try container.viewContext.execute(deleteRequest)
+        try container.viewContext.save()
+    }
+    
+    func saveLevel(level: LevelDefinition) async throws {
+        var levelMO = try findLevel(id: level.id)
+        
+        if levelMO == nil {
+            levelMO = LevelMO(context: container.viewContext)
+            levelMO?.id = UUID()
+            levelMO?.number = try self.fetchHighestNumber(levelType: level.levelType) + 1
+            
+            //                levelMO.id = level.id
+        }
+        
+        if var levelMO = levelMO {
+            LevelMapper.map(from: level, to: &levelMO)
+            
+            //                levelMO.gridText = level.gridText
+            //                levelMO.letterMap = level.letterMap
+            //                levelMO.attemptedLetters = level.attemptedLetters
+            save()
+        }
+        else {
+            throw OptionalUnwrappingError.foundNil("Couldn't create LevelMO")
+        }
+    }
+    
     func addLayout() async throws {
         let levelMO = LevelMO(context: container.viewContext)
         
@@ -36,99 +82,6 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
                     save()
                 }
             }
-        }
-    }
-    
-    func listPacks(levelType: LevelType, completion: @escaping (Result<[URL], any Error>) -> Void) {
-        fatalError("\(#function) not implemented")
-    }
-
-
-    func fetchLevelByID(id: UUID, completion: @escaping (Result<LevelMO?, Error>) -> Void) {
-        do {
-            let levelMO = try findLevel(id: id)
-            completion(.success(levelMO))
-        } catch let error {
-            completion(.failure(error))
-        }
-    }
-    
-    func addPlayableLevel(level: LevelDefinition, completion: @escaping (Result<Void, Error>) -> Void) {
-        var levelMO = LevelMO(context: container.viewContext)
-
-        do {
-            levelMO.id = UUID()
-            levelMO.number = try self.fetchHighestNumber(levelType: .playable) + 1
-            LevelMapper.map(from: level, to: &levelMO)
-            save()
-            completion(.success(()))
-        } catch let error {
-            completion(.failure(error))
-        }
-    }
-
-
-    func save(completion: @escaping (Result<Void, any Error>) -> Void) {
-        do {
-            try container.viewContext.save()
-            completion(.success(()))
-        } catch let error {
-            completion(.failure(error))
-        }
-    }
-    
-    func deleteAll(levelType: LevelType, completion: @escaping (Result<Void, any Error>) -> Void) {
-        do {
-            try deleteAll(levelType: levelType)
-            try container.viewContext.save()
-            completion(.success(()))
-        } catch let error {
-            completion(.failure(error))
-        }
-    }
-    
-    func delete(levelID: UUID, completion: @escaping (Result<Void, Error>) -> Void) {
-        let request: NSFetchRequest<NSFetchRequestResult> = createFetchLevelRequest(resultType: NSFetchRequestResult.self, levelID: levelID)
-        
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
-
-        do {
-            try container.viewContext.execute(deleteRequest)
-            try container.viewContext.save()
-            completion(.success(()))
-        } catch let error {
-            completion(.failure(error))
-        }
-    }
-
-    
-    func saveLevel(level: LevelDefinition, completion: @escaping (Result<Void, any Error>) -> Void) {
-        do {
-            var levelMO = try findLevel(id: level.id)
-            
-            if levelMO == nil {
-                levelMO = LevelMO(context: container.viewContext)
-                levelMO?.id = UUID()
-                levelMO?.number = try self.fetchHighestNumber(levelType: level.levelType) + 1
-
-//                levelMO.id = level.id
-            }
-            
-            if var levelMO = levelMO {
-                LevelMapper.map(from: level, to: &levelMO)
-
-//                levelMO.gridText = level.gridText
-//                levelMO.letterMap = level.letterMap
-//                levelMO.attemptedLetters = level.attemptedLetters
-                save()
-                completion(.success(()))
-            }
-            else {
-                completion(.failure(OptionalUnwrappingError.foundNil("Couldn't create LevelMO")))
-            }
-        }
-        catch let error {
-            completion(.failure(error))
         }
     }
 }

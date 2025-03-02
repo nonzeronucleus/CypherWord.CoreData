@@ -25,6 +25,7 @@ class LevelListViewModel: ObservableObject {
     private var navigationViewModel: NavigationViewModel?
     private var cancellables = Set<AnyCancellable>()
 
+    @MainActor
     init(levelType: LevelType,
          navigationViewModel:NavigationViewModel,
          settingsViewModel: SettingsViewModel,
@@ -119,6 +120,7 @@ class LevelListViewModel: ObservableObject {
     }
     
     
+    @MainActor
     private func reload() {
         switch levelType {
             case .layout:
@@ -160,6 +162,7 @@ class LevelListViewModel: ObservableObject {
         }
     }
 
+    @MainActor
     private func fetchLayouts() {
         Task {
             do {

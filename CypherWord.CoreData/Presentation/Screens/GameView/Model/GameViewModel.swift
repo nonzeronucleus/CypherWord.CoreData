@@ -74,28 +74,31 @@ class GameViewModel: ObservableObject {
     }
     
     
-    func save(then onComplete: @escaping (() -> Void) = {}) {
+//    func save(then onComplete: @escaping (() -> Void) = {}) {
+//        isBusy = true
+//        
+//        DispatchQueue.main.async { [weak self] in
+//            guard let self = self else { return }
+//            levelDefinition = LevelDefinition(from: level)
+//            saveProgress()
+//        }
+//    }
+    
+    func save() {
         isBusy = true
         
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            levelDefinition = LevelDefinition(from: level)
-            saveProgress()
+        Task {
+            try! await saveProgress()
+            isBusy = false
         }
+        
     }
+//
 
     
-    private func saveProgress() {
-        saveLevelUseCase.execute(level: levelDefinition, completion: { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                    case .success():
-                        self?.isBusy = false
-                    case .failure(let error):
-                        self?.error = error.localizedDescription
-                }
-            }
-        })
+    private func saveProgress() async throws {
+        try await saveLevelUseCase.execute(level: levelDefinition)
+        isBusy = false
     }
     
     

@@ -60,6 +60,7 @@ class NavigationViewModel: ObservableObject {
         return LevelEditViewModel(levelDefinition: level, navigationViewModel: self)
     }
     
+    @MainActor
     func createLevelListViewModel(levelType: LevelType) -> LevelListViewModel {
         LevelListViewModel(levelType: levelType, navigationViewModel: self, settingsViewModel: settingsViewModel)
     }

@@ -26,14 +26,9 @@ class FileRespositoryTests {
             let fileExists = FileManager.default.fileExists(atPath: fileURL.path)
             #expect(fileExists == true)
             
-            fileRepository.listPacks(levelType:LevelType.playable) {
-                switch $0 {
-                    case .success(let packs):
-                        print(packs)
-                    case .failure(let error):
-                        print(error)
-                }
-            }
+            let packs = try await fileRepository.listPacks(levelType:LevelType.playable)
+            print(packs)
+            
         }
         catch {
             #expect(error == nil)

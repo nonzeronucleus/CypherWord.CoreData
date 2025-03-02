@@ -81,28 +81,24 @@ class LevelEditViewModel: ObservableObject {
         }
         currentState = .clean
     }
-    
+
+    @MainActor
     func delete() {
         isBusy = true
         
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            
-            deleteLevelUseCase.execute(levelID: level.id, completion: { [weak self] result in
-                DispatchQueue.main.async {
-                    switch result {
-                        case .success():
-                            self?.isBusy = false
-                            self?.goBack()
-                        case .failure(let error):
-                            self?.error = error.localizedDescription
-                    }
-                }
-            })
+        Task {
+            do {
+                try await deleteLevelUseCase.execute(levelID: level.id)
+                goBack()
+            }
+            catch {
+                self.error = error.localizedDescription
+            }
         }
     }
+ 
     
-    
+    @MainActor
     func save(then onComplete: @escaping (() -> Void) = {}) {
         isBusy = true
         
@@ -126,67 +122,71 @@ class LevelEditViewModel: ObservableObject {
         }
     }
     
-    private func saveLayout() {
-        let levelDefinition = LevelDefinition(from: level)
-        
-        saveLevelUseCase.execute(level: levelDefinition, completion: { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                    case .success():
-                        self?.isBusy = false
-                    case .failure(let error):
-                        self?.error = error.localizedDescription
-                }
-            }
-        })
-    }
-    
-    private func savePlayableLevel() {
-        let levelDefinition = LevelDefinition(from: level)
-        
-        addPlayableLevelUseCase.execute(level: levelDefinition, completion: { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                    case .success():
-                        self?.isBusy = false
-                    case .failure(let error):
-                        self?.error = error.localizedDescription
-                }
-            }
-        })
-    }
-
-    
     @MainActor
-    func populate() {
-        // if not clean, ask about saving
-        print("if not clean, ask about saving")
+    private func saveLayout() {
+        var levelDefinition = LevelDefinition(from: level)
+        levelDefinition.letterMap = nil
         
-        isBusy = true
-        populateTask?.cancel() // Cancel any existing task
-
-        populateTask = Task { [weak self] in
-            guard let self else { return } // Swift 5.9 shorthand for `guard let self = self else { return }`
+        Task {
             
-            let populator = CrosswordPopulatorUseCase()
-            let result = await populator.executeAsync(initCrossword: self.level.crossword)
-
-            guard !Task.isCancelled else { return }
-
-            await MainActor.run { // Ensure UI updates happen on the main thread
-                switch result {
-                    case .success(let (newCrossword, characterIntMap)):
-                        self.level.crossword = newCrossword
-                        self.level.letterMap = characterIntMap
-                        self.currentState = .populated
-                    case .failure(let error):
-                        self.error = error.localizedDescription
-                }
+            do {
+                try await saveLevelUseCase.execute(level: levelDefinition)
                 self.isBusy = false
+            }
+            catch {
+                self.isBusy = false
+                self.error = error.localizedDescription
             }
         }
     }
     
+    private func savePlayableLevel() {
+        isBusy = true
+        Task {
+            let levelDefinition = LevelDefinition(from: level)
+            
+            do {
+                isBusy = false
+                try await addPlayableLevelUseCase.execute(level: levelDefinition)
+            }
+            catch {
+                isBusy = false
+                self.error = error.localizedDescription
+            }
+        }
+    }
+
+
+    @MainActor
+    func populate() {
+        print("if not clean, ask about saving")
+        
+        isBusy = true
+
+        populateTask = Task {
+            do {
+                let populator = CrosswordPopulatorUseCase()
+                let (newCrossword, characterIntMap) = try await populator.executeAsync(initCrossword: self.level.crossword)
+
+                // Before updating the UI, check if the task was cancelled
+                guard !Task.isCancelled else { return }
+
+                self.level.crossword = newCrossword
+                self.level.letterMap = characterIntMap
+                isBusy = false
+            } catch {
+                if Task.isCancelled {
+                    print("Populate task was cancelled")
+                } else {
+                    print("Error in populate: \(error)")
+                }
+                isBusy = false
+            }
+        }
+    }
+        
+        
+        
     func handleBackButtonTap() {
         if currentState == .clean {
             goBack()
@@ -196,8 +196,11 @@ class LevelEditViewModel: ObservableObject {
         }
     }
     
+    @MainActor
     func handleSaveChangesButtonTap() {
-        save(then: goBack)
+        save()
+        goBack()
+//        save(then: goBack)
     }
     
     func goBack() {
@@ -208,6 +211,7 @@ class LevelEditViewModel: ObservableObject {
     
     
     // Call this function from your UI button
+    @MainActor
     func cancel() {
         if let populateTask = populateTask {
             populateTask.cancel()
@@ -216,6 +220,7 @@ class LevelEditViewModel: ObservableObject {
         isBusy = false // Update UI to remove spinner
     }
     
+    @MainActor
     func resize(newSize: Int) {
         guard size != newSize else { return }
 
@@ -225,21 +230,18 @@ class LevelEditViewModel: ObservableObject {
         resizeTask?.cancel() // Cancel any existing task
 
         resizeTask = Task { [weak self] in
-            guard let self else { return } // Swift 5.9 shorthand for `guard let self = self else { return }`
-            
-            let result = await resizeGridUseCase.executeAsync(inputGrid: level.crossword, newSize: newSize)
-            
-            guard !Task.isCancelled else { return }
-
-            await MainActor.run { // Ensure UI updates happen on the main thread
-                switch result {
-                    case .success(let (newCrossword)):
-                        self.level.crossword = newCrossword
-                        self.size = newSize
-                    case .failure(let error):
-                        self.error = error.localizedDescription
-                }
-//                self.isBusy = false
+            do {
+                guard let self else { return } // Swift 5.9 shorthand for `guard let self = self else { return }`
+                
+                let newCrossword = try await resizeGridUseCase.execute(inputGrid: level.crossword, newSize: newSize)
+                
+                guard !Task.isCancelled else { return }
+                
+                self.level.crossword = newCrossword
+                self.size = newSize
+            }
+            catch {
+                self?.error = error.localizedDescription
             }
         }
     }

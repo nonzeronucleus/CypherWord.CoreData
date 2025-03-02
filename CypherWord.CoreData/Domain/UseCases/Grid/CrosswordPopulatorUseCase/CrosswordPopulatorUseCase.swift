@@ -5,25 +5,35 @@ enum PopulatorError: Error {
 }
 
 class CrosswordPopulatorUseCase:CrosswordPopulatorUseCaseProtocol {
-    func execute(initCrossword: Crossword, completion: @escaping (Result<(Crossword, CharacterIntMap) , any Error>) -> Void) {
-        do {
-            let crosswordPopulator = CrosswordPopulator(crossword: initCrossword)
-            let res = try crosswordPopulator.populateCrossword()
-            completion(.success(res))
-        }
-        catch {
-            completion(.failure(error))
-        }
+    func executeAsync(initCrossword: Crossword) async throws -> (Crossword, CharacterIntMap) {
+        let crosswordPopulator = CrosswordPopulator(crossword: initCrossword)
+        return  try crosswordPopulator.populateCrossword()
+    }
+
+        
+//        return await withCheckedContinuation { continuation in
+//            return execute(initCrossword: initCrossword)
+            
+//            { result in
+//                guard !Task.isCancelled else { return } // Stop if task is cancelled
+//                continuation.resume(returning: result)
+//            }
+//        }
+//    }
+
+    func execute(initCrossword: Crossword) async throws -> (Crossword, CharacterIntMap) {
+        let crosswordPopulator = CrosswordPopulator(crossword: initCrossword)
+        return  try crosswordPopulator.populateCrossword()
     }
     
-    func executeAsync(initCrossword: Crossword) async -> Result<(Crossword, CharacterIntMap), Error> {
-        return await withCheckedContinuation { continuation in
-            execute(initCrossword: initCrossword) { result in
-                guard !Task.isCancelled else { return } // Stop if task is cancelled
-                continuation.resume(returning: result)
-            }
-        }
-    }
+//    func executeAsync(initCrossword: Crossword) async -> Result<(Crossword, CharacterIntMap), Error> {
+//        return await withCheckedContinuation { continuation in
+//            execute(initCrossword: initCrossword) { result in
+//                guard !Task.isCancelled else { return } // Stop if task is cancelled
+//                continuation.resume(returning: result)
+//            }
+//        }
+//    }
 }
 
 class CrosswordPopulator {

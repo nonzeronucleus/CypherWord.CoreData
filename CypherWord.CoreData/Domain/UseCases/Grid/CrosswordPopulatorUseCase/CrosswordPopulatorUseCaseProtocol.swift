@@ -1,3 +1,3 @@
 protocol CrosswordPopulatorUseCaseProtocol {
-    func executeAsync(initCrossword: Crossword) async -> Result<(Crossword, CharacterIntMap), Error>
+    func executeAsync(initCrossword: Crossword) async throws -> (Crossword, CharacterIntMap)
 }

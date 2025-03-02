@@ -93,16 +93,8 @@ struct ResizeTests {
     
     // Helper function to handle completion-based async function
     private func resizeGrid(inputGrid: Crossword, newSize: Int) async throws -> Crossword {
-        return try await withCheckedThrowingContinuation { continuation in
-            let useCase = ResizeGridUseCase()
-            useCase.execute(inputGrid: inputGrid, newSize: newSize) { result in
-                switch result {
-                    case .success(let resizedGrid):
-                        continuation.resume(returning: resizedGrid)
-                    case .failure(let error):
-                        continuation.resume(throwing: error)
-                }
-            }
-        }
+        let resizeGridUseCase = ResizeGridUseCase()
+        return try await resizeGridUseCase.execute(inputGrid: inputGrid, newSize: newSize)
+        
     }
 }

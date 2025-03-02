@@ -8,16 +8,7 @@ class DeleteLevelUseCase :DeleteLevelUseCaseProtocol {
         self.repository = repository
     }
 
-    func execute(levelID: UUID, completion: @escaping (Result<Void, any Error>) -> Void) {
-        repository.delete (levelID: levelID, completion: { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success:
-                        completion(.success(()))
-                case .failure(let error):
-                    completion(.failure(error))
-                }
-            }
-        })
+    func execute(levelID: UUID) async throws {
+        try await repository.delete (levelID: levelID)
     }
 }

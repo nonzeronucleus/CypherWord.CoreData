@@ -1,3 +1,3 @@
 protocol AddPlayableLevelUseCaseProtocol {
-    func execute(level: LevelDefinition, completion: @escaping (Result<Void, Error>) -> Void)
+    func execute(level: LevelDefinition) async throws
 }

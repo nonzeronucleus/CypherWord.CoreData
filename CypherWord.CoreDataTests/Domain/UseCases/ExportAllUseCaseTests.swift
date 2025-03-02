@@ -72,6 +72,11 @@ class ExportAllUseCaseTests {
 }
 
 final class MockFileRepository: FileRepositoryProtocol {
+    func listPacks(levelType: CypherWord_CoreData.LevelType) async throws -> [URL] {
+        print("\(#function) not implemented")
+        return []
+    }
+    
     func fetchLevels(levelType: CypherWord_CoreData.LevelType) async throws -> [CypherWord_CoreData.LevelDefinition] {
         return []
     }
@@ -83,17 +88,8 @@ final class MockFileRepository: FileRepositoryProtocol {
         savedLevels = levels
     }
     
-    func listPacks(levelType: CypherWord_CoreData.LevelType, completion: @escaping (Result<[URL], any Error>) -> Void) {
-        print("\(#function) not implemented")
-    }
-    
     var throwError: Bool = false
     var savedPacks: [PackDefinition] = []
     var savedLevels: [LevelDefinition] = []
     var expectedSaveResult: Result<Void, Error> = .success(())
-
-    // MARK: - Stubbed Protocol Methods
-    func fetchLevels(levelType: LevelType, completion: @escaping (Result<[LevelDefinition], any Error>) -> Void) {
-        completion(.success([]))
-    }
 }

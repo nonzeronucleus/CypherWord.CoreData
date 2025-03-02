@@ -80,29 +80,6 @@ extension FileRepository : FileRepositoryProtocol {
         }
     }
     
-    
-    func listPacks(levelType: LevelType, completion: @escaping (Result<[URL], any Error>) -> Void) {
-        let pattern = #"Games\..*\.json"#
-        let directory = importFilePath()
-    
-        do {
-            let files = try fileManager.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
-            
-            // Use regex to filter files
-            let regex = try NSRegularExpression(pattern: pattern)
-            let filteredFiles: [URL] = files.filter { file in
-                let fileName = file.lastPathComponent
-                return regex.firstMatch(in: fileName, range: NSRange(location: 0, length: fileName.utf16.count)) != nil
-            }
-            
-            completion(.success(filteredFiles))
-        } catch {
-            print("Error listing files: \(error)")
-            completion(.failure(error))
-        }
-    }
-    
-    
     func loadPackManifest() async throws -> [PackDefinition] {
         guard let manifestURL = getManifestReadFilePath() else  {
             return []
@@ -117,9 +94,24 @@ extension FileRepository : FileRepositoryProtocol {
         }
     }
     
-    func savePackManifest(packs: [PackDefinition], completion: @escaping (Result<Void, any Error>) -> Void) {
+    func listPacks(levelType: LevelType) async throws -> [URL] {
+        let pattern = #"Games\..*\.json"#
+        let directory = importFilePath()
+        
+        let files = try fileManager.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
+        
+        // Use regex to filter files
+        let regex = try NSRegularExpression(pattern: pattern)
+        let filteredFiles: [URL] = files.filter { file in
+            let fileName = file.lastPathComponent
+            return regex.firstMatch(in: fileName, range: NSRange(location: 0, length: fileName.utf16.count)) != nil
+        }
+        
+        return filteredFiles
         
     }
+    
+    
 }
 
 
@@ -167,9 +159,7 @@ extension FileRepository {
         if fileManager.fileExists(atPath: readFilePath.path) {
             return readFilePath
         }
-
         
         return nil
-//        return readDirectoryURL.appendingPathComponent("manifest.json")
     }
 }

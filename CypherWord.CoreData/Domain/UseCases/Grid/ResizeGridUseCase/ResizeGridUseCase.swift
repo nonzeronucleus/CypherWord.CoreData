@@ -1,5 +1,5 @@
 class ResizeGridUseCase : ResizeGridUseCaseProtocol {
-    func execute(inputGrid: Crossword, newSize:Int, completion: @escaping (Result<Crossword, any Error>) -> Void) {
+    func execute(inputGrid: Crossword, newSize:Int) async throws -> Crossword {
         let size = inputGrid.rows
         let growthSize = newSize - size
         let offset = abs(growthSize / 2)
@@ -22,16 +22,15 @@ class ResizeGridUseCase : ResizeGridUseCaseProtocol {
                 newGrid[targetRow, targetColumn] = inputGrid[sourceRow, sourceColumn]
             }
         }
-
-        completion(.success(newGrid))
+        return newGrid
     }
     
-    func executeAsync(inputGrid: Crossword, newSize:Int) async -> Result<Crossword, any Error> {
-        return await withCheckedContinuation { continuation in
-            execute(inputGrid: inputGrid, newSize: newSize) { result in
-                guard !Task.isCancelled else { return } // Stop if task is cancelled
-                continuation.resume(returning: result)
-            }
-        }
-    }
+//    func executeAsync(inputGrid: Crossword, newSize:Int) async -> Result<Crossword, any Error> {
+//        return await withCheckedContinuation { continuation in
+//            execute(inputGrid: inputGrid, newSize: newSize) { result in
+//                guard !Task.isCancelled else { return } // Stop if task is cancelled
+//                continuation.resume(returning: result)
+//            }
+//        }
+//    }
 }

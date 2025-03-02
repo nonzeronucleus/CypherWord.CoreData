@@ -1,6 +1,25 @@
 import Foundation
 
 class FakeLevelRepository: LevelRepositoryProtocol {
+    func fetchLevelByID(id: UUID) async throws -> LevelMO? {
+        fatalError("To Implement - addPlayableLevel")
+    }
+    
+    func addPlayableLevel(level: LevelDefinition) async throws {
+        fatalError("To Implement - addPlayableLevel")
+    }
+    
+    func delete(levelID: UUID) async throws {
+        if throwErrorOnDelete {
+            throw NSError(domain: "TestError", code: 1, userInfo: nil)
+        }
+        deletedLevelID = levelID
+    }
+    
+    func saveLevel(level: LevelDefinition) async throws {
+        fatalError("To Implement - addPlayableLevel")
+    }
+    
     func addLayout() async throws {
         let levelDefinition = LevelDefinition(id: UUID(), number: 1, attemptedLetters: nil, numCorrectLetters: 0)
         testLayouts[levelDefinition.id] = levelDefinition
@@ -37,47 +56,14 @@ class FakeLevelRepository: LevelRepositoryProtocol {
     func saveLevels(levels: [LevelDefinition]) async throws {
     }
     
-    func listPacks(levelType: LevelType, completion: @escaping (Result<[URL], any Error>) -> Void) {
-        
-    }
-    
     var testLayouts: Dictionary<UUID, LevelDefinition>
     var testPlayableLevels: Dictionary<UUID, LevelDefinition>
-    
-    func delete(levelID: UUID, completion: @escaping (Result<Void, any Error>) -> Void) {
-        fatalError("To Implement - addPlayableLevel")
-    }
-    
-    func fetchLevelByID(id: UUID, completion: @escaping (Result<LevelMO?, any Error>) -> Void) {
-        fatalError("To Implement - addPlayableLevel")
-    }
-    
-    func addPlayableLevel(level: LevelDefinition, completion: @escaping (Result<Void, any Error>) -> Void) {
-        fatalError("To Implement - addPlayableLevel")
-    }
-    
-    func saveLevels(levels: [LevelDefinition], completion: @escaping (Result<Void, any Error>) -> Void) {
-//        fatalError("To Implement - saveLevels")
-    }
-
+    var deletedLevelID:UUID?
+    var throwErrorOnDelete = false
     
     init(testLayouts: [LevelDefinition] = [], testPlayableLevels: [LevelDefinition] = []) {
         self.testLayouts = Dictionary(uniqueKeysWithValues: testLayouts.map { ($0.id, $0) })
         self.testPlayableLevels = Dictionary(uniqueKeysWithValues: testPlayableLevels.map { ($0.id, $0) })
 
-    }
-    
-    func save(completion: @escaping (Result<Void, Error>) -> Void) {
-        completion(.success(()))
-    }
-    
-    func saveLevel(level: LevelDefinition, completion: @escaping (Result<Void, any Error>) -> Void) {
-        if level.levelType == .layout {
-            testLayouts[level.id] = level
-        }
-        else {
-            testPlayableLevels[level.id] = level
-        }
-        completion(.success(()))
     }
 }
