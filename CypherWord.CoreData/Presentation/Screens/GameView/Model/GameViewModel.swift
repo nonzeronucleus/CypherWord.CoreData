@@ -1,12 +1,11 @@
 import Foundation
 import Dependencies
 
+//@MainActor
 class GameViewModel: ObservableObject {
     private var saveLevelUseCase: SaveLevelUseCaseProtocol
 
     @Published private(set) var error:String?
-    
-    @Published private(set) var levelDefinition: LevelDefinition
     @Published private(set) var level: Level
  
     @Published var selectedNumber: Int?
@@ -19,27 +18,27 @@ class GameViewModel: ObservableObject {
     @Published var numCorrectLetters: Int = 0
     
     private let navigationViewModel: NavigationViewModel?
-    
-    
+
     init(level:LevelDefinition,
          navigationViewModel:NavigationViewModel? = nil,
          saveLevelUseCase: SaveLevelUseCaseProtocol = SaveLevelUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue)
     ) {
         self.saveLevelUseCase = saveLevelUseCase
-        self.levelDefinition = level
         self.level = Level(definition: level)
         self.navigationViewModel = navigationViewModel
         
-        revealLetter(letter: "X")
-        revealLetter(letter: "Z")
+        Task {
+            await revealLetter(letter: "X")
+            await revealLetter(letter: "Z")
+        }
     }
     
     
-    func revealLetter(letter:Character) {
+    @MainActor func revealLetter(letter:Character) async {
         let val = level.letterMap![letter]
         
         if let val {
-            setAttemptedValue(idx: val, char: letter)
+            await setAttemptedValue(idx: val, char: letter)
         }
     }
     
@@ -61,7 +60,7 @@ class GameViewModel: ObservableObject {
         }
     }
     
-    
+    @MainActor
     func onLetterPressed(letter: Character) {
         if completed {
             return
@@ -69,68 +68,71 @@ class GameViewModel: ObservableObject {
 
         checking = false
         if let selectedNumber {
-            setAttemptedValue(idx: selectedNumber, char: letter)
+            Task {
+                await setAttemptedValue(idx: selectedNumber, char: letter)
+            }
         }
     }
     
     
-//    func save(then onComplete: @escaping (() -> Void) = {}) {
-//        isBusy = true
-//        
-//        DispatchQueue.main.async { [weak self] in
-//            guard let self = self else { return }
-//            levelDefinition = LevelDefinition(from: level)
-//            saveProgress()
-//        }
-//    }
-    
-    func save() {
+    @MainActor
+    func save() async {
         isBusy = true
         
-        Task {
-            try! await saveProgress()
+        do {
+            try await saveProgress()
+            
             isBusy = false
         }
-        
+        catch {
+            self.error = error.localizedDescription
+            isBusy = false
+        }
     }
-//
 
     
+    @MainActor
     private func saveProgress() async throws {
+        let levelDefinition = LevelDefinition(from: level)
         try await saveLevelUseCase.execute(level: levelDefinition)
         isBusy = false
     }
     
     
-    func onDeletePressed() {
+    @MainActor func onDeletePressed() {
         if completed {
             return
         }
 
         checking = false
         if let selectedNumber {
-            setAttemptedValue(idx: selectedNumber, char: " ")
+            Task {
+                await setAttemptedValue(idx: selectedNumber, char: " ")
+            }
         }
     }
     
-    func setAttemptedValue(idx: Int, char:Character) {
+    @MainActor private func setAttemptedValue(idx: Int, char:Character) async {
         let prevNumCorrectLetters = level.numCorrectLetters
         level.attemptedLetters[idx] = char
+
         if prevNumCorrectLetters < 26 && level.numCorrectLetters == 26 {
             showCompletedDialog = true
         }
         numCorrectLetters = level.numCorrectLetters
-        save()
+        await save()
     }
     
     func checkLetters() {
         checking.toggle()
     }
     
+    @MainActor
     func revealNextLetter() {
         if let letter = level.getNextLetterToReveal() {
-            revealLetter(letter: letter)
-            
+            Task {
+                await revealLetter(letter: letter)
+            }
         }
     }
     
@@ -140,7 +142,9 @@ class GameViewModel: ObservableObject {
     
     func handleBackButtonTap() {
         if let navigationViewModel {
-            navigationViewModel.goBack()
+            Task {
+                await navigationViewModel.goBack()
+            }
         }
     }
     

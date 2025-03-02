@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 
+@MainActor
 class ApplicationViewModel: ObservableObject {
     @Published var settingsViewModel: SettingsViewModel
     @Published var navigationViewModel: NavigationViewModel

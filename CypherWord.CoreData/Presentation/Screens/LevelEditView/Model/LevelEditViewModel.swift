@@ -2,7 +2,7 @@ import Foundation
 import SwiftUICore
 import Dependencies
 
-
+@MainActor
 class LevelEditViewModel: ObservableObject {
     enum EditState {
         case clean

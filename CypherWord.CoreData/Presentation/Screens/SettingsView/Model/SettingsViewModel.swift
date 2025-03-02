@@ -2,6 +2,7 @@ import Foundation
 import Dependencies
 import Combine
 
+@MainActor
 class SettingsViewModel: ObservableObject {
     let id = UUID()
     private let updateSettingsUseCase: UpdateSettingsUseCaseProtocol

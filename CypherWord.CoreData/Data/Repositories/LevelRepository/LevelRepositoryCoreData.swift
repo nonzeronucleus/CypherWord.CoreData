@@ -36,10 +36,6 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         
         if var levelMO = levelMO {
             LevelMapper.map(from: level, to: &levelMO)
-            
-            //                levelMO.gridText = level.gridText
-            //                levelMO.letterMap = level.letterMap
-            //                levelMO.attemptedLetters = level.attemptedLetters
             save()
         }
         else {

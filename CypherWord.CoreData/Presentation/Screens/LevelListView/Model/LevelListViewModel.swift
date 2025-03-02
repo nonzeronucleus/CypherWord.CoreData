@@ -3,7 +3,7 @@ import SwiftUI
 import Dependencies
 import Combine
 
-
+@MainActor
 class LevelListViewModel: ObservableObject {
     var settingsViewModel: SettingsViewModel
 
