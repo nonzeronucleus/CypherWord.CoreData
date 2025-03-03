@@ -61,38 +61,28 @@ struct LevelListView : View {
         self.viewModel = viewModel
     }
     
-    func primaryColor(level:LevelDefinition? = nil) -> Color {
-        if viewModel.levelType == .layout {
-            return .orange
-        }
-        else {
-            if let level = level {
-                if level.numCorrectLetters == 26 {
-                    return .green
-                }
-            }
-        }
-        return .blue
-    }
-    
-    
-    func secondaryColor(level:LevelDefinition? = nil) -> Color {
-        if viewModel.levelType == .layout {
-            return .red
-        }
-        else {
-            if let level = level {
-                if level.numCorrectLetters == 26 {
-                    return .mint
-                }
-            }
-        }
-        return .cyan
-    }
-    
+//    func primaryColor(level:LevelDefinition? = nil) -> Color {
+//        viewModel.primaryColor(level:level)
+//    }
+//    
+//    
+//    func secondaryColor(level:LevelDefinition? = nil) -> Color {
+//        if viewModel.levelType == .layout {
+//            return .red
+//        }
+//        else {
+//            if let level = level {
+//                if level.numCorrectLetters == 26 {
+//                    return .mint
+//                }
+//            }
+//        }
+//        return .cyan
+//    }
+//    
     var body: some View {
         VStack {
-            TitleBarView(title: viewModel.levelType.rawValue, color: primaryColor()) {
+            TitleBarView(title: viewModel.title(), color: viewModel.primaryColor()) {
                 viewModel.navigateToSettings()
             }
             
@@ -115,7 +105,7 @@ struct LevelListView : View {
                     let levels = viewModel.displayableLevels
                     ForEach(levels) { level in
                         if let number = level.number {
-                            let gradient = Gradient(colors: [primaryColor(level: level), secondaryColor(level: level)])
+                            let gradient = Gradient(colors: [viewModel.primaryColor(level: level), viewModel.secondaryColor(level: level)])
                             ZStack {
                                 LevelButtonView(number: number,gradient: gradient) {
                                     viewModel.onSelectLevel(level: level)
@@ -135,7 +125,8 @@ struct LevelListView : View {
             Spacer()
             
             if settingsViewModel.settings.editMode {
-                if viewModel.levelType == .layout {
+                if let viewModel = viewModel as? LayoutListViewModel {
+//                if viewModel.isLayout() {
                     Button("Add") {
                         viewModel.addLayout()
                     }
@@ -150,11 +141,10 @@ struct LevelListView : View {
             }
         }
         .tabItem {
-            Image(systemName: viewModel.levelType == .layout ? "books.vertical" : "square.grid.3x3")
-            Text(viewModel.levelType.rawValue)
+            Image(systemName: viewModel.isLayout ? "books.vertical" : "square.grid.3x3")
+            Text(viewModel.title())
         }
-        .tag(viewModel.levelType)
-        
+        .tag(viewModel.tag)
     }
 }
 
@@ -175,8 +165,7 @@ struct LevelListView : View {
         $0.levelRepository = FakeLevelRepository(testLayouts: testLayouts, testPlayableLevels: testPlayableLevels)
     } operation: {
         let settingsViewModel = SettingsViewModel(parentId: nil)
-        let viewModel = LevelListViewModel(
-            levelType: .layout,
+        let viewModel = LayoutListViewModel(
             navigationViewModel: NavigationViewModel(settingsViewModel: SettingsViewModel(parentId: nil)),
             settingsViewModel:SettingsViewModel(parentId: nil))
         
@@ -204,8 +193,7 @@ struct LevelListView : View {
         let settingsViewModel = SettingsViewModel(parentId: nil)
         settingsViewModel.settings.showCompletedLevels = true
 
-        let viewModel = LevelListViewModel(
-            levelType: .playable,
+        let viewModel = PlayableLevelListViewModel(
             navigationViewModel: NavigationViewModel(settingsViewModel: SettingsViewModel(parentId: nil)),
             settingsViewModel:SettingsViewModel(parentId: nil))
 
@@ -234,8 +222,7 @@ struct LevelListView : View {
         let settingsViewModel = SettingsViewModel(parentId: nil)
         settingsViewModel.settings.showCompletedLevels = false
 
-        let viewModel = LevelListViewModel(
-            levelType: .playable,
+        let viewModel = PlayableLevelListViewModel(
             navigationViewModel: NavigationViewModel(settingsViewModel: SettingsViewModel(parentId: nil)),
             settingsViewModel:SettingsViewModel(parentId: nil))
 

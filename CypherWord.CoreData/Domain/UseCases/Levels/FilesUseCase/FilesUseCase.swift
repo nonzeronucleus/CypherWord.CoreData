@@ -1,7 +1,7 @@
 class FilesUseCase {
-    var fileRepository: SaveableRepositoryProtocol
+    var fileRepository: FileRepositoryProtocol
     
-    init(fileRepository: SaveableRepositoryProtocol) {
+    init(fileRepository: FileRepositoryProtocol) {
         self.fileRepository = fileRepository
     }
 }

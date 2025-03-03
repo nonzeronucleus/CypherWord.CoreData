@@ -173,6 +173,7 @@ class LevelEditViewModel: ObservableObject {
 
                 self.level.crossword = newCrossword
                 self.level.letterMap = characterIntMap
+                self.currentState = .populated
                 isBusy = false
             } catch {
                 if Task.isCancelled {
@@ -198,8 +199,7 @@ class LevelEditViewModel: ObservableObject {
     
     @MainActor
     func handleSaveChangesButtonTap() {
-        save()
-        goBack()
+        save(then: goBack)
 //        save(then: goBack)
     }
     

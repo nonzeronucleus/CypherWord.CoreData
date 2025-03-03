@@ -63,7 +63,13 @@ class NavigationViewModel: ObservableObject {
     
     @MainActor
     func createLevelListViewModel(levelType: LevelType) -> LevelListViewModel {
-        LevelListViewModel(levelType: levelType, navigationViewModel: self, settingsViewModel: settingsViewModel)
+        switch levelType {
+            case .playable:
+                return PlayableLevelListViewModel(navigationViewModel: self, settingsViewModel: settingsViewModel)
+            case .layout:
+                return LayoutListViewModel(navigationViewModel: self, settingsViewModel: settingsViewModel)
+        }
+//        LevelListViewModel(levelType: levelType, navigationViewModel: self, settingsViewModel: settingsViewModel)
     }
 }
 

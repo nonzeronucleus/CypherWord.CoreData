@@ -3,10 +3,8 @@ import SwiftUI
 struct ContentView: View {
     @StateObject var model = ContentViewModel()
     @State var selection:LevelType = .playable
-//    let listViewModel:LevelListViewModel
 
     init () {
-//        listViewModel = LevelListViewModel(navigationViewModel: <#T##NavigationViewModel#>)
     }
 
     var body: some View {

@@ -1,6 +1,9 @@
 import Foundation
 
-protocol LevelRepositoryProtocol: SaveableRepositoryProtocol {
+protocol LevelRepositoryProtocol {
+    func fetchLevels(levelType: LevelType) async throws -> [LevelDefinition]
+    func saveLevels(levels: [LevelDefinition]) async throws
+    
     func fetchLevelByID(id: UUID) async throws -> LevelMO?
     func addPlayableLevel(level: LevelDefinition) async throws
     

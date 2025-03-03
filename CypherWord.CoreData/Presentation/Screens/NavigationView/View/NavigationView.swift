@@ -41,8 +41,7 @@ struct NavigationView : View {
                                         .navigationBarBackButtonHidden(true)
                                 case .none:
                                     Text("Error loading level")
-                            }
-                        case .settings:
+                            }                        case .settings:
                             SettingsView()
                     }
                 }
@@ -69,5 +68,7 @@ struct NavigationView : View {
         return NavigationView(/*viewModel*/)
     }
 }
+
+
 
 

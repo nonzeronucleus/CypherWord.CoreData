@@ -33,6 +33,31 @@ class FileRepository {
 }
 
 extension FileRepository : FileRepositoryProtocol {
+    func saveLayouts(levels: [LevelDefinition]) async throws {
+        if levels.isEmpty {
+            return
+        }
+
+        let levelsToSave = levels.map { level in
+            var newLevel = level // Create a copy
+            newLevel.attemptedLetters = String(repeating: " ", count: 26)
+            return newLevel
+        }
+
+        do {
+            let fileName = LevelType.layout.rawValue + "" + ".json"
+            let url = exportFilePath().appendingPathComponent(fileName)
+            
+            if printLocation {
+                print("\(#file) \(#function) Saving to \(url.description)")
+            }
+            let jsonData = try JSONEncoder().encode(levelsToSave)
+            try jsonData.write(to: url)
+
+            return
+        }
+    }
+    
     
     func saveLevels(levels: [LevelDefinition]) async throws {
         if levels.isEmpty {
@@ -48,10 +73,10 @@ extension FileRepository : FileRepositoryProtocol {
         let levelType = levelsToSave.first!.levelType
 
         do {
+//            var manifest:[PackDefinition] = []
+//            
 //            if levelType == .playable {
-//                let manifest = try await loadPackManifest()
-//
-//                print(manifest)
+//                manifest = try await loadPackManifest()
 //            }
 
             let fileName = levelType.rawValue + "" + ".json"
@@ -61,6 +86,12 @@ extension FileRepository : FileRepositoryProtocol {
             }
             let jsonData = try JSONEncoder().encode(levelsToSave)
             try jsonData.write(to: url)
+            
+            if levelType == .playable {
+//                manifest
+//                try await
+            }
+
             return
         }
     }
@@ -162,4 +193,11 @@ extension FileRepository {
         
         return nil
     }
+    
+    private func getManifestWriteFilePath() -> URL {
+        return writeDirectoryURL.appendingPathComponent("manifest.json")
+    }
+        
+
+    
 }
