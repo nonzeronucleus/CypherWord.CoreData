@@ -100,5 +100,95 @@
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F2E29285-7A84-42B4-B0F1-D5DFE307AD07"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CypherWord.CoreData/Data/Repositories/FileRepository/FileRepository.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "207"
+            endingLineNumber = "207"
+            landmarkName = "unknown"
+            landmarkType = "0">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "8F5D7DF5-09FA-4B97-B2DC-ACF4CF933EAC"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CypherWord.CoreData/Presentation/Screens/LevelListView/Model/LevelListViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "106"
+            endingLineNumber = "106"
+            landmarkName = "exportAll()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "8F5D7DF5-09FA-4B97-B2DC-ACF4CF933EAC - d3bacec56d077672"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for closure #1 () async -&gt; () in CypherWord_CoreData.LevelListViewModel.exportAll() -&gt; ()"
+                  moduleName = "CypherWord.CoreData.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ianplumb/Development/swift/CypherWord.CoreData/CypherWord.CoreData/Presentation/Screens/LevelListView/Model/LevelListViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "106"
+                  endingLineNumber = "106">
+               </Location>
+               <Location
+                  uuid = "8F5D7DF5-09FA-4B97-B2DC-ACF4CF933EAC - 6ccfb24475219c44"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) await resume partial function for closure #1 () async -&gt; () in CypherWord_CoreData.LevelListViewModel.exportAll() -&gt; ()"
+                  moduleName = "CypherWord.CoreData.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ianplumb/Development/swift/CypherWord.CoreData/CypherWord.CoreData/Presentation/Screens/LevelListView/Model/LevelListViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "106"
+                  endingLineNumber = "106">
+               </Location>
+               <Location
+                  uuid = "8F5D7DF5-09FA-4B97-B2DC-ACF4CF933EAC - 7e293a198bdc3a7c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #1 () async -&gt; () in CypherWord_CoreData.LevelListViewModel.exportAll() -&gt; ()"
+                  moduleName = "CypherWord.CoreData.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ianplumb/Development/swift/CypherWord.CoreData/CypherWord.CoreData/Presentation/Screens/LevelListView/Model/LevelListViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "106"
+                  endingLineNumber = "106">
+               </Location>
+               <Location
+                  uuid = "8F5D7DF5-09FA-4B97-B2DC-ACF4CF933EAC - 154d43d0bf8b8278"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(7) suspend resume partial function for closure #1 () async -&gt; () in CypherWord_CoreData.LevelListViewModel.exportAll() -&gt; ()"
+                  moduleName = "CypherWord.CoreData.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ianplumb/Development/swift/CypherWord.CoreData/CypherWord.CoreData/Presentation/Screens/LevelListView/Model/LevelListViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "106"
+                  endingLineNumber = "106">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

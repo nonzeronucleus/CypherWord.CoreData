@@ -8,6 +8,7 @@ class LevelListViewModel: ObservableObject {
     var settingsViewModel: SettingsViewModel
     
     var deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol
+    var exportPlayableLevelsUseCase: ExportLevelsUseCaseProtocol
     
     @Published var allLevels: [LevelDefinition] = []
     @Published var displayableLevels: [LevelDefinition] = []
@@ -23,11 +24,13 @@ class LevelListViewModel: ObservableObject {
     @MainActor
     init(navigationViewModel:NavigationViewModel,
          settingsViewModel: SettingsViewModel,
-         deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol = DeleteAllLevelsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue)
+         deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol = DeleteAllLevelsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
+         exportPlayableLevelsUseCase: ExportLevelsUseCaseProtocol = ExportLevelsUseCase(fileRepository: Dependency(\.fileRepository).wrappedValue)
     ){
         self.navigationViewModel = navigationViewModel
         self.settingsViewModel = settingsViewModel
         self.deleteAllLevelsUseCase = deleteAllLevelsUseCase
+        self.exportPlayableLevelsUseCase = exportPlayableLevelsUseCase
         
         showCompleted = settingsViewModel.settings.showCompletedLevels
         
@@ -96,7 +99,23 @@ class LevelListViewModel: ObservableObject {
     }
     
     func exportAll() {
-        fatalError("\(String(describing: #function)) not implemented")
+        isBusy = true
+        
+        Task {
+            do {
+                try await exportPlayableLevelsUseCase.execute(fileDefinition: PlayableLevelFileDefinition(packNumber: 1),  levels: allLevels)
+                await MainActor.run {
+                    
+                    isBusy = false
+                }
+            } catch {
+                await MainActor.run {
+                    
+                    self.error = error.localizedDescription
+                    isBusy = false
+                }
+            }
+        }
     }
     
     @MainActor

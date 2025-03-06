@@ -15,7 +15,7 @@ class ExportAllUseCaseTests {
             @Dependency(\.uuid) var uuid
 
             let repository = Dependency(\.fileRepository).wrappedValue
-            let useCase = ExportAllUseCase(fileRepository: repository)
+            let useCase = ExportLevelsUseCase(fileRepository: repository)
 
             let testLevels = [
                 LevelDefinition(id: uuid(), number: 1),
@@ -23,7 +23,7 @@ class ExportAllUseCaseTests {
             ]
             
             do {
-                try await useCase.execute(levels: testLevels)
+                try await useCase.execute(fileDefinition: LayoutFileDefinition(), levels: testLevels)
                 
                 //            mockRepository.expectedSaveResult = .success(())
                 
@@ -54,13 +54,13 @@ class ExportAllUseCaseTests {
         } operation: {
             @Dependency(\.uuid) var uuid
             
-            let exportAllUseCase = ExportAllUseCase(fileRepository: mockRepository)
+            let exportAllUseCase = ExportLevelsUseCase(fileRepository: mockRepository)
 
             let testLevels = [LevelDefinition(id: uuid(), number: 1)]
             let expectedError = NSError(domain: "TestError", code: 2, userInfo: nil)
 
             do {
-                try await exportAllUseCase.execute(levels: testLevels)
+                try await exportAllUseCase.execute(fileDefinition: LayoutFileDefinition(), levels: testLevels)
                 
                 #expect(Bool(false), "Expected an error but no error was thrown")
             } catch {
@@ -72,22 +72,21 @@ class ExportAllUseCaseTests {
 }
 
 final class MockFileRepository: FileRepositoryProtocol {
-    func listPacks(levelType: CypherWord_CoreData.LevelType) async throws -> [URL] {
-        print("\(#function) not implemented")
+    func fetchLevels(fileDefinition: any CypherWord_CoreData.FileDefinitionProtocol) async throws -> [CypherWord_CoreData.LevelDefinition] {
         return []
     }
     
-    func fetchLevels(levelType: CypherWord_CoreData.LevelType) async throws -> [CypherWord_CoreData.LevelDefinition] {
-        return []
-    }
-    
-    func saveLevels(levels: [CypherWord_CoreData.LevelDefinition]) async throws {
+    func saveLevels(fileDefinition: any CypherWord_CoreData.FileDefinitionProtocol, levels: [CypherWord_CoreData.LevelDefinition]) async throws {
         if throwError {
             throw NSError(domain: "TestError", code: 2, userInfo: nil)
         }
         savedLevels = levels
     }
     
+    func listPacks(levelType: CypherWord_CoreData.LevelType) async throws -> [URL] {
+        print("\(#function) not implemented")
+        return []
+    }
     var throwError: Bool = false
     var savedPacks: [PackDefinition] = []
     var savedLevels: [LevelDefinition] = []

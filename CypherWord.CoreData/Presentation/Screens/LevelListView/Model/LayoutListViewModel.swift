@@ -5,13 +5,13 @@ class LayoutListViewModel: LevelListViewModel {
     
     private var fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
     private var addLayoutUseCase: AddLayoutUseCaseProtocol
-    private var exportLayoutsUseCase: ExportLayoutsUseCaseProtocol
+    private var exportLayoutsUseCase: ExportLevelsUseCaseProtocol
     
     init(navigationViewModel:NavigationViewModel,
          settingsViewModel: SettingsViewModel,
          fetchLayoutsUseCase: FetchLevelsUseCaseProtocol = FetchLayoutsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
          addLayoutUseCase: AddLayoutUseCaseProtocol = AddLayoutUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
-         exportLayoutsUseCase:ExportLayoutsUseCaseProtocol = ExportLayoutsUseCase(fileRepository: Dependency(\.fileRepository).wrappedValue)
+         exportLayoutsUseCase:ExportLevelsUseCaseProtocol = ExportLevelsUseCase(fileRepository: Dependency(\.fileRepository).wrappedValue)
     ){
         self.fetchLayoutsUseCase = fetchLayoutsUseCase
         self.addLayoutUseCase = addLayoutUseCase
@@ -66,7 +66,7 @@ class LayoutListViewModel: LevelListViewModel {
         
         Task {
             do {
-                try await exportLayoutsUseCase.execute(levels: allLevels) // TODO Change to include playable levels
+                try await exportLayoutsUseCase.execute(fileDefinition: LayoutFileDefinition(), levels: allLevels) 
                 await MainActor.run {
                     
                     isBusy = false

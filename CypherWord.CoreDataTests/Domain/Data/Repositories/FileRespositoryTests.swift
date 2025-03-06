@@ -18,16 +18,18 @@ class FileRespositoryTests {
         // Test saving levels
 
         do {
-            try await fileRepository.saveLevels(levels: levels)
+            try await fileRepository.saveLevels(fileDefinition: LayoutFileDefinition(), levels: levels)
+            
+            print(temporaryDirectoryURL)
             
             // Verify the file was saved
-            let fileName = LevelType.playable.rawValue + ".json"
+            let fileName = LevelType.layout.rawValue + ".json"
             let fileURL = temporaryDirectoryURL.appendingPathComponent(fileName)
             let fileExists = FileManager.default.fileExists(atPath: fileURL.path)
             #expect(fileExists == true)
             
-            let packs = try await fileRepository.listPacks(levelType:LevelType.playable)
-            print(packs)
+//            let packs = try await fileRepository.listPacks(levelType:LevelType.playable)
+//            print(packs)
             
         }
         catch {
@@ -42,18 +44,17 @@ class FileRespositoryTests {
         defer { try? removeTemporaryDirectory(at: temporaryDirectoryURL) }
         
         let fileRepository = FileRepository(directoryURL: temporaryDirectoryURL)
-        let levelType = LevelType.playable
         
         // Save some levels first
         let levels = [
             LevelDefinition(id: UUID(), number: 1, gridText: "Grid1", letterMap: "Map1", attemptedLetters: "abc", numCorrectLetters: 3)
         ]
         
-        try await fileRepository.saveLevels(levels: levels)
+        try await fileRepository.saveLevels(fileDefinition: LayoutFileDefinition(), levels: levels)
         
         // Test fetching levels
         
-        let fetchedLevels = try await fileRepository.fetchLevels(levelType: levelType)
+        let fetchedLevels = try await fileRepository.fetchLevels(fileDefinition: LayoutFileDefinition())
         
         // Verify the fetched levels
         #expect(fetchedLevels.count == 1)

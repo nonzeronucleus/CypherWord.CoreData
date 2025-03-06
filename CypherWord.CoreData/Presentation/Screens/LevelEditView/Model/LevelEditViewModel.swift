@@ -200,7 +200,6 @@ class LevelEditViewModel: ObservableObject {
     @MainActor
     func handleSaveChangesButtonTap() {
         save(then: goBack)
-//        save(then: goBack)
     }
     
     func goBack() {
@@ -216,7 +215,6 @@ class LevelEditViewModel: ObservableObject {
         if let populateTask = populateTask {
             populateTask.cancel()
         }
-//        populateTask?.cancel()
         isBusy = false // Update UI to remove spinner
     }
     
