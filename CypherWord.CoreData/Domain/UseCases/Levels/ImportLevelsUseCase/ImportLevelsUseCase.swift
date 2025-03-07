@@ -4,7 +4,7 @@ import Dependencies
 
 
 protocol ImportLevelsUseCaseProtocol {
-    func execute(fileDefinition: FileDefinitionProtocol) async throws
+    func execute(fileDefinition: any FileDefinitionProtocol) async throws
 }
 
 class ImportLevelsUseCase : ImportLevelsUseCaseProtocol {
@@ -18,7 +18,7 @@ class ImportLevelsUseCase : ImportLevelsUseCaseProtocol {
         self.fileRepository = fileRepository
     }
 
-    func execute(fileDefinition: FileDefinitionProtocol) async throws {
+    func execute(fileDefinition: any FileDefinitionProtocol) async throws {
         let levels = try await fileRepository.fetchLevels(fileDefinition: fileDefinition)
         
         try await levelRepository.saveLevels(levels:levels)

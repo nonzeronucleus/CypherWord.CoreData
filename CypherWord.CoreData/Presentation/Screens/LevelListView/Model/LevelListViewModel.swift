@@ -103,7 +103,7 @@ class LevelListViewModel: ObservableObject {
         
         Task {
             do {
-                try await exportPlayableLevelsUseCase.execute(fileDefinition: PlayableLevelFileDefinition(packNumber: 1),  levels: allLevels)
+                try await exportPlayableLevelsUseCase.execute(/*fileDefinition: PlayableLevelFileDefinition(packNumber: 1),  */levels: allLevels)
                 await MainActor.run {
                     
                     isBusy = false

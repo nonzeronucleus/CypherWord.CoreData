@@ -23,7 +23,7 @@ class ExportAllUseCaseTests {
             ]
             
             do {
-                try await useCase.execute(fileDefinition: LayoutFileDefinition(), levels: testLevels)
+                try await useCase.execute(levels: testLevels)
                 
                 //            mockRepository.expectedSaveResult = .success(())
                 
@@ -60,7 +60,7 @@ class ExportAllUseCaseTests {
             let expectedError = NSError(domain: "TestError", code: 2, userInfo: nil)
 
             do {
-                try await exportAllUseCase.execute(fileDefinition: LayoutFileDefinition(), levels: testLevels)
+                try await exportAllUseCase.execute(levels: testLevels)
                 
                 #expect(Bool(false), "Expected an error but no error was thrown")
             } catch {
@@ -76,7 +76,7 @@ final class MockFileRepository: FileRepositoryProtocol {
         return []
     }
     
-    func saveLevels(fileDefinition: any CypherWord_CoreData.FileDefinitionProtocol, levels: [CypherWord_CoreData.LevelDefinition]) async throws {
+    func saveLevels(levels: [CypherWord_CoreData.LevelDefinition]) async throws {
         if throwError {
             throw NSError(domain: "TestError", code: 2, userInfo: nil)
         }

@@ -30,7 +30,7 @@ final class ContentViewModel: ObservableObject {
         Task {
             do {
                 try await loadLevels(fileDefinition: LayoutFileDefinition())
-                try await loadLevels(fileDefinition: PlayableLevelFileDefinition(packNumber: 1))
+//                try await loadLevels(fileDefinition: PlayableLevelFileDefinition(packNumber: 1))
                 await MainActor.run {
                     isInitialized = true
                 }
@@ -46,7 +46,7 @@ final class ContentViewModel: ObservableObject {
     }
     
     
-    func loadLevels(fileDefinition: FileDefinitionProtocol) async throws {
+    func loadLevels(fileDefinition: any FileDefinitionProtocol) async throws {
 //        print("Need to implement \(#function) in \(#file)")
         try await importLeveslUseCase.execute(fileDefinition: fileDefinition)
             

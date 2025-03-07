@@ -1,17 +1,42 @@
 import Foundation
 import Dependencies
 
-protocol FileDefinitionProtocol {
+protocol FileDefinitionProtocol: Identifiable, Codable, Equatable  {
     func getFileName() -> String
 }
 
-class LayoutFileDefinition : FileDefinitionProtocol {
+
+class DummyFileDefinition : FileDefinitionProtocol, Codable {
+    init() {
+        
+    }
+    
+    
+    static func == (lhs: DummyFileDefinition, rhs: DummyFileDefinition) -> Bool {
+        return true
+    }
+    
+    func getFileName() -> String {
+        fatalError("init(from:) has not been implemented")
+    }
+}
+
+
+class LayoutFileDefinition : FileDefinitionProtocol, Codable {
+    static func == (lhs: LayoutFileDefinition, rhs: LayoutFileDefinition) -> Bool {
+        return true
+    }
+    
     func getFileName() -> String {
         return "Layouts.json"
     }
 }
 
 class PlayableLevelFileDefinition : FileDefinitionProtocol {
+    static func == (lhs: PlayableLevelFileDefinition, rhs: PlayableLevelFileDefinition) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
     let packNumber: Int
     let id: UUID
     

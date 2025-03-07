@@ -110,8 +110,8 @@
             filePath = "CypherWord.CoreData/Data/Repositories/FileRepository/FileRepository.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "264"
-            endingLineNumber = "264"
+            startingLineNumber = "270"
+            endingLineNumber = "270"
             landmarkName = "unknown"
             landmarkType = "0">
          </BreakpointContent>
@@ -119,47 +119,65 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "F8A141BB-2D00-48FD-9FA9-0C1AD860F681"
+            uuid = "3B446DEA-4805-4989-849C-E00288745C64"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CypherWord.CoreData/Presentation/Screens/LevelListView/Model/LevelListViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "114"
+            endingLineNumber = "114"
+            landmarkName = "exportAll()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F3B86FB3-1F2C-420A-9A52-A293974631E0"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CypherWord.CoreData/Presentation/Screens/LevelListView/Model/LayoutListViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "94"
+            endingLineNumber = "94"
+            landmarkName = "deleteAll()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "52DFEDA6-E7C9-473F-890D-121A70D1BF1C"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CypherWord.CoreData/Presentation/Screens/NavigationView/View/NavigationView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "17"
+            endingLineNumber = "17"
+            landmarkName = "body"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "61DFB66F-CF09-48EA-8A31-58275452DC84"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CypherWord.CoreData/Domain/Entities/Files/FileDefinition.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "19"
-            endingLineNumber = "19"
-            landmarkName = "init(packNumber:id:)"
+            startingLineNumber = "10"
+            endingLineNumber = "10"
+            landmarkName = "init()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "F8A141BB-2D00-48FD-9FA9-0C1AD860F681 - 2fd3918bb6001a96"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "CypherWord_CoreData.PlayableLevelFileDefinition.init(packNumber: Swift.Int, id: Swift.Optional&lt;Foundation.UUID&gt;) -&gt; CypherWord_CoreData.PlayableLevelFileDefinition"
-                  moduleName = "CypherWord.CoreData.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ianplumb/Development/swift/CypherWord.CoreData/CypherWord.CoreData/Domain/Entities/Files/FileDefinition.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "19"
-                  endingLineNumber = "19">
-               </Location>
-               <Location
-                  uuid = "F8A141BB-2D00-48FD-9FA9-0C1AD860F681 - 2fd3918bb6001a96"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "CypherWord_CoreData.PlayableLevelFileDefinition.init(packNumber: Swift.Int, id: Swift.Optional&lt;Foundation.UUID&gt;) -&gt; CypherWord_CoreData.PlayableLevelFileDefinition"
-                  moduleName = "CypherWord.CoreData.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ianplumb/Development/swift/CypherWord.CoreData/CypherWord.CoreData/Domain/Entities/Files/FileDefinition.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "19"
-                  endingLineNumber = "19">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
