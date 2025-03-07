@@ -1,6 +1,7 @@
 import Foundation
 
-import Foundation
+typealias Manifest = [Int:UUID]
+
 
 protocol FileRepositoryProtocol {
     func fetchLevels(fileDefinition: FileDefinitionProtocol) async throws -> [LevelDefinition]
@@ -12,6 +13,7 @@ protocol FileRepositoryProtocol {
 
 enum FileError: Error {
     case notFound
+    case manifestMissing(String)
     case other(Error)
 }
 
@@ -23,7 +25,7 @@ class FileRepository {
     private let writeDirectoryURL: URL
     private let readDirectoryURL: URL
     private let manifestFilename = "manifest.json"
-    var printLocation: Bool = true
+    var printLocation: Bool = false
 
     init(fileManager: FileManager = .default, directoryURL: URL? = nil) {
         self.fileManager = fileManager
@@ -67,8 +69,13 @@ extension FileRepository: FileRepositoryProtocol {
 
 extension FileRepository {
     private func writeToFile(fileDefinition: any FileDefinitionProtocol, levels: [LevelDefinition]) async throws {
+        var manifest: [Int:UUID]? = nil
         if levels.isEmpty {
             return
+        }
+        
+        if let playableLevel = fileDefinition as? PlayableLevelFileDefinition {
+            try await manifest = readManifestFile(fileName: playableLevel.manifestFileName)
         }
         
         let levelsToSave = levels.map { level in
@@ -87,7 +94,27 @@ extension FileRepository {
             let jsonData = try JSONEncoder().encode(levelsToSave)
             try jsonData.write(to: url)
             
-            return
+            if let playableLevel = fileDefinition as? PlayableLevelFileDefinition {
+                guard var manifest else {
+                    throw FileError.manifestMissing("#\(#function) at #\(#line) ")
+                }
+                manifest[playableLevel.packNumber] = playableLevel.id
+                
+                try await writeManifestFile(fileName: playableLevel.manifestFileName, manifest: manifest)
+            }
+        }
+    }
+    
+    
+    private func writeManifestFile(fileName: String, manifest: [Int:UUID]) async throws {
+        do {
+            let url = writeDirectoryURL.appendingPathComponent(fileName)
+            
+            if printLocation {
+                print("\(#file) \(#function) Saving to \(url.description)")
+            }
+            let jsonData = try JSONEncoder().encode(manifest)
+            try jsonData.write(to: url)
         }
     }
 }
@@ -96,18 +123,48 @@ extension FileRepository {
 
 extension FileRepository {
     private func readFromFile(fileDefinition: any FileDefinitionProtocol) async throws -> [LevelDefinition] {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        
+        do {
+            let fileName = fileDefinition.getFileName()
+            let url = readDirectoryURL.appendingPathComponent(fileName)
+            
+            let jsonData = try Data(contentsOf: url)
+            let levels = try decoder.decode([LevelDefinition].self, from: jsonData)
+            
+            return levels
+        }
+    }
+
+    private func readManifestFile(fileName: String) async throws -> [Int:UUID] {
+        if let manifestFileURL = findManifestFileURL() {
             let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
+            let jsonData = try Data(contentsOf: manifestFileURL)
+            let manifest: [Int:UUID] = try decoder.decode([Int:UUID].self, from: jsonData)
+            
+            print("Loaded manifest: \(manifest)")
+            
+            return manifest
+        }
+        
+        return [:]
+    }
     
-            do {
-                let fileName = fileDefinition.getFileName()
-                let url = readDirectoryURL.appendingPathComponent(fileName)
-    
-                let jsonData = try Data(contentsOf: url)
-                let levels = try decoder.decode([LevelDefinition].self, from: jsonData)
-    
-                return levels
-            }
+    private func findManifestFileURL() -> URL? {
+        var readFilePath = writeDirectoryURL.appendingPathComponent("Manifest.json")
+
+        if fileManager.fileExists(atPath: readFilePath.path) {
+            return readFilePath
+        }
+
+        readFilePath = readFilePath.appendingPathComponent("Manifest.json")
+
+        if fileManager.fileExists(atPath: readFilePath.path) {
+            return readFilePath
+        }
+
+        return nil
     }
 }
 

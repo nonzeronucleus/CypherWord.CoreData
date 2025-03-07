@@ -5,7 +5,7 @@ import Foundation
 // Test Suite for FileRepository
 class FileRespositoryTests {
     @Test
-    func testSaveLevels() async throws {
+    func testSaveLayouts() async throws {
         let temporaryDirectoryURL = try createTemporaryDirectory()
         defer { try? removeTemporaryDirectory(at: temporaryDirectoryURL) }
         
@@ -38,8 +38,9 @@ class FileRespositoryTests {
 
     }
     
+    
     @Test
-    func testFetchLevels() async throws {
+    func testFetchLayouts() async throws {
         let temporaryDirectoryURL = try createTemporaryDirectory()
         defer { try? removeTemporaryDirectory(at: temporaryDirectoryURL) }
         
@@ -59,6 +60,49 @@ class FileRespositoryTests {
         // Verify the fetched levels
         #expect(fetchedLevels.count == 1)
         #expect(fetchedLevels.first?.levelType == .playable)
+    }
+    
+    
+    @Test
+    func testSavePlayableLevels() async throws {
+        let temporaryDirectoryURL = try createTemporaryDirectory()
+        defer { try? removeTemporaryDirectory(at: temporaryDirectoryURL) }
+        
+        let fileRepository = FileRepository(directoryURL: temporaryDirectoryURL)
+        let levels = [
+            LevelDefinition(id: UUID(), number: 1, gridText: "Grid1", letterMap: "Map1", attemptedLetters: "abc", numCorrectLetters: 3),
+            LevelDefinition(id: UUID(), number: 2, gridText: "Grid2", letterMap: "Map2", attemptedLetters: "xyz", numCorrectLetters: 5)
+        ]
+        
+        // Test saving levels
+
+        do {
+            try await fileRepository.saveLevels(fileDefinition: PlayableLevelFileDefinition(packNumber: 1), levels: levels)
+            
+            print(temporaryDirectoryURL)
+            
+            // Verify the file was saved
+            var fileName = "Games.1.json"
+            var fileURL = temporaryDirectoryURL.appendingPathComponent(fileName)
+            var fileExists = FileManager.default.fileExists(atPath: fileURL.path)
+            #expect(fileExists == true)
+            
+            
+            // Verify the manifest was created
+            fileName = "Manifest.json"
+            fileURL = temporaryDirectoryURL.appendingPathComponent(fileName)
+            fileExists = FileManager.default.fileExists(atPath: fileURL.path)
+            #expect(fileExists == true)
+
+            
+//            let packs = try await fileRepository.listPacks(levelType:LevelType.playable)
+//            print(packs)
+            
+        }
+        catch {
+            #expect(error == nil)
+        }
+
     }
 }
 
