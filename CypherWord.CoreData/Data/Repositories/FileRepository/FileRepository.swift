@@ -4,9 +4,13 @@ typealias Manifest = [Int:UUID]
 
 
 protocol FileRepositoryProtocol {
-    func fetchLevels(fileDefinition: any FileDefinitionProtocol) async throws -> [LevelDefinition]
-    
-    func saveLevels(levels: [LevelDefinition]) async throws
+    func fetchLevels(fileDefinition: any FileDefinitionProtocol) async throws -> LevelFile
+    func saveLevels(file:LevelFile) async throws
+
+
+//    func fetchLevels(fileDefinition: any FileDefinitionProtocol) async throws -> [LevelDefinition]
+//    
+//    func saveLevels(levels: [LevelDefinition]) async throws
 }
 
 
@@ -54,16 +58,19 @@ class FileRepository {
 // Public interface functions
 
 extension FileRepository: FileRepositoryProtocol {
-    func fetchLevels(fileDefinition: any FileDefinitionProtocol) async throws -> [LevelDefinition] {
-        return try await readFromFile(fileDefinition: fileDefinition)
+    func fetchLevels(fileDefinition: any FileDefinitionProtocol) async throws -> LevelFile {
+        return try await LevelFile(definition: fileDefinition, levels: readFromFile(fileDefinition: fileDefinition))
     }
     
-    func saveLevels(levels: [LevelDefinition]) async throws {
+    func saveLevels(file:LevelFile) async throws {
+        let levels = file.levels
+        let fileDefinition = file.definition
+        
         guard levels.count > 0 else {
             return
         }
         
-        let fileDefinition = levels[0].fileDefinition
+//        let fileDefinition = levels[0].fileDefinition
         
         try await writeToFile(fileDefinition: fileDefinition, levels: levels)
     }

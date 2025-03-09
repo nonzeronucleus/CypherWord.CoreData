@@ -1,5 +1,25 @@
 import CoreData
 
+
+import Foundation
+
+protocol LevelRepositoryProtocol {
+    func fetchLevels(levelType: LevelType) async throws -> [LevelDefinition]
+    func saveLevels(file:LevelFile) async throws
+    
+    func fetchLevelByID(id: UUID) async throws -> LevelMO?
+    func addPlayableLevel(level: LevelDefinition) async throws
+    
+    func delete(levelID: UUID) async throws
+    func saveLevel(level: LevelDefinition) async throws
+
+    func addLayout() async throws
+
+    func deleteAll(levelType: LevelType) async throws
+}
+
+
+
 @MainActor
 extension LevelStorageCoreData:LevelRepositoryProtocol {
     func fetchLevelByID(id: UUID) async throws -> LevelMO? {
@@ -68,9 +88,9 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         }
     }
     
-    func saveLevels(levels: [LevelDefinition]) async throws {
+    func saveLevels(file:LevelFile) async throws {
         do {
-            for level in levels {
+            for level in file.levels {
                 if try findLevel(id: level.id) == nil {
                     let _ = try LevelMapper.map(context: container.viewContext, levelDefinition: level) {
                         return try fetchHighestNumber(levelType: level.levelType) + 1

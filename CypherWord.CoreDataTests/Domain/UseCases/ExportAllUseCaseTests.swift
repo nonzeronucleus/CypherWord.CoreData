@@ -23,7 +23,8 @@ class ExportAllUseCaseTests {
             ]
             
             do {
-                try await useCase.execute(levels: testLevels)
+                let levelFiles = LevelFile(definition: LayoutFileDefinition(), levels: testLevels)
+                try await useCase.execute(file: levelFiles)
                 
                 //            mockRepository.expectedSaveResult = .success(())
                 
@@ -35,7 +36,7 @@ class ExportAllUseCaseTests {
                 //                }
                 //            }
                 
-                #expect(mockRepository.savedLevels == testLevels)
+                #expect(mockRepository.file.levels == testLevels)
             }
             catch {
                 #expect(error == nil)
@@ -57,10 +58,11 @@ class ExportAllUseCaseTests {
             let exportAllUseCase = ExportLevelsUseCase(fileRepository: mockRepository)
 
             let testLevels = [LevelDefinition(id: uuid(), number: 1)]
+            let file = LevelFile(definition: LayoutFileDefinition(), levels: testLevels)
             let expectedError = NSError(domain: "TestError", code: 2, userInfo: nil)
 
             do {
-                try await exportAllUseCase.execute(levels: testLevels)
+                try await exportAllUseCase.execute(file: file)
                 
                 #expect(Bool(false), "Expected an error but no error was thrown")
             } catch {
@@ -72,15 +74,15 @@ class ExportAllUseCaseTests {
 }
 
 final class MockFileRepository: FileRepositoryProtocol {
-    func fetchLevels(fileDefinition: any CypherWord_CoreData.FileDefinitionProtocol) async throws -> [CypherWord_CoreData.LevelDefinition] {
-        return []
+    func fetchLevels(fileDefinition: any CypherWord_CoreData.FileDefinitionProtocol) async throws -> CypherWord_CoreData.LevelFile {
+        return file
     }
-    
-    func saveLevels(levels: [CypherWord_CoreData.LevelDefinition]) async throws {
+
+    func saveLevels(file: CypherWord_CoreData.LevelFile) async throws {
         if throwError {
             throw NSError(domain: "TestError", code: 2, userInfo: nil)
         }
-        savedLevels = levels
+        self.file = file
     }
     
     func listPacks(levelType: CypherWord_CoreData.LevelType) async throws -> [URL] {
@@ -89,6 +91,7 @@ final class MockFileRepository: FileRepositoryProtocol {
     }
     var throwError: Bool = false
     var savedPacks: [PackDefinition] = []
-    var savedLevels: [LevelDefinition] = []
+//    var savedLevels: [LevelDefinition] = []
+    var file: LevelFile = LevelFile(definition: DummyFileDefinition(), levels: [])
     var expectedSaveResult: Result<Void, Error> = .success(())
 }

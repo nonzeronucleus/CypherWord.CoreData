@@ -2,7 +2,8 @@ import SwiftUICore
 import Dependencies
 
 class PlayableLevelListViewModel: LevelListViewModel {
-        private var fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol
+    private var fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol
+    private var packNumber: Int = 1
 
     init(navigationViewModel:NavigationViewModel,
          settingsViewModel: SettingsViewModel,
@@ -11,7 +12,9 @@ class PlayableLevelListViewModel: LevelListViewModel {
     ){
         self.fetchPlayableLevelsUseCase = fetchPlayableLevelsUseCase
         
-        super.init(navigationViewModel: navigationViewModel, settingsViewModel: settingsViewModel)
+        super.init(navigationViewModel: navigationViewModel,
+                   settingsViewModel: settingsViewModel,
+                   levelFile: LevelFile(definition: PlayableLevelFileDefinition(packNumber: packNumber), levels: []))
     }
 
     
@@ -47,7 +50,9 @@ class PlayableLevelListViewModel: LevelListViewModel {
             do {
                 let levels = try await self.fetchPlayableLevelsUseCase.execute()
                 await MainActor.run {
-                    self.allLevels = levels  // ✅ Runs on main thread
+//                    self.allLevels = levels  // ✅ Runs on main thread
+                    levelFile.levels = levels
+                    
                 }
             } catch {
                 await MainActor.run {
@@ -63,7 +68,7 @@ class PlayableLevelListViewModel: LevelListViewModel {
             do {
                 let levels = try await deleteAllLevelsUseCase.execute(levelType: .playable)
                 await MainActor.run {
-                    self.allLevels = levels  // ✅ Ensures update happens on the main thread
+                    levelFile.levels = levels  // ✅ Ensures update happens on the main thread
                 }
             } catch {
                 await MainActor.run {

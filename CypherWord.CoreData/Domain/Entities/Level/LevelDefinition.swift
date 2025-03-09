@@ -15,7 +15,7 @@ struct LevelDefinition: Identifiable, Equatable {
     var letterMap: String?
     var attemptedLetters: String
     var numCorrectLetters: Int
-    var fileDefinition: any FileDefinitionProtocol
+//    var fileDefinition: any FileDefinitionProtocol
     
     var levelType: LevelType {
         get {
@@ -31,7 +31,7 @@ struct LevelDefinition: Identifiable, Equatable {
 //        self.fileDefinition = DummyFileDefinition()
         self.attemptedLetters = attemptedLetters ?? String(repeating: " ", count: 26)
         self.numCorrectLetters = numCorrectLetters
-        self.fileDefinition = (letterMap == nil) ? LayoutFileDefinition() : PlayableLevelFileDefinition(packNumber: 1)
+//        self.fileDefinition = (letterMap == nil) ? LayoutFileDefinition() : PlayableLevelFileDefinition(packNumber: 1)
     }
     
     init(from level:Level) {
@@ -46,7 +46,7 @@ struct LevelDefinition: Identifiable, Equatable {
         self.attemptedLetters = String(level.attemptedLetters)
         self.numCorrectLetters = level.numCorrectLetters
 //        self.fileDefinition = DummyFileDefinition()
-        self.fileDefinition = (letterMap == nil) ? LayoutFileDefinition() : PlayableLevelFileDefinition(packNumber: 1)
+//        self.fileDefinition = (letterMap == nil) ? LayoutFileDefinition() : PlayableLevelFileDefinition(packNumber: 1)
     }
 //    
 //    init(from decoder: any Decoder) throws {
@@ -92,7 +92,7 @@ extension LevelDefinition: Codable {
 //        self.numCorrectLetters = try container.decode(Int.self, forKey: .numCorrectLetters)
         self.numCorrectLetters = 0
         
-        self.fileDefinition = (letterMap == nil) ? LayoutFileDefinition() : PlayableLevelFileDefinition(packNumber: 1)
+//        self.fileDefinition = (letterMap == nil) ? LayoutFileDefinition() : PlayableLevelFileDefinition(packNumber: 1)
         
 
 //        // Decode fileDefinition manually

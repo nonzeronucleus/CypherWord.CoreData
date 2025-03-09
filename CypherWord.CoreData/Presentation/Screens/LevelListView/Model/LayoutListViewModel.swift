@@ -17,7 +17,9 @@ class LayoutListViewModel: LevelListViewModel {
         self.addLayoutUseCase = addLayoutUseCase
         self.exportLayoutsUseCase = exportLayoutsUseCase
 
-        super.init(navigationViewModel: navigationViewModel, settingsViewModel: settingsViewModel)
+        super.init(navigationViewModel: navigationViewModel,
+                   settingsViewModel: settingsViewModel,
+                   levelFile: LevelFile(definition: LayoutFileDefinition(), levels: []))
     }
 
     
@@ -45,7 +47,8 @@ class LayoutListViewModel: LevelListViewModel {
             do {
                 let levels = try await self.fetchLayoutsUseCase.execute()
                 await MainActor.run {
-                    self.allLevels = levels  // ✅ Runs on main thread
+                    self.levelFile.levels = levels
+//                    self.allLevels = levels  // ✅ Runs on main thread
                 }
             } catch {
                 await MainActor.run {
@@ -57,7 +60,7 @@ class LayoutListViewModel: LevelListViewModel {
     
     func addLayout() {
         Task {
-            allLevels = try await addLayoutUseCase.execute()
+            levelFile.levels = try await addLayoutUseCase.execute()
         }
     }
     
@@ -66,7 +69,9 @@ class LayoutListViewModel: LevelListViewModel {
         
         Task {
             do {
-                try await exportLayoutsUseCase.execute(/*fileDefinition: LayoutFileDefinition(),*/ levels: allLevels) 
+//                let file = LevelFile(definition: DummyFileDefinition(), levels: allLevels)
+
+                try await exportLayoutsUseCase.execute(/*fileDefinition: LayoutFileDefinition(),*/ file: levelFile)
                 await MainActor.run {
                     
                     isBusy = false
@@ -87,7 +92,8 @@ class LayoutListViewModel: LevelListViewModel {
             do {
                 let levels = try await deleteAllLevelsUseCase.execute(levelType: .layout)
                 await MainActor.run {
-                    self.allLevels = levels  // ✅ Ensures update happens on the main thread
+//                    self.allLevels = levels  // ✅ Ensures update happens on the main thread
+                    self.levelFile.levels = levels
                 }
             } catch {
                 await MainActor.run {

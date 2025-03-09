@@ -10,7 +10,8 @@ class LevelListViewModel: ObservableObject {
     var deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol
     var exportPlayableLevelsUseCase: ExportLevelsUseCaseProtocol
     
-    @Published var allLevels: [LevelDefinition] = []
+//    @Published var allLevels: [LevelDefinition] = []
+    @Published var levelFile: LevelFile
     @Published var displayableLevels: [LevelDefinition] = []
     @Published var error:String?
     @Published private(set) var selectedLevel: LevelDefinition?
@@ -24,17 +25,19 @@ class LevelListViewModel: ObservableObject {
     @MainActor
     init(navigationViewModel:NavigationViewModel,
          settingsViewModel: SettingsViewModel,
+         levelFile: LevelFile,
          deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol = DeleteAllLevelsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
          exportPlayableLevelsUseCase: ExportLevelsUseCaseProtocol = ExportLevelsUseCase(fileRepository: Dependency(\.fileRepository).wrappedValue)
     ){
         self.navigationViewModel = navigationViewModel
         self.settingsViewModel = settingsViewModel
+        self.levelFile = levelFile
         self.deleteAllLevelsUseCase = deleteAllLevelsUseCase
         self.exportPlayableLevelsUseCase = exportPlayableLevelsUseCase
         
         showCompleted = settingsViewModel.settings.showCompletedLevels
         
-        $allLevels
+        levelFile.$levels
             .receive(on: DispatchQueue.main)
             .sink { [weak self] newLevels in
                 if let showCompleted = self?.showCompleted {
@@ -46,9 +49,7 @@ class LevelListViewModel: ObservableObject {
         $showCompleted
             .receive(on: DispatchQueue.main)
             .sink { [weak self] newShowCompleted in
-                if let levels = self?.allLevels {
-                    self?.updateDisplayableLevels(levels: levels, showCompleted: newShowCompleted)
-                }
+                self?.updateDisplayableLevels(levels: levelFile.levels, showCompleted: newShowCompleted)
             }
             .store(in: &cancellables)
         
@@ -103,7 +104,7 @@ class LevelListViewModel: ObservableObject {
         
         Task {
             do {
-                try await exportPlayableLevelsUseCase.execute(/*fileDefinition: PlayableLevelFileDefinition(packNumber: 1),  */levels: allLevels)
+                try await exportPlayableLevelsUseCase.execute(file: levelFile)
                 await MainActor.run {
                     
                     isBusy = false

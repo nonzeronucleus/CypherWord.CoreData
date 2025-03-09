@@ -19,7 +19,8 @@ class FileRespositoryTests {
         // Test saving levels
 
         do {
-            try await fileRepository.saveLevels(levels: levels)
+            var file = LevelFile(definition: LayoutFileDefinition(), levels: levels)
+            try await fileRepository.saveLevels(file: file)
             
             print(temporaryDirectoryURL)
             
@@ -52,15 +53,15 @@ class FileRespositoryTests {
             LevelDefinition(id: UUID(), number: 1, gridText: "Grid1", attemptedLetters: "abc", numCorrectLetters: 3)
         ]
         
-        try await fileRepository.saveLevels(levels: levels)
+        try await fileRepository.saveLevels(file: LevelFile(definition: LayoutFileDefinition(), levels: levels))
         
         // Test fetching levels
         
-        let fetchedLevels = try await fileRepository.fetchLevels(fileDefinition: LayoutFileDefinition())
+        let fetchedLevelFile = try await fileRepository.fetchLevels(fileDefinition: LayoutFileDefinition())
         
         // Verify the fetched levels
-        #expect(fetchedLevels.count == 1)
-        #expect(fetchedLevels.first?.levelType == .layout)
+        #expect(fetchedLevelFile.levels.count == 1)
+        #expect(fetchedLevelFile.levels.first?.levelType == .layout)
     }
     
     
@@ -84,7 +85,9 @@ class FileRespositoryTests {
             // Test saving levels
             
             do {
-                try await fileRepository.saveLevels(levels: levels)
+                var file = LevelFile(definition: PlayableLevelFileDefinition(packNumber: 1), levels: levels)
+
+                try await fileRepository.saveLevels(file:file)
                 
                 print(temporaryDirectoryURL)
                 

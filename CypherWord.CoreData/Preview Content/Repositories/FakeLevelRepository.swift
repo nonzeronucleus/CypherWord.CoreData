@@ -53,9 +53,10 @@ class FakeLevelRepository: LevelRepositoryProtocol {
         }
     }
     
-    func saveLevels(levels: [LevelDefinition]) async throws {
+    func saveLevels(file: LevelFile) async throws {
     }
     
+
     var testLayouts: Dictionary<UUID, LevelDefinition>
     var testPlayableLevels: Dictionary<UUID, LevelDefinition>
     var deletedLevelID:UUID?
