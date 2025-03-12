@@ -30,7 +30,7 @@ final class ContentViewModel: ObservableObject {
         Task {
             do {
                 try await loadLevels(fileDefinition: LayoutFileDefinition())
-//                try await loadLevels(fileDefinition: PlayableLevelFileDefinition(packNumber: 1))
+                try await loadLevels(fileDefinition: PlayableLevelFileDefinition(packNumber: 1))
                 await MainActor.run {
                     isInitialized = true
                 }

@@ -19,7 +19,7 @@ class FileRespositoryTests {
         // Test saving levels
 
         do {
-            var file = LevelFile(definition: LayoutFileDefinition(), levels: levels)
+            let file = LevelFile(definition: LayoutFileDefinition(), levels: levels)
             try await fileRepository.saveLevels(file: file)
             
             print(temporaryDirectoryURL)
@@ -85,7 +85,7 @@ class FileRespositoryTests {
             // Test saving levels
             
             do {
-                var file = LevelFile(definition: PlayableLevelFileDefinition(packNumber: 1), levels: levels)
+                let file = LevelFile(definition: PlayableLevelFileDefinition(packNumber: 1), levels: levels)
 
                 try await fileRepository.saveLevels(file:file)
                 
