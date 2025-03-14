@@ -91,6 +91,14 @@ struct GameView: View {
             }
             
         }
+        .background(
+            LinearGradient(
+                gradient: Gradient(colors: [Color.purple.opacity(0.2), Color.blue.opacity(0.2)]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .edgesIgnoringSafeArea(.all)
+        )
     }
 }
 

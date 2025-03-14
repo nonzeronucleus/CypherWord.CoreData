@@ -20,9 +20,10 @@ struct NavigationView : View {
                 VStack {
                     if settingsViewModel.settings.editMode {
                         TabView(selection: $selection) {
-                            LevelListView(viewModel.createLevelListViewModel(levelType: .playable))
-                            
-                            LevelListView(viewModel.createLevelListViewModel( levelType: .layout))
+                            LevelSelectView(viewModel.createLevelListViewModel(levelType: .playable))
+                            LevelSelectView(viewModel.createLevelListViewModel( levelType: .layout))
+
+//                            LevelListView(viewModel.createLevelListViewModel( levelType: .layout))
                         }
                     }
                     else {
@@ -64,8 +65,12 @@ struct NavigationView : View {
     withDependencies {
         $0.levelRepository = FakeLevelRepository(testLayouts: testLayouts, testPlayableLevels: testPlayableLevels)
     } operation: {
+        var settingsViewModel =  SettingsViewModel(parentId:nil)
+        var navigationView = NavigationViewModel(settingsViewModel:settingsViewModel)
 //        let viewModel = LevelListViewModel()
         return NavigationView(/*viewModel*/)
+            .environmentObject(navigationView)
+            .environmentObject(settingsViewModel)
     }
 }
 

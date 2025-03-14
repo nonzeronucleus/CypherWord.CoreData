@@ -1,62 +1,6 @@
 import SwiftUI
 import Dependencies
 
-struct CurvedBox: Shape {
-    var curveAmount: CGFloat = 20 // Adjust for more/less curve
-
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let midY = rect.midY
-        
-        path.move(to: CGPoint(x: rect.minX, y: rect.minY))
-        
-        // Left side curve
-        path.addQuadCurve(
-            to: CGPoint(x: rect.minX, y: rect.maxY),
-            control: CGPoint(x: rect.minX - curveAmount, y: midY)
-        )
-        
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-        
-        // Right side curve
-        path.addQuadCurve(
-            to: CGPoint(x: rect.maxX, y: rect.minY),
-            control: CGPoint(x: rect.maxX + curveAmount, y: midY)
-        )
-        
-        path.closeSubpath()
-        return path
-    }
-}
-
-struct CurvedBoxContainer<Content: View>: View {
-    var curveAmount: CGFloat
-    var content: Content
-
-    init(curveAmount: CGFloat = 20, @ViewBuilder content: () -> Content) {
-        self.curveAmount = curveAmount
-        self.content = content()
-    }
-
-    var body: some View {
-        ZStack {
-            CurvedBox(curveAmount: curveAmount)
-                .fill(LinearGradient(
-                    gradient: Gradient(colors: [.green, .cyan]),
-                    startPoint: .top,
-                    endPoint: .bottom)
-                )
-            
-                .shadow(radius: 5)
-
-            content // Child views will be placed inside the shape
-        }
-        .padding(30)
-//        .frame(width: 250, height: 300)
-        .clipShape(CurvedBox(curveAmount: curveAmount)) // Clip to maintain shape
-    }
-}
-
 struct LabelButton: View {
     var level: LevelDefinition
     var viewModel: LevelListViewModel
@@ -97,27 +41,7 @@ struct LevelListView : View {
             }
             .padding(0)
 
-
-//            if (!viewModel.isLayout){
-//                Text("<>")
-//            }
-            
             ZStack {
-//                CurvedBoxContainer(curveAmount: 30) {
-//                    VStack {
-//                        Text("Hello")
-//                            .font(.largeTitle)
-//                            .foregroundColor(.white)
-//                        Spacer()
-//                        Button("Tap Me") {
-//                            print("Button Tapped")
-//                        }
-//                        .padding()
-//                        .background(Color.white.opacity(0.3))
-//                        .cornerRadius(10)
-//                        .foregroundColor(.black)
-                        
-//                        .padding()
                         
                 ScrollView {
                     LazyVGrid(columns: gridItemLayout, spacing: 20) {

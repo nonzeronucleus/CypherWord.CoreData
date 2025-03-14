@@ -8,7 +8,7 @@ enum LevelType: String, CaseIterable, Identifiable, Hashable {
     var id: Self { self }
 }
 
-struct LevelDefinition: Identifiable, Equatable {
+struct LevelDefinition: Identifiable, Equatable, Hashable {
     var id: UUID
     var number: Int?
     var gridText: String?

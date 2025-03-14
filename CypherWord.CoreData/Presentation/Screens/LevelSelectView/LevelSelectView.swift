@@ -1,12 +1,24 @@
 import SwiftUI
+import Dependencies
 
 struct LevelSelectView: View {
-    let levels = Array(1...24) // Example levels (more than one page)
+    @EnvironmentObject var settingsViewModel: SettingsViewModel
+    @ObservedObject var viewModel: LevelListViewModel
+
+//    private var gridItemLayout = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
+    init(_ viewModel: LevelListViewModel) {
+        self.viewModel = viewModel
+    }
+
+//    let levels = Array(1...24) // Example levels (more than one page)
     let columns = [GridItem(.adaptive(minimum: 60, maximum: 80), spacing: 20)] // Grid layout
     @State private var currentPage = 1 // Current page number
+    var totalPages = 2
     let levelsPerPage = 12 // Number of levels per page
 
     var body: some View {
+        let visibleLevels = viewModel.displayableLevels
+
         VStack {
             // Level Grid
             ScrollView {
@@ -14,49 +26,15 @@ struct LevelSelectView: View {
                     ForEach(visibleLevels, id: \.self) { level in
                         LevelCard(level: level, progress: Double.random(in: 0...1)) // Random progress for demo
                             .onTapGesture {
-                                print("Selected Level \(level)")
+                                viewModel.onSelectLevel(level: level)
+//                                print("Selected Level \(level)")
                                 // Navigate to the selected level here
                             }
                     }
                 }
                 .padding()
             }
-
             // Page Navigation
-            HStack {
-                // Left Arrow
-                Button(action: {
-                    if currentPage > 1 {
-                        currentPage -= 1
-                    }
-                }) {
-                    Image(systemName: "chevron.left.circle.fill")
-                        .font(.system(size: 30))
-                        .foregroundColor(currentPage > 1 ? .blue : .gray)
-                        .padding()
-                }
-                .disabled(currentPage <= 1)
-
-                // Page Number
-                Text("Page \(currentPage)")
-                    .font(.system(size: 20, weight: .bold, design: .rounded))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 20)
-
-                // Right Arrow
-                Button(action: {
-                    if currentPage < totalPages {
-                        currentPage += 1
-                    }
-                }) {
-                    Image(systemName: "chevron.right.circle.fill")
-                        .font(.system(size: 30))
-                        .foregroundColor(currentPage < totalPages ? .blue : .gray)
-                        .padding()
-                }
-                .disabled(currentPage >= totalPages)
-            }
-            .padding(.bottom, 20)
         }
         .navigationTitle("Level Select")
         .background(
@@ -67,33 +45,88 @@ struct LevelSelectView: View {
             )
             .edgesIgnoringSafeArea(.all)
         )
+        .tabItem {
+            Image(systemName: viewModel.isLayout ? "books.vertical" : "square.grid.3x3")
+            Text(viewModel.title())
+        }
+        .tag(viewModel.tag)
     }
 
-    // Calculate visible levels for the current page
-    private var visibleLevels: [Int] {
-        let startIndex = (currentPage - 1) * levelsPerPage
-        let endIndex = min(startIndex + levelsPerPage, levels.count)
-        return Array(levels[startIndex..<endIndex])
-    }
-
-    // Calculate total number of pages
-    private var totalPages: Int {
-        Int(ceil(Double(levels.count) / Double(levelsPerPage)))
-    }
 }
 
 
+//    // Calculate visible levels for the current page
+//    private var visibleLevels: [Int] {
+//        let levels = viewModel.displayableLevels
+//
+//        let startIndex = (currentPage - 1) * levelsPerPage
+//        let endIndex = min(startIndex + levelsPerPage, levels.count)
+//        return Array(levels[startIndex..<endIndex])
+//    }
+//
+//    // Calculate total number of pages
+//    private var totalPages: Int {
+//        let levels = viewModel.displayableLevels
+//
+//        Int(ceil(Double(levels.count) / Double(levelsPerPage)))
+//    }
+
+
+
+//            HStack {
+//                //                 Left Arrow
+//                Button(action: {
+//                    if currentPage > 1 {
+//                        currentPage -= 1
+//                    }
+//                }) {
+//                    Image(systemName: "chevron.left.circle.fill")
+//                        .font(.system(size: 30))
+//                        .foregroundColor(currentPage > 1 ? .blue : .gray)
+//                        .padding()
+//                }
+//                .disabled(currentPage <= 1)
+//
+//                // Page Number
+//                Text("Page \(currentPage)")
+//                    .font(.system(size: 20, weight: .bold, design: .rounded))
+//                    .foregroundColor(.white)
+//                    .padding(.horizontal, 20)
+//
+//                //                 Right Arrow
+//                Button(action: {
+//                    if currentPage < totalPages {
+//                        currentPage += 1
+//                    }
+//                }) {
+//                    Image(systemName: "chevron.right.circle.fill")
+//                        .font(.system(size: 30))
+//                        .foregroundColor(currentPage < totalPages ? .blue : .gray)
+//                        .padding()
+//                }
+//                .disabled(currentPage >= totalPages)
+//            }
+//            .padding(.bottom, 20)
+
+
 struct LevelCard: View {
-    let level: Int
+    let level: LevelDefinition
     let progress: Double // Progress from 0 to 1
     let showingStars = false
+    
+    init(level: LevelDefinition, progress: Double = 1.0) {
+        self.level = level
+        self.progress = progress
+    }
 
     var body: some View {
         VStack(spacing: 8) {
 //            Text("Level \(level)")
-            Text("\(level)")
-                .font(.system(size: 32, weight: .bold, design: .rounded))
-                .foregroundColor(.white)
+            if let number = level.number {
+                Text("\(number)")
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+            }
 
             // Progress indicator (stars or bar)
             ProgressBar(value: progress)
@@ -125,6 +158,7 @@ struct LevelCard: View {
         )
         .cornerRadius(15)
         .shadow(color: Color.black.opacity(0.3), radius: 10, x: 0, y: 5)
+        
     }
 }
 
@@ -149,16 +183,46 @@ struct ProgressBar: View {
     }
 }
 
-struct ContentView2: View {
-    var body: some View {
-//        NavigationView {
-            LevelSelectView()
-//        }
+//struct ContentView2: View {
+//    var body: some View {
+////        NavigationView {
+//            LevelSelectView()
+////        }
+//    }
+//}
+
+//struct ContentView2_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ContentView2()
+//    }
+//}
+//
+
+#Preview("Playable - hide completed") {
+    let testLayouts = [
+        LevelDefinition(id: UUID(), number: 1, attemptedLetters: nil),
+        LevelDefinition(id: UUID(), number: 2, attemptedLetters: nil)
+    ]
+    
+    let testPlayableLevels = [
+        LevelDefinition(id: UUID(), number: 1, attemptedLetters: nil),
+        LevelDefinition(id: UUID(), number: 2, attemptedLetters: nil, numCorrectLetters: 20),
+        LevelDefinition(id: UUID(), number: 3, attemptedLetters: nil, numCorrectLetters: 26),
+        LevelDefinition(id: UUID(), number: 4, attemptedLetters: nil)
+    ]
+    
+    withDependencies {
+        $0.levelRepository = FakeLevelRepository(testLayouts: testLayouts, testPlayableLevels: testPlayableLevels)
+    } operation: {
+        let settingsViewModel = SettingsViewModel(parentId: nil)
+        settingsViewModel.settings.showCompletedLevels = false
+
+        let viewModel = PlayableLevelListViewModel(
+            navigationViewModel: NavigationViewModel(settingsViewModel: SettingsViewModel(parentId: nil)),
+            settingsViewModel:SettingsViewModel(parentId: nil))
+
+        return LevelSelectView(viewModel)
+            .environmentObject(settingsViewModel)
     }
 }
 
-struct ContentView2_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView2()
-    }
-}
