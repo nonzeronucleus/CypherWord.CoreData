@@ -23,7 +23,7 @@ struct LevelDefinition: Identifiable, Equatable {
         }
     }
 
-    init(id: UUID, /*fileDefinition: any FileDefinitionProtocol, */number: Int, gridText: String? =  nil, letterMap: String? =  nil, attemptedLetters: String? = nil, numCorrectLetters: Int = 0) {
+    init(id: UUID, number: Int, gridText: String? =  nil, letterMap: String? =  nil, attemptedLetters: String? = nil, numCorrectLetters: Int = 0) {
         self.id = id
         self.number = number
         self.gridText = gridText

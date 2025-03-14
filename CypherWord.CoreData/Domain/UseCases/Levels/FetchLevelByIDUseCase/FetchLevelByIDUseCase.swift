@@ -1,5 +1,4 @@
 import Foundation
-import Dependencies
 
 class FetchLevelByIDUseCase : LevelsUseCase, FetchLevelByIDUseCaseProtocol {
     func execute(id: UUID) async throws -> LevelDefinition? {

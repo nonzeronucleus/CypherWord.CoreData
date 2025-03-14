@@ -1,55 +1,84 @@
 import SwiftUI
 import Dependencies
 
+struct CurvedBox: Shape {
+    var curveAmount: CGFloat = 20 // Adjust for more/less curve
 
-struct TitleBarView: View {
-    var title: String
-    var color: Color
-    var action: () -> Void
-    
-    var body: some View {
-        ZStack {
-            // Background color extending to the top edge
-            color
-                .ignoresSafeArea(edges: .top)
-
-            ZStack {
-                HStack {
-                    Spacer()
-                    
-                    // Centered Title
-                    Text(title)
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                    
-                    Spacer()
-                }
-                
-                HStack {
-                    Spacer()
-                    
-                    // Settings Button (Gear Icon)
-                    Button(action: {
-                        action()
-                    }) {
-                        Image(systemName: "gearshape.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 24, height: 24)
-                            .foregroundColor(.white)
-                    }
-                    .padding(.trailing, 16) // Add some right padding
-                }
-            }
-            .frame(height: 30) // Set a fixed height for the title bar
-        }
-        .frame(height: 60) // Total height of the title bar
-        .padding(.bottom, 8)
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let midY = rect.midY
+        
+        path.move(to: CGPoint(x: rect.minX, y: rect.minY))
+        
+        // Left side curve
+        path.addQuadCurve(
+            to: CGPoint(x: rect.minX, y: rect.maxY),
+            control: CGPoint(x: rect.minX - curveAmount, y: midY)
+        )
+        
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        
+        // Right side curve
+        path.addQuadCurve(
+            to: CGPoint(x: rect.maxX, y: rect.minY),
+            control: CGPoint(x: rect.maxX + curveAmount, y: midY)
+        )
+        
+        path.closeSubpath()
+        return path
     }
 }
 
+struct CurvedBoxContainer<Content: View>: View {
+    var curveAmount: CGFloat
+    var content: Content
 
+    init(curveAmount: CGFloat = 20, @ViewBuilder content: () -> Content) {
+        self.curveAmount = curveAmount
+        self.content = content()
+    }
+
+    var body: some View {
+        ZStack {
+            CurvedBox(curveAmount: curveAmount)
+                .fill(LinearGradient(
+                    gradient: Gradient(colors: [.green, .cyan]),
+                    startPoint: .top,
+                    endPoint: .bottom)
+                )
+            
+                .shadow(radius: 5)
+
+            content // Child views will be placed inside the shape
+        }
+        .padding(30)
+//        .frame(width: 250, height: 300)
+        .clipShape(CurvedBox(curveAmount: curveAmount)) // Clip to maintain shape
+    }
+}
+
+struct LabelButton: View {
+    var level: LevelDefinition
+    var viewModel: LevelListViewModel
+    
+    var body: some View {
+        if let number = level.number {
+            let gradient = Gradient(colors: [viewModel.primaryColor(level: level), viewModel.secondaryColor(level: level)])
+            ZStack {
+                LevelButtonView(number: number,gradient: gradient) {
+                    viewModel.onSelectLevel(level: level)
+                }
+                if level.levelType == .playable && level.percentComplete < 1.0 {
+                    PercentageCircleView(percentage: level.percentComplete)
+                }
+            }
+            .accessibilityIdentifier("LevelButton_\(number)")
+        }
+        else {
+            fatalError("No Number for Level \(level.id)")
+        }
+    }
+}
 
 
 struct LevelListView : View {
@@ -60,73 +89,54 @@ struct LevelListView : View {
     init(_ viewModel: LevelListViewModel) {
         self.viewModel = viewModel
     }
-    
-//    func primaryColor(level:LevelDefinition? = nil) -> Color {
-//        viewModel.primaryColor(level:level)
-//    }
-//    
-//    
-//    func secondaryColor(level:LevelDefinition? = nil) -> Color {
-//        if viewModel.levelType == .layout {
-//            return .red
-//        }
-//        else {
-//            if let level = level {
-//                if level.numCorrectLetters == 26 {
-//                    return .mint
-//                }
-//            }
-//        }
-//        return .cyan
-//    }
-//    
+
     var body: some View {
         VStack {
             TitleBarView(title: viewModel.title(), color: viewModel.primaryColor()) {
                 viewModel.navigateToSettings()
             }
-            
-//            if viewModel.levelType == .playable {
-//                HStack {
-//                    Toggle("Show Completed", isOn: $viewModel.showCompleted)
-//                         .toggleStyle(SwitchToggleStyle()) // Default iOS switch style
-//                         .padding()
-//                         .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6))) // Light gray background
-//                         .shadow(radius: 3)
-//                         .padding()
-//                 }
-//                 .frame(maxWidth: .infinity) // Center vertically & horizontally
-//                 .background(Color(.systemBackground)) // Match system theme
-//            }
+            .padding(0)
 
+
+//            if (!viewModel.isLayout){
+//                Text("<>")
+//            }
             
-            ScrollView {
-                LazyVGrid(columns: gridItemLayout, spacing: 20) {
-                    let levels = viewModel.displayableLevels
-                    ForEach(levels) { level in
-                        if let number = level.number {
-                            let gradient = Gradient(colors: [viewModel.primaryColor(level: level), viewModel.secondaryColor(level: level)])
-                            ZStack {
-                                LevelButtonView(number: number,gradient: gradient) {
-                                    viewModel.onSelectLevel(level: level)
-                                }
-                                if level.levelType == .playable && level.percentComplete < 1.0 {
-                                    PercentageCircleView(percentage: level.percentComplete)
-                                }
-                            }
-                        }
-                        else {
-                            fatalError("No Number for Level \(level.id)")
+            ZStack {
+//                CurvedBoxContainer(curveAmount: 30) {
+//                    VStack {
+//                        Text("Hello")
+//                            .font(.largeTitle)
+//                            .foregroundColor(.white)
+//                        Spacer()
+//                        Button("Tap Me") {
+//                            print("Button Tapped")
+//                        }
+//                        .padding()
+//                        .background(Color.white.opacity(0.3))
+//                        .cornerRadius(10)
+//                        .foregroundColor(.black)
+                        
+//                        .padding()
+                        
+                ScrollView {
+                    LazyVGrid(columns: gridItemLayout, spacing: 20) {
+                        let levels = viewModel.displayableLevels
+                        ForEach(levels) { level in
+                            LabelButton(level: level, viewModel: viewModel)
                         }
                     }
+                    .padding(20)
                 }
+//                    }
+//                }
             }
+            .padding(0)
             
             Spacer()
             
             if settingsViewModel.settings.editMode {
                 if let viewModel = viewModel as? LayoutListViewModel {
-//                if viewModel.isLayout() {
                     Button("Add") {
                         viewModel.addLayout()
                     }

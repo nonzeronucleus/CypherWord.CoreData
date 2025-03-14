@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		285900172D824CE0004CB9C3 /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 28EB87352D824369007BC8C6 /* Dependencies */; };
+		285900182D824CE0004CB9C3 /* DependenciesTestSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 28EB87372D8243B0007BC8C6 /* DependenciesTestSupport */; };
 		28CAACAD2D56B18600AE7721 /* Resolver in Frameworks */ = {isa = PBXBuildFile; productRef = 28CAACAC2D56B18600AE7721 /* Resolver */; };
 		28CAACB72D56B31400AE7721 /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 28CAACB62D56B31400AE7721 /* Dependencies */; };
 		28CAACB92D56B31400AE7721 /* DependenciesMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 28CAACB82D56B31400AE7721 /* DependenciesMacros */; };
@@ -77,6 +79,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				285900182D824CE0004CB9C3 /* DependenciesTestSupport in Frameworks */,
+				285900172D824CE0004CB9C3 /* Dependencies in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -89,6 +93,7 @@
 				28E36D8E2D4E0B3800AEF8E3 /* CypherWord.CoreData */,
 				28E36D9F2D4E0B3A00AEF8E3 /* CypherWord.CoreDataTests */,
 				28E36DA92D4E0B3A00AEF8E3 /* CypherWord.CoreDataUITests */,
+				28EB87322D824320007BC8C6 /* Frameworks */,
 				28E36D8D2D4E0B3800AEF8E3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -101,6 +106,13 @@
 				28E36DA62D4E0B3A00AEF8E3 /* CypherWord.CoreDataUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		28EB87322D824320007BC8C6 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -173,6 +185,8 @@
 			);
 			name = CypherWord.CoreDataUITests;
 			packageProductDependencies = (
+				28EB87352D824369007BC8C6 /* Dependencies */,
+				28EB87372D8243B0007BC8C6 /* DependenciesTestSupport */,
 			);
 			productName = CypherWord.CoreDataUITests;
 			productReference = 28E36DA62D4E0B3A00AEF8E3 /* CypherWord.CoreDataUITests.xctest */;
@@ -614,6 +628,16 @@
 			productName = DependenciesMacros;
 		};
 		28CAACBA2D56B31400AE7721 /* DependenciesTestSupport */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28CAACB52D56B31400AE7721 /* XCRemoteSwiftPackageReference "swift-dependencies" */;
+			productName = DependenciesTestSupport;
+		};
+		28EB87352D824369007BC8C6 /* Dependencies */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28CAACB52D56B31400AE7721 /* XCRemoteSwiftPackageReference "swift-dependencies" */;
+			productName = Dependencies;
+		};
+		28EB87372D8243B0007BC8C6 /* DependenciesTestSupport */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 28CAACB52D56B31400AE7721 /* XCRemoteSwiftPackageReference "swift-dependencies" */;
 			productName = DependenciesTestSupport;
