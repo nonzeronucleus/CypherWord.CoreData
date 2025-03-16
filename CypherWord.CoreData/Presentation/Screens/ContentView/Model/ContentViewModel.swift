@@ -5,14 +5,16 @@ final class ContentViewModel: ObservableObject {
     @Published var isInitialized = false
     @Published var error: String?
     private var importLeveslUseCase: ImportLevelsUseCaseProtocol
-
+    private var loadManifestUseCase: LoadManifestUseCaseProtocol
     @MainActor
     init(
         importLeveslUseCase: ImportLevelsUseCaseProtocol = ImportLevelsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue,
-                                                                               fileRepository:  Dependency(\.fileRepository).wrappedValue)
+                                                                               fileRepository:  Dependency(\.fileRepository).wrappedValue),
+        loadManifestUseCase:LoadManifestUseCaseProtocol = LoadManifestUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue)
     )
     {
         self.importLeveslUseCase = importLeveslUseCase
+        self.loadManifestUseCase = loadManifestUseCase
     }
     
     func start2() {
@@ -29,8 +31,12 @@ final class ContentViewModel: ObservableObject {
 
         Task {
             do {
-                try await loadLevels(fileDefinition: LayoutFileDefinition())
-                try await loadLevels(fileDefinition: PlayableLevelFileDefinition(packNumber: 1))
+                let manifest = try await loadManifestUseCase.execute()
+                try await importLeveslUseCase.execute(fileDefinition: LayoutFileDefinition())
+                guard let playableFile = manifest.getLevelFileDefinition(forNumber: 1) else {
+                    fatalError("Can't load manifest")
+                }
+                try await importLeveslUseCase.execute(fileDefinition: playableFile)
                 await MainActor.run {
                     isInitialized = true
                 }
@@ -43,15 +49,5 @@ final class ContentViewModel: ObservableObject {
                 }
             }
         }
-    }
-    
-    
-    func loadLevels(fileDefinition: any FileDefinitionProtocol) async throws {
-//        print("Need to implement \(#function) in \(#file)")
-        try await importLeveslUseCase.execute(fileDefinition: fileDefinition)
-            
-//            .execute(
-//            levelType: levelType, packNumber: 1)
-//        )
     }
 }

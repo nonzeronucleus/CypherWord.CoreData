@@ -1,16 +1,11 @@
 import Foundation
 
-typealias Manifest = [Int:UUID]
+//typealias Manifest = [Pack]
 
 
 protocol FileRepositoryProtocol {
     func fetchLevels(fileDefinition: any FileDefinitionProtocol) async throws -> LevelFile
     func saveLevels(file:LevelFile) async throws
-
-
-//    func fetchLevels(fileDefinition: any FileDefinitionProtocol) async throws -> [LevelDefinition]
-//    
-//    func saveLevels(levels: [LevelDefinition]) async throws
 }
 
 

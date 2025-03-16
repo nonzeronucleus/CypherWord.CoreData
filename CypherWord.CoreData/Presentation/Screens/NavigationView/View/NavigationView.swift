@@ -65,8 +65,8 @@ struct NavigationView : View {
     withDependencies {
         $0.levelRepository = FakeLevelRepository(testLayouts: testLayouts, testPlayableLevels: testPlayableLevels)
     } operation: {
-        var settingsViewModel =  SettingsViewModel(parentId:nil)
-        var navigationView = NavigationViewModel(settingsViewModel:settingsViewModel)
+        let settingsViewModel =  SettingsViewModel(parentId:nil)
+        let navigationView = NavigationViewModel(settingsViewModel:settingsViewModel)
 //        let viewModel = LevelListViewModel()
         return NavigationView(/*viewModel*/)
             .environmentObject(navigationView)

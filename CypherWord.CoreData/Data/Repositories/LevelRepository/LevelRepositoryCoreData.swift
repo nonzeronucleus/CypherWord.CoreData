@@ -1,4 +1,5 @@
 import CoreData
+import Dependencies
 
 
 import Foundation
@@ -15,13 +16,24 @@ protocol LevelRepositoryProtocol {
 
     func addLayout() async throws
 
-    func deleteAll(levelType: LevelType) async throws
+    func deleteAllLevels(levelType: LevelType) async throws
+    
+    func getManifest() async throws -> Manifest
 }
 
 
 
 @MainActor
 extension LevelStorageCoreData:LevelRepositoryProtocol {
+    
+    func getManifest() async throws -> Manifest {
+        let packs = try fetchPacks()
+        
+//        print(dbLocation ?? "...")
+        
+        return Manifest(packs: packs)
+    }
+    
     func fetchLevelByID(id: UUID) async throws -> LevelMO? {
         return try findLevel(id: id)
     }
@@ -89,8 +101,18 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
     }
     
     func saveLevels(file:LevelFile) async throws {
+        if let playableFileDefinition = file.definition as? PlayableLevelFileDefinition {
+            try await savePlayableLevels(playableFileDefinition: playableFileDefinition, levels: file.levels)
+        }
+        else {
+            try await saveLayouts(levels:file.levels)
+        }
+    }
+
+    
+    func saveLayouts(levels:[LevelDefinition]) async throws {
         do {
-            for level in file.levels {
+            for level in levels {
                 if try findLevel(id: level.id) == nil {
                     let _ = try LevelMapper.map(context: container.viewContext, levelDefinition: level) {
                         return try fetchHighestNumber(levelType: level.levelType) + 1
@@ -101,9 +123,50 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
             }
         }
     }
+    
+    func savePlayableLevels(playableFileDefinition:PlayableLevelFileDefinition, levels:[LevelDefinition]) async throws {
+        @Dependency(\.uuid) var uuid
+        
+        for level in levels {
+            if let levelMO = try findLevel(id: level.id) {
+//                print("Current id \(String(describing: levelMO.packId))")
+                levelMO.packId = playableFileDefinition.id
+//                print("Setting pack id to \(playableFileDefinition.id) for level \(level.id)")
+            }
+            else {
+                let levelMO = try LevelMapper.map(context: container.viewContext, levelDefinition: level) {
+                    return try fetchHighestNumber(levelType: level.levelType) + 1
+                }
+                levelMO.packId = playableFileDefinition.id
+            }
+            
+            save()
+        }
+        
+        try writePackToManifest(playableFileDefinition: playableFileDefinition)
+    }
+    
+    
+    func writePackToManifest(playableFileDefinition: PlayableLevelFileDefinition) throws {
+        var packMO:PackMO? = try fetchPackByNumber(number: playableFileDefinition.packNumber)
+        
+        if packMO == nil {
+            packMO = PackMO(context:  container.viewContext)
+        }
+        
+        if let packMO {
+            packMO.number = Int16(playableFileDefinition.packNumber)
+            packMO.id = playableFileDefinition.id
+        }
+        save()
+
+    }
 }
 
 class LevelStorageCoreData {
+    private let levelEntityName: String = "LevelMO"
+    private let packEntityName: String = "PackMO"
+
     private lazy var container: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "LevelsContainer")
         
@@ -123,10 +186,8 @@ class LevelStorageCoreData {
     }
 
     
-    private let entityName: String = "LevelMO"
-    
     private func createFetchLevelsRequest<T>(resultType: T.Type, levelType: LevelType) -> NSFetchRequest<T> where T: NSFetchRequestResult {
-        let request = NSFetchRequest<T>(entityName: entityName)
+        let request = NSFetchRequest<T>(entityName: levelEntityName)
         if levelType == .playable {
             request.predicate = NSPredicate(format: "letterMap != nil")
         } else {
@@ -138,8 +199,16 @@ class LevelStorageCoreData {
     
 
     private func createFetchLevelRequest<T>(resultType: T.Type, levelID: UUID) -> NSFetchRequest<T> where T: NSFetchRequestResult {
-        let request = NSFetchRequest<T>(entityName: entityName)
+        let request = NSFetchRequest<T>(entityName: levelEntityName)
         request.predicate = NSPredicate(format: "id == %@", levelID as CVarArg)
+        
+        return request
+    }
+    
+    
+    private func createFetchPacksRequest<T>(resultType: T.Type) -> NSFetchRequest<T> where T: NSFetchRequestResult {
+        let request = NSFetchRequest<T>(entityName: packEntityName)
+//        request.predicate = NSPredicate(format: "id == %@", levelID as CVarArg)
         
         return request
     }
@@ -183,7 +252,7 @@ class LevelStorageCoreData {
     }
     
     
-    func deleteAll(levelType: LevelType) throws {
+    func deleteAllLevels(levelType: LevelType) throws {
         let request: NSFetchRequest<NSFetchRequestResult> = createFetchLevelsRequest(resultType: NSFetchRequestResult.self, levelType: levelType)
         
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
@@ -212,6 +281,26 @@ class LevelStorageCoreData {
             print("Error saving to Core Data. \(error)")
         }
     }
+    
+    
+    func fetchPacks() throws -> [PackMO] {
+        let request: NSFetchRequest<PackMO> = createFetchPacksRequest(resultType: PackMO.self)
+        let packs = try container.viewContext.fetch(request)
+        
+        return packs
+    }
+    
+    @MainActor
+    func fetchPackByNumber(number:Int) throws -> PackMO? {
+        let request: NSFetchRequest<PackMO> = createFetchPacksRequest(resultType: PackMO.self)
+
+        request.predicate = NSPredicate(format: "number == %@", number as NSNumber)
+
+        let pack = try container.viewContext.fetch(request).first
+        
+        return pack
+    }
+
 }
     
 

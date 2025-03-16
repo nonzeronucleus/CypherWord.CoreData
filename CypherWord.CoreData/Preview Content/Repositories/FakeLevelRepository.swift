@@ -1,6 +1,10 @@
 import Foundation
 
 class FakeLevelRepository: LevelRepositoryProtocol {
+    func getManifest() async throws -> Manifest {
+        fatalError("To Implement - addPlayableLevel")
+    }
+    
     func fetchLevelByID(id: UUID) async throws -> LevelMO? {
         fatalError("To Implement - addPlayableLevel")
     }
@@ -25,7 +29,7 @@ class FakeLevelRepository: LevelRepositoryProtocol {
         testLayouts[levelDefinition.id] = levelDefinition
     }
     
-    func deleteAll(levelType: LevelType) async throws {
+    func deleteAllLevels(levelType: LevelType) async throws {
         if levelType == .playable {
             self.testPlayableLevels.removeAll()
         }

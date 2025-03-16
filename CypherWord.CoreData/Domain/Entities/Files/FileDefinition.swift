@@ -33,12 +33,22 @@ class LayoutFileDefinition : FileDefinitionProtocol, Codable {
 }
 
 class PlayableLevelFileDefinition : FileDefinitionProtocol {
+    let packNumber: Int
+    let id: UUID
+    
     static func == (lhs: PlayableLevelFileDefinition, rhs: PlayableLevelFileDefinition) -> Bool {
         return lhs.id == rhs.id
     }
     
-    let packNumber: Int
-    let id: UUID
+    init(packMO:PackMO) {
+        guard let id = packMO.id else {
+            fatalError("Missing id for packMO \(packMO)")
+        }
+        self.id = id
+        packNumber  = Int(packMO.number)
+    }
+    
+
     
     init(packNumber: Int, id: UUID? = nil) {
         if let id = id {
