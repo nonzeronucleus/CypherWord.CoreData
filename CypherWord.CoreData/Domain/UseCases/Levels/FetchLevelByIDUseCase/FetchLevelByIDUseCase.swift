@@ -5,6 +5,6 @@ class FetchLevelByIDUseCase : LevelsUseCase, FetchLevelByIDUseCaseProtocol {
         guard let levelMO = try await levelRepository.fetchLevelByID(id:id) else {
             return nil
         }
-        return LevelMapper.map(mo: levelMO)
+        return LevelMapper.toLevelDefinition(mo: levelMO)
     }
 }

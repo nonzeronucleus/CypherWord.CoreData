@@ -16,7 +16,7 @@ protocol LevelRepositoryProtocol {
 
     func addLayout() async throws
 
-    func deleteAllLevels(levelType: LevelType) async throws
+    func deleteAll(levelType: LevelType) async throws
     
     func getManifest() async throws -> Manifest
 }
@@ -29,9 +29,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
     func getManifest() async throws -> Manifest {
         let packs = try fetchPacks()
         
-//        print(dbLocation ?? "...")
-        
-        return Manifest(packs: packs)
+        return Manifest(levels: PackMapper.toFileDefinitions(mos: packs))
     }
     
     func fetchLevelByID(id: UUID) async throws -> LevelMO? {
@@ -43,7 +41,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         
         levelMO.id = UUID()
         levelMO.number = try self.fetchHighestNumber(levelType: .playable) + 1
-        LevelMapper.map(from: level, to: &levelMO)
+        LevelMapper.toLevelMO(from: level, to: &levelMO)
         save()
     }
     
@@ -68,7 +66,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         }
         
         if var levelMO = levelMO {
-            LevelMapper.map(from: level, to: &levelMO)
+            LevelMapper.toLevelMO(from: level, to: &levelMO)
             save()
         }
         else {
@@ -94,7 +92,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
             let savedEntities = try container.viewContext.fetch(fetchRequest)
             
             let levels = savedEntities.map( {
-                entity in LevelMapper.map(mo: entity)
+                entity in LevelMapper.toLevelDefinition(mo: entity)
             })
             return levels
         }
@@ -114,7 +112,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         do {
             for level in levels {
                 if try findLevel(id: level.id) == nil {
-                    let _ = try LevelMapper.map(context: container.viewContext, levelDefinition: level) {
+                    let _ = try LevelMapper.toLevelMO(context: container.viewContext, levelDefinition: level) {
                         return try fetchHighestNumber(levelType: level.levelType) + 1
                     }
 
@@ -134,7 +132,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
 //                print("Setting pack id to \(playableFileDefinition.id) for level \(level.id)")
             }
             else {
-                let levelMO = try LevelMapper.map(context: container.viewContext, levelDefinition: level) {
+                let levelMO = try LevelMapper.toLevelMO(context: container.viewContext, levelDefinition: level) {
                     return try fetchHighestNumber(levelType: level.levelType) + 1
                 }
                 levelMO.packId = playableFileDefinition.id
@@ -250,10 +248,29 @@ class LevelStorageCoreData {
         
         return 0
     }
+
     
+    func deleteAll(levelType: LevelType) throws {
+        try deleteAllLevels(levelType: levelType)
+        if levelType == .playable {
+            try deleteAllPacks()
+        }
+    }
+
     
     func deleteAllLevels(levelType: LevelType) throws {
         let request: NSFetchRequest<NSFetchRequestResult> = createFetchLevelsRequest(resultType: NSFetchRequestResult.self, levelType: levelType)
+        
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+
+        do {
+            try container.viewContext.execute(deleteRequest)
+            try container.viewContext.save()
+        }
+    }
+    
+    func deleteAllPacks() throws {
+        let request: NSFetchRequest<NSFetchRequestResult> = createFetchPacksRequest(resultType: NSFetchRequestResult.self)
         
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
 

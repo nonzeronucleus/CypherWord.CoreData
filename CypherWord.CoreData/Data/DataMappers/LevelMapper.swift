@@ -1,7 +1,7 @@
 import CoreData
 
 class LevelMapper {
-    static func map(mo: LevelMO) -> LevelDefinition {
+    static func toLevelDefinition(mo: LevelMO) -> LevelDefinition {
         guard let id = mo.id else {
             fatalError("Missing id for LevelMO number \(mo.number)")
         }
@@ -14,7 +14,7 @@ class LevelMapper {
         )
     }
     
-    static func map(context:NSManagedObjectContext, levelDefinition: LevelDefinition, getNextNum: () throws -> Int64) throws -> LevelMO {
+    static func toLevelMO(context:NSManagedObjectContext, levelDefinition: LevelDefinition, getNextNum: () throws -> Int64) throws -> LevelMO {
         var mo = LevelMO(context: context)
         mo.id = levelDefinition.id
         
@@ -25,12 +25,12 @@ class LevelMapper {
             try mo.number = getNextNum()
         }
         
-        map(from: levelDefinition, to: &mo)
+        toLevelMO(from: levelDefinition, to: &mo)
         
         return mo
     }
     
-    static func map(from levelDefinition: LevelDefinition, to mo: inout LevelMO )  {
+    static func toLevelMO(from levelDefinition: LevelDefinition, to mo: inout LevelMO )  {
         mo.gridText = levelDefinition.gridText
         mo.letterMap = levelDefinition.letterMap
         mo.attemptedLetters = levelDefinition.attemptedLetters

@@ -20,14 +20,15 @@ struct NavigationView : View {
                 VStack {
                     if settingsViewModel.settings.editMode {
                         TabView(selection: $selection) {
-                            LevelSelectView(viewModel.createLevelListViewModel(levelType: .playable))
-                            LevelSelectView(viewModel.createLevelListViewModel( levelType: .layout))
+                            LevelListView(viewModel.createLevelListViewModel(levelType: .playable))
+                            LevelListView(viewModel.createLevelListViewModel( levelType: .layout))
 
 //                            LevelListView(viewModel.createLevelListViewModel( levelType: .layout))
                         }
                     }
                     else {
                         LevelListView(viewModel.createLevelListViewModel(levelType: .playable))
+//                        LevelListView(viewModel.createLevelListViewModel(levelType: .playable))
                     }
                 }
                 .navigationDestination(for: NavigationDestination.self) { destination in

@@ -1,8 +1,14 @@
 import Foundation
+import Dependencies
 
 class FakeLevelRepository: LevelRepositoryProtocol {
     func getManifest() async throws -> Manifest {
-        fatalError("To Implement - addPlayableLevel")
+        @Dependency(\.uuid) var uuid
+
+        return Manifest(levels: [
+            PlayableLevelFileDefinition(packNumber: 1, id: uuid()),
+            PlayableLevelFileDefinition(packNumber: 2, id: uuid())
+        ])
     }
     
     func fetchLevelByID(id: UUID) async throws -> LevelMO? {
@@ -29,7 +35,12 @@ class FakeLevelRepository: LevelRepositoryProtocol {
         testLayouts[levelDefinition.id] = levelDefinition
     }
     
-    func deleteAllLevels(levelType: LevelType) async throws {
+    func deleteAll(levelType: LevelType) async throws {
+        try await deleteAllLevels(levelType: levelType)
+    }
+
+    
+    private func deleteAllLevels(levelType: LevelType) async throws {
         if levelType == .playable {
             self.testPlayableLevels.removeAll()
         }
