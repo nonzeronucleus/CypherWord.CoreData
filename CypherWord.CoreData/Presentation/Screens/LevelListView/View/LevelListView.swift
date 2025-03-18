@@ -32,12 +32,14 @@ struct LevelListView: View {
                         LevelCard(level: level, progress: Double.random(in: 0...1)) // Random progress for demo
                             .onTapGesture {
                                 viewModel.onSelectLevel(level: level)
-//                                print("Selected Level \(level)")
                                 // Navigate to the selected level here
                             }
                     }
                 }
                 .padding()
+            }
+            if let playableLevelListViewModel = viewModel as? PlayableLevelListViewModel {
+                PackView(playableLevelListViewModel)
             }
             // Page Navigation
         }

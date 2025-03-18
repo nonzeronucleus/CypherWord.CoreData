@@ -59,15 +59,16 @@ extension FileRepository: FileRepositoryProtocol {
     
     func saveLevels(file:LevelFile) async throws {
         let levels = file.levels
-        let fileDefinition = file.definition
-        
-        guard levels.count > 0 else {
-            return
+        if let fileDefinition = file.definition {
+            
+            guard levels.count > 0 else {
+                return
+            }
+            
+            //        let fileDefinition = levels[0].fileDefinition
+            
+            try await writeToFile(fileDefinition: fileDefinition, levels: levels)
         }
-        
-//        let fileDefinition = levels[0].fileDefinition
-        
-        try await writeToFile(fileDefinition: fileDefinition, levels: levels)
     }
 }
 
