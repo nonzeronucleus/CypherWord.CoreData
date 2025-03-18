@@ -39,7 +39,7 @@ struct LevelListView: View {
                 .padding()
             }
             if let playableLevelListViewModel = viewModel as? PlayableLevelListViewModel {
-                PackView(playableLevelListViewModel)
+                PackView(playableLevelListViewModel, settingsViewModel: settingsViewModel)
             }
             // Page Navigation
         }

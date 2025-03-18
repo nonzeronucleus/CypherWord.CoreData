@@ -107,9 +107,13 @@ extension FileRepository {
                 guard var manifest else {
                     throw FileError.manifestMissing("#\(#function) at #\(#line) ")
                 }
-                manifest[playableLevel.packNumber] = playableLevel.id
-                
-                try await writeManifestFile(fileName: playableLevel.manifestFileName, manifest: manifest)
+                if let packNumber = playableLevel.packNumber {
+                    manifest[packNumber] = playableLevel.id
+                    try await writeManifestFile(fileName: playableLevel.manifestFileName, manifest: manifest)
+                }
+                else {
+                    fatalError("\(#file) \(#function) at \(#line) - no pack number")
+                }
             }
         }
     }

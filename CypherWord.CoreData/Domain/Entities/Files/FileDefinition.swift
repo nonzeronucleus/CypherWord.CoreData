@@ -7,11 +7,6 @@ protocol FileDefinitionProtocol: Identifiable, Codable, Equatable  {
 
 
 class DummyFileDefinition : FileDefinitionProtocol, Codable {
-    init() {
-        
-    }
-    
-    
     static func == (lhs: DummyFileDefinition, rhs: DummyFileDefinition) -> Bool {
         return true
     }
@@ -33,7 +28,7 @@ class LayoutFileDefinition : FileDefinitionProtocol, Codable {
 }
 
 class PlayableLevelFileDefinition : FileDefinitionProtocol {
-    let packNumber: Int
+    let packNumber: Int?
     let id: UUID
     
     static func == (lhs: PlayableLevelFileDefinition, rhs: PlayableLevelFileDefinition) -> Bool {
@@ -50,7 +45,7 @@ class PlayableLevelFileDefinition : FileDefinitionProtocol {
     
 
     
-    init(packNumber: Int, id: UUID? = nil) {
+    init(packNumber: Int?, id: UUID? = nil) {
         if let id = id {
             self.id = id
         } else {
@@ -61,7 +56,10 @@ class PlayableLevelFileDefinition : FileDefinitionProtocol {
     }
     
     func getFileName() -> String {
-        "Games.\(packNumber).json"
+        guard let packNumber else {
+            fatalError(#function)
+        }
+        return "Games.\(packNumber).json"
     }
     
     var manifestFileName:String = "Manifest.json"

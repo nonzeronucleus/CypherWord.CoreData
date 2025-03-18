@@ -1,49 +1,65 @@
 import SwiftUI
 
 struct PackView: View {
+    @ObservedObject var settingsViewModel: SettingsViewModel
     @ObservedObject var viewModel: PlayableLevelListViewModel
     
-    init(_ viewModel: PlayableLevelListViewModel) {
+    init(_ viewModel: PlayableLevelListViewModel, settingsViewModel: SettingsViewModel) {
         self.viewModel = viewModel
+        self.settingsViewModel = settingsViewModel
     }
     
-//    @State private var currentLevel: Int = 1
     let minLevel: Int = 1
-    let maxLevel: Int = 10
+//    let maxLevel: Int = 10
     
     var body: some View {
+        
+        // If in edit model, allow the first empty pack to be shown to allow new levels to be added
+        let maxLevel = settingsViewModel.settings.editMode
+            ? viewModel.maxLevelNumber + 1
+            : viewModel.maxLevelNumber
+        
         HStack {
-            // Left Button (Decrease Level)
-            Button(action: {
-                if viewModel.packNumber > minLevel {
-                    viewModel.packNumber -= 1
+            if var packNumber = viewModel.packNumber {
+                
+                // Left Button (Decrease Level)
+                Button(action: {
+                    if packNumber > minLevel {
+                        packNumber -= 1
+                    }
+                    
+                    viewModel.packNumber = packNumber
+                }) {
+                    Image(systemName: "chevron.left.circle.fill")
+                        .font(.system(size: 32))
+                        .foregroundColor(packNumber > minLevel ? .blue : .gray)
+                        .padding()
                 }
-            }) {
-                Image(systemName: "chevron.left.circle.fill")
-                    .font(.system(size: 32))
-                    .foregroundColor(viewModel.packNumber > minLevel ? .blue : .gray)
-                    .padding()
-            }
-            .disabled(viewModel.packNumber == minLevel)
-            
-            // Current Level Display
-            Text("Pack \(viewModel.packNumber)")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .frame(minWidth: 100)
-            
-            // Right Button (Increase Level)
-            Button(action: {
-                if viewModel.packNumber < maxLevel {
-                    viewModel.packNumber += 1
+                .disabled(viewModel.packNumber == minLevel)
+                
+                // Current Level Display
+                Text("Pack \(packNumber)")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .frame(minWidth: 100)
+                
+                // Right Button (Increase Level)
+                Button(action: {
+                    if packNumber < maxLevel {
+                        packNumber += 1
+                    }
+                    viewModel.packNumber = packNumber
+                }) {
+                    Image(systemName: "chevron.right.circle.fill")
+                        .font(.system(size: 40))
+                        .foregroundColor(packNumber < maxLevel ? .blue : .gray)
+                        .padding()
                 }
-            }) {
-                Image(systemName: "chevron.right.circle.fill")
-                    .font(.system(size: 40))
-                    .foregroundColor(viewModel.packNumber < maxLevel ? .blue : .gray)
-                    .padding()
+                .disabled(viewModel.packNumber == maxLevel)
             }
-            .disabled(viewModel.packNumber == maxLevel)
+            else {
+                Text("Loading...")
+            }
         }
         .padding()
     }

@@ -5,9 +5,9 @@ class PlayableLevelListViewModel: LevelListViewModel {
     private var fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol
     private var loadManifestUaeCase: LoadManifestUseCaseProtocol
     var manifest: Manifest?
-    @Published var packNumber: Int {
+    @Published var packNumber: Int? {
         didSet {
-            print("Pack number \(packNumber)")
+            print("Pack number \(String(describing: packNumber))")
         }
     }
 
@@ -17,21 +17,21 @@ class PlayableLevelListViewModel: LevelListViewModel {
          loadManifestUseCase: LoadManifestUseCaseProtocol = LoadManifestUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue)
     ){
         self.loadManifestUaeCase = loadManifestUseCase
-        let initPackNumber: Int = 1
+//        let initPackNumber: Int = 1
         self.fetchPlayableLevelsUseCase = fetchPlayableLevelsUseCase
         
-        self.packNumber = initPackNumber
+        self.packNumber = nil
         self.manifest = nil
         
         super.init(navigationViewModel: navigationViewModel,
                    settingsViewModel: settingsViewModel,
-                   levelFile: LevelFile(definition: PlayableLevelFileDefinition(packNumber: initPackNumber), levels: []))
+                   levelFile: LevelFile(definition: PlayableLevelFileDefinition(packNumber: nil), levels: []))
 
         Task {
-            self.manifest = try await loadManifestUseCase.execute()
-            print(self.manifest ?? "No Manifest")
+            let manifest = try await loadManifestUseCase.execute()
+            self.packNumber = manifest.maxLevelNumber
+            self.manifest = manifest
         }
-
     }
 
     
@@ -60,6 +60,12 @@ class PlayableLevelListViewModel: LevelListViewModel {
     
     override var isLayout : Bool {
         get { false }
+    }
+    
+    var maxLevelNumber: Int {
+        guard let manifest else { return 0 }
+        
+        return manifest.maxLevelNumber
     }
 
     override func reload() {

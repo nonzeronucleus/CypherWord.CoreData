@@ -146,17 +146,22 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
     
     
     func writePackToManifest(playableFileDefinition: PlayableLevelFileDefinition) throws {
-        var packMO:PackMO? = try fetchPackByNumber(number: playableFileDefinition.packNumber)
-        
-        if packMO == nil {
-            packMO = PackMO(context:  container.viewContext)
+        if let packNumber = playableFileDefinition.packNumber {
+            var packMO:PackMO? = try fetchPackByNumber(number: packNumber)
+            
+            if packMO == nil {
+                packMO = PackMO(context:  container.viewContext)
+            }
+            
+            if let packMO {
+                packMO.number = Int16(packNumber)
+                packMO.id = playableFileDefinition.id
+            }
+            save()
         }
-        
-        if let packMO {
-            packMO.number = Int16(playableFileDefinition.packNumber)
-            packMO.id = playableFileDefinition.id
+        else {
+            fatalError(#function + ": Pack number must be an Int")
         }
-        save()
 
     }
 }

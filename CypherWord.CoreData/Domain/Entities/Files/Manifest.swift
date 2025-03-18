@@ -4,7 +4,7 @@ class Manifest {
     var fileDefinitions: [Int:PlayableLevelFileDefinition] = [:]
     
     init(levels:[PlayableLevelFileDefinition]) {
-        fileDefinitions = Dictionary(uniqueKeysWithValues: levels.map { ($0.packNumber, $0) })
+        fileDefinitions = Dictionary(uniqueKeysWithValues: levels.map { level in (level.packNumber!, level) })
     }
 
 //    init(packs:[PackMO]) {
@@ -17,5 +17,9 @@ class Manifest {
             return definition
         }
         return PlayableLevelFileDefinition(packNumber: packNumber)
+    }
+    
+    var maxLevelNumber:Int {
+        return fileDefinitions.keys.max() ?? 0
     }
 }

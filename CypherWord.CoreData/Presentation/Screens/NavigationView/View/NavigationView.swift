@@ -22,13 +22,10 @@ struct NavigationView : View {
                         TabView(selection: $selection) {
                             LevelListView(viewModel.createLevelListViewModel(levelType: .playable))
                             LevelListView(viewModel.createLevelListViewModel( levelType: .layout))
-
-//                            LevelListView(viewModel.createLevelListViewModel( levelType: .layout))
                         }
                     }
                     else {
                         LevelListView(viewModel.createLevelListViewModel(levelType: .playable))
-//                        LevelListView(viewModel.createLevelListViewModel(levelType: .playable))
                     }
                 }
                 .navigationDestination(for: NavigationDestination.self) { destination in
