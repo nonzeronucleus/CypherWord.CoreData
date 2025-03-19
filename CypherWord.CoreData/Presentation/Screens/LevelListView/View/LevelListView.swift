@@ -29,7 +29,7 @@ struct LevelListView: View {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 20) {
                     ForEach(visibleLevels, id: \.self) { level in
-                        LevelCard(level: level, progress: Double.random(in: 0...1)) // Random progress for demo
+                        LevelCard(level: level, progress: level.percentComplete) // Random progress for demo
                             .onTapGesture {
                                 viewModel.onSelectLevel(level: level)
                                 // Navigate to the selected level here
@@ -39,7 +39,7 @@ struct LevelListView: View {
                 .padding()
             }
             if let playableLevelListViewModel = viewModel as? PlayableLevelListViewModel {
-                PackView(playableLevelListViewModel, settingsViewModel: settingsViewModel)
+                PackView(playableLevelListViewModel)
             }
             // Page Navigation
         }
@@ -65,60 +65,6 @@ struct LevelListView: View {
 }
 
 
-//    // Calculate visible levels for the current page
-//    private var visibleLevels: [Int] {
-//        let levels = viewModel.displayableLevels
-//
-//        let startIndex = (currentPage - 1) * levelsPerPage
-//        let endIndex = min(startIndex + levelsPerPage, levels.count)
-//        return Array(levels[startIndex..<endIndex])
-//    }
-//
-//    // Calculate total number of pages
-//    private var totalPages: Int {
-//        let levels = viewModel.displayableLevels
-//
-//        Int(ceil(Double(levels.count) / Double(levelsPerPage)))
-//    }
-
-
-
-//            HStack {
-//                //                 Left Arrow
-//                Button(action: {
-//                    if currentPage > 1 {
-//                        currentPage -= 1
-//                    }
-//                }) {
-//                    Image(systemName: "chevron.left.circle.fill")
-//                        .font(.system(size: 30))
-//                        .foregroundColor(currentPage > 1 ? .blue : .gray)
-//                        .padding()
-//                }
-//                .disabled(currentPage <= 1)
-//
-//                // Page Number
-//                Text("Page \(currentPage)")
-//                    .font(.system(size: 20, weight: .bold, design: .rounded))
-//                    .foregroundColor(.white)
-//                    .padding(.horizontal, 20)
-//
-//                //                 Right Arrow
-//                Button(action: {
-//                    if currentPage < totalPages {
-//                        currentPage += 1
-//                    }
-//                }) {
-//                    Image(systemName: "chevron.right.circle.fill")
-//                        .font(.system(size: 30))
-//                        .foregroundColor(currentPage < totalPages ? .blue : .gray)
-//                        .padding()
-//                }
-//                .disabled(currentPage >= totalPages)
-//            }
-//            .padding(.bottom, 20)
-
-
 struct LevelCard: View {
     let level: LevelDefinition
     let progress: Double // Progress from 0 to 1
@@ -126,7 +72,7 @@ struct LevelCard: View {
     
     init(level: LevelDefinition, progress: Double = 1.0) {
         self.level = level
-        self.progress = progress
+        self.progress = max(progress,0.0)
     }
 
     var body: some View {
@@ -141,8 +87,6 @@ struct LevelCard: View {
             // Progress indicator (stars or bar)
             ProgressBar(value: progress)
                 .frame(height: 8)
-            
-            
 
             //// Star rating (optional)
             if showingStars {
@@ -193,20 +137,6 @@ struct ProgressBar: View {
     }
 }
 
-//struct ContentView2: View {
-//    var body: some View {
-////        NavigationView {
-//            LevelSelectView()
-////        }
-//    }
-//}
-
-//struct ContentView2_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ContentView2()
-//    }
-//}
-//
 
 #Preview("Playable - hide completed") {
     let testLayouts = [

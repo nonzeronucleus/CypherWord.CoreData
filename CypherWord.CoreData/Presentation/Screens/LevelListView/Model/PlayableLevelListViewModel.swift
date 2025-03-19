@@ -17,7 +17,6 @@ class PlayableLevelListViewModel: LevelListViewModel {
          loadManifestUseCase: LoadManifestUseCaseProtocol = LoadManifestUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue)
     ){
         self.loadManifestUaeCase = loadManifestUseCase
-//        let initPackNumber: Int = 1
         self.fetchPlayableLevelsUseCase = fetchPlayableLevelsUseCase
         
         self.packNumber = nil
@@ -73,7 +72,6 @@ class PlayableLevelListViewModel: LevelListViewModel {
             do {
                 let levels = try await self.fetchPlayableLevelsUseCase.execute()
                 await MainActor.run {
-//                    self.allLevels = levels  // ✅ Runs on main thread
                     levelFile.levels = levels
                     
                 }
