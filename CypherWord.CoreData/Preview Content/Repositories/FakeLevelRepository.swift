@@ -2,6 +2,18 @@ import Foundation
 import Dependencies
 
 class FakeLevelRepository: LevelRepositoryProtocol {
+    func commit() {
+        fatalError("\(#function) not implemented")
+    }
+    
+    func prepareLevelMO(from level: LevelDefinition) throws {
+        fatalError("\(#function) not implemented")
+    }
+    
+    func fetchHighestNumber(levelType: LevelType) throws -> Int {
+        fatalError("\(#function) not implemented")
+    }
+    
     func getManifest() async throws -> Manifest {
         @Dependency(\.uuid) var uuid
 

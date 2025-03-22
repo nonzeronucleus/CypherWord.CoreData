@@ -5,6 +5,11 @@ import Dependencies
 import Foundation
 
 protocol LevelRepositoryProtocol {
+    
+    func prepareLevelMO(from level:LevelDefinition) async throws
+    
+    func commit()
+    
     func fetchLevels(levelType: LevelType) async throws -> [LevelDefinition]
     func saveLevels(file:LevelFile) async throws
     
@@ -14,18 +19,58 @@ protocol LevelRepositoryProtocol {
     func delete(levelID: UUID) async throws
     func saveLevel(level: LevelDefinition) async throws
 
-    func addLayout() async throws
+//    func addLayout() async throws
 
     func deleteAll(levelType: LevelType) async throws
     
     func getManifest() async throws -> Manifest
+    
+    func fetchHighestNumber(levelType: LevelType) throws -> Int
+
 }
 
 
 
-@MainActor
 extension LevelStorageCoreData:LevelRepositoryProtocol {
+    func commit() {
+        do {
+            try container.viewContext.save()
+        } catch let error {
+            print("Error saving to Core Data. \(error)")
+        }
+    }
     
+    
+    func fetchHighestNumber(levelType: LevelType) throws -> Int{
+        return try Int(fetchHighestNumberInternal(levelType: levelType))
+    }
+    
+    
+    func prepareLevelMO(from level:LevelDefinition) async throws {
+        try await MainActor.run {
+            var levelMO = try findLevel(id: level.id)
+            
+            if levelMO == nil {
+                levelMO = LevelMO(context: container.viewContext)
+            }
+            
+            guard let number = level.number else {
+                throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey : "Level number must be set"])
+            }
+            
+            if let levelMO {
+                levelMO.id = level.id
+                levelMO.number = Int64(number)
+                levelMO.gridText = level.gridText
+                levelMO.letterMap = level.letterMap
+            }
+        }
+    }
+
+
+    
+    
+    @MainActor
     func getManifest() async throws -> Manifest {
         let packs = try fetchPacks()
         
@@ -36,15 +81,17 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         return try findLevel(id: id)
     }
     
+    @MainActor
     func addPlayableLevel(level: LevelDefinition) async throws {
         var levelMO = LevelMO(context: container.viewContext)
         
         levelMO.id = UUID()
-        levelMO.number = try self.fetchHighestNumber(levelType: .playable) + 1
+        levelMO.number = try self.fetchHighestNumberInternal(levelType: .playable) + 1
         LevelMapper.toLevelMO(from: level, to: &levelMO)
         save()
     }
     
+    @MainActor
     func delete(levelID: UUID) async throws {
         let request: NSFetchRequest<NSFetchRequestResult> = createFetchLevelRequest(resultType: NSFetchRequestResult.self, levelID: levelID)
         
@@ -54,13 +101,14 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         try container.viewContext.save()
     }
     
+    @MainActor
     func saveLevel(level: LevelDefinition) async throws {
         var levelMO = try findLevel(id: level.id)
         
         if levelMO == nil {
             levelMO = LevelMO(context: container.viewContext)
             levelMO?.id = UUID()
-            levelMO?.number = try self.fetchHighestNumber(levelType: level.levelType) + 1
+            levelMO?.number = try self.fetchHighestNumberInternal(levelType: level.levelType) + 1
             
             //                levelMO.id = level.id
         }
@@ -74,18 +122,19 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         }
     }
     
-    func addLayout() async throws {
-        let levelMO = LevelMO(context: container.viewContext)
-        
-        do {
-            levelMO.id = UUID()
-            levelMO.number = try self.fetchHighestNumber(levelType: .layout) + 1
-            levelMO.gridText = nil
-            levelMO.letterMap = nil
-            save()
-        }
-    }
+//    func addLayout() async throws {
+//        let levelMO = LevelMO(context: container.viewContext)
+//        
+//        do {
+//            levelMO.id = UUID()
+//            levelMO.number = try self.fetchHighestNumber(levelType: .layout) + 1
+//            levelMO.gridText = nil
+//            levelMO.letterMap = nil
+//            save()
+//        }
+//    }
     
+    @MainActor
     func fetchLevels(levelType: LevelType) async throws -> [LevelDefinition] {
         do {
             let fetchRequest: NSFetchRequest<LevelMO> = createFetchLevelsRequest(resultType: LevelMO.self, levelType: levelType)
@@ -107,13 +156,13 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         }
     }
 
-    
+    @MainActor
     func saveLayouts(levels:[LevelDefinition]) async throws {
         do {
             for level in levels {
                 if try findLevel(id: level.id) == nil {
                     let _ = try LevelMapper.toLevelMO(context: container.viewContext, levelDefinition: level) {
-                        return try fetchHighestNumber(levelType: level.levelType) + 1
+                        return try fetchHighestNumberInternal(levelType: level.levelType) + 1
                     }
 
                     save()
@@ -122,6 +171,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         }
     }
     
+    @MainActor
     func savePlayableLevels(playableFileDefinition:PlayableLevelFileDefinition, levels:[LevelDefinition]) async throws {
         @Dependency(\.uuid) var uuid
         
@@ -133,7 +183,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
             }
             else {
                 let levelMO = try LevelMapper.toLevelMO(context: container.viewContext, levelDefinition: level) {
-                    return try fetchHighestNumber(levelType: level.levelType) + 1
+                    return try fetchHighestNumberInternal(levelType: level.levelType) + 1
                 }
                 levelMO.packId = playableFileDefinition.id
             }
@@ -145,24 +195,29 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
     }
     
     
+    @MainActor
     func writePackToManifest(playableFileDefinition: PlayableLevelFileDefinition) throws {
-        if let packNumber = playableFileDefinition.packNumber {
-            var packMO:PackMO? = try fetchPackByNumber(number: packNumber)
-            
-            if packMO == nil {
-                packMO = PackMO(context:  container.viewContext)
+        Task { @MainActor in
+            if let packNumber = playableFileDefinition.packNumber {
+                var packMO:PackMO?
+                
+                packMO = try fetchPackByNumber(number: packNumber)
+                
+                if packMO == nil {
+                    packMO = PackMO(context:  container.viewContext)
+                }
+                
+                if let packMO {
+                    packMO.number = Int16(packNumber)
+                    packMO.id = playableFileDefinition.id
+                }
+                save()
             }
             
-            if let packMO {
-                packMO.number = Int16(packNumber)
-                packMO.id = playableFileDefinition.id
+            else {
+                fatalError(#function + ": Pack number must be an Int")
             }
-            save()
         }
-        else {
-            fatalError(#function + ": Pack number must be an Int")
-        }
-
     }
 }
 
@@ -217,7 +272,7 @@ class LevelStorageCoreData {
     }
 
     
-    private func fetchHighestNumber(levelType: LevelType) throws -> Int64 {
+    private func fetchHighestNumberInternal(levelType: LevelType) throws -> Int64 {
         // Create a fetch request for dictionaries (so we get a dictionary result, not full managed objects)
         let fetchRequest = NSFetchRequest<NSDictionary>(entityName: "LevelMO")
         fetchRequest.resultType = .dictionaryResultType
@@ -269,8 +324,10 @@ class LevelStorageCoreData {
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
 
         do {
-            try container.viewContext.execute(deleteRequest)
-            try container.viewContext.save()
+            Task { @MainActor in
+                try container.viewContext.execute(deleteRequest)
+                try container.viewContext.save()
+            }
         }
     }
     
@@ -296,7 +353,7 @@ class LevelStorageCoreData {
 
     
     
-    private func save() {
+    internal func save() {
         do {
             try container.viewContext.save()
         } catch let error {
