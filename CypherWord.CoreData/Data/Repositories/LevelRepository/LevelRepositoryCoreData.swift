@@ -14,7 +14,7 @@ protocol LevelRepositoryProtocol {
     func saveLevels(file:LevelFile) async throws
     
     func fetchLevelByID(id: UUID) async throws -> LevelMO?
-    func addPlayableLevel(level: LevelDefinition) async throws
+//    func addPlayableLevel(level: LevelDefinition) async throws
     
     func delete(levelID: UUID) async throws
     func saveLevel(level: LevelDefinition) async throws
@@ -81,16 +81,16 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         return try findLevel(id: id)
     }
     
-    @MainActor
-    func addPlayableLevel(level: LevelDefinition) async throws {
-        var levelMO = LevelMO(context: container.viewContext)
-        
-        levelMO.id = UUID()
-        levelMO.number = try self.fetchHighestNumberInternal(levelType: .playable) + 1
-        LevelMapper.toLevelMO(from: level, to: &levelMO)
-        save()
-    }
-    
+//    @MainActor
+//    func addPlayableLevel(level: LevelDefinition) async throws {
+//        var levelMO = LevelMO(context: container.viewContext)
+//        
+//        levelMO.id = UUID()
+//        levelMO.number = try self.fetchHighestNumberInternal(levelType: .playable) + 1
+//        LevelMapper.toLevelMO(from: level, to: &levelMO)
+//        save()
+//    }
+//    
     @MainActor
     func delete(levelID: UUID) async throws {
         let request: NSFetchRequest<NSFetchRequestResult> = createFetchLevelRequest(resultType: NSFetchRequestResult.self, levelID: levelID)

@@ -147,7 +147,7 @@ class LevelEditViewModel: ObservableObject {
             
             do {
                 isBusy = false
-                try await addPlayableLevelUseCase.execute(level: levelDefinition)
+                try await addPlayableLevelUseCase.execute(layout: levelDefinition)
             }
             catch {
                 isBusy = false
