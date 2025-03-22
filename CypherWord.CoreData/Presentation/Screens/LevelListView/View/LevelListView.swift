@@ -41,6 +41,22 @@ struct LevelListView: View {
             if let playableLevelListViewModel = viewModel as? PlayableLevelListViewModel {
                 PackView(playableLevelListViewModel)
             }
+            if settingsViewModel.settings.editMode {
+                
+                if let viewModel = viewModel as? LayoutListViewModel {
+                    Button("Add") {
+                        viewModel.addLayout()
+                    }
+                }
+                Button("Delete all") {
+                    viewModel.deleteAll()
+                }
+                Button("Export") {
+                    viewModel.exportAll()
+                }
+                Spacer()
+            }
+                
             // Page Navigation
         }
 //        .navigationTitle("Level Select")
