@@ -51,7 +51,9 @@ class FakeLevelRepository: LevelRepositoryProtocol {
     }
     
     func addLayout() async throws {
-        let levelDefinition = LevelDefinition(id: UUID(), number: 1, attemptedLetters: nil, numCorrectLetters: 0)
+        @Dependency(\.uuid) var uuid
+
+        let levelDefinition = LevelDefinition(id: uuid(), number: 1, packId: uuid(), attemptedLetters: nil, numCorrectLetters: 0)
         testLayouts[levelDefinition.id] = levelDefinition
     }
     

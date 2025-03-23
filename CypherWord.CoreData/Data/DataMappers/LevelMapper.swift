@@ -5,8 +5,10 @@ class LevelMapper {
         guard let id = mo.id else {
             fatalError("Missing id for LevelMO number \(mo.number)")
         }
+        
         return LevelDefinition(id: id, //fileDefinition: DummyFileDefinition(),
                                number: Int(mo.number),
+                               packId: mo.packId,
                                gridText: mo.gridText,
                                letterMap: mo.letterMap,
                                attemptedLetters: mo.attemptedLetters,

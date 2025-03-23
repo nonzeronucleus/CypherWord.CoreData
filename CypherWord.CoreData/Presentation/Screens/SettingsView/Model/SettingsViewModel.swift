@@ -4,7 +4,7 @@ import Combine
 
 @MainActor
 class SettingsViewModel: ObservableObject {
-    let id = UUID()
+    let id:UUID
     private let updateSettingsUseCase: UpdateSettingsUseCaseProtocol
     private let loadSettingsUseCase: LoadSettingsUseCaseProtocol
 
@@ -22,7 +22,9 @@ class SettingsViewModel: ObservableObject {
         updateSettingsUseCase: UpdateSettingsUseCaseProtocol = UpdateSettingsUseCase(repository: Dependency(\.settingsRepository).wrappedValue),
         loadSettingsUseCase: LoadSettingsUseCaseProtocol = LoadSettingsUseCase(repository: Dependency(\.settingsRepository).wrappedValue)
     ) {
-        print("\(String(describing: parentId))")
+        @Dependency(\.uuid) var uuid
+
+        id = uuid()
         self.updateSettingsUseCase = updateSettingsUseCase
         self.loadSettingsUseCase = loadSettingsUseCase
         let settings = loadSettingsUseCase.execute()

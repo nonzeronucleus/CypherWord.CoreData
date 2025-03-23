@@ -1,9 +1,6 @@
 import SwiftUI
 import Dependencies
 
-
-
-
 struct NavigationView : View {
     @EnvironmentObject var applicationViewModel: ApplicationViewModel
     @EnvironmentObject var settingsViewModel: SettingsViewModel
@@ -50,14 +47,16 @@ struct NavigationView : View {
 }
 
 #Preview {
+    @Dependency(\.uuid) var uuid
+
     let testLayouts = [
-        LevelDefinition(id: UUID(), number: 1),
-        LevelDefinition(id: UUID(), number: 2),
+        LevelDefinition(id: uuid(), number: 1, packId: nil),
+        LevelDefinition(id: uuid(), number: 2, packId: nil),
     ]
     
     let testPlayableLevels = [
-        LevelDefinition(id: UUID(), number: 1),
-        LevelDefinition(id: UUID(), number: 2),
+        LevelDefinition(id: uuid(), number: 1, packId: uuid()),
+        LevelDefinition(id: uuid(), number: 2, packId: uuid()),
     ]
     
     withDependencies {

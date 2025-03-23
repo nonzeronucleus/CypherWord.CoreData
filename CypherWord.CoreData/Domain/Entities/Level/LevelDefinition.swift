@@ -15,7 +15,7 @@ struct LevelDefinition: Identifiable, Equatable, Hashable {
     var letterMap: String?
     var attemptedLetters: String
     var numCorrectLetters: Int
-    var packID: UUID?
+    var packId: UUID?
 //    var fileDefinition: any FileDefinitionProtocol
     
     var levelType: LevelType {
@@ -24,9 +24,9 @@ struct LevelDefinition: Identifiable, Equatable, Hashable {
         }
     }
 
-    init(id: UUID, number: Int, packId:UUID? = nil, gridText: String? =  nil, letterMap: String? =  nil, attemptedLetters: String? = nil, numCorrectLetters: Int = 0) {
+    init(id: UUID, number: Int, packId:UUID?, gridText: String? =  nil, letterMap: String? =  nil, attemptedLetters: String? = nil, numCorrectLetters: Int = 0) {
         self.id = id
-        self.packID = packId
+        self.packId = packId
         self.number = number
         self.gridText = gridText
         self.letterMap = letterMap

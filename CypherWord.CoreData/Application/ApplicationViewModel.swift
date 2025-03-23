@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import Dependencies
 
 @MainActor
 class ApplicationViewModel: ObservableObject {
@@ -7,7 +8,9 @@ class ApplicationViewModel: ObservableObject {
     @Published var navigationViewModel: NavigationViewModel
     
     init() {
-        let settingsViewModel = SettingsViewModel(parentId: UUID())
+        @Dependency(\.uuid) var uuid
+
+        let settingsViewModel = SettingsViewModel(parentId: uuid())
         navigationViewModel = NavigationViewModel(settingsViewModel: settingsViewModel)
         self.settingsViewModel = settingsViewModel
     }

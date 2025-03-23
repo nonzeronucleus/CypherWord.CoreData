@@ -18,8 +18,8 @@ class ExportAllUseCaseTests {
             let useCase = ExportLevelsUseCase(fileRepository: repository)
 
             let testLevels = [
-                LevelDefinition(id: uuid(), number: 1),
-                LevelDefinition(id: uuid(), number: 2)
+                LevelDefinition(id: uuid(), number: 1, packId: uuid()),
+                LevelDefinition(id: uuid(), number: 2, packId: uuid())
             ]
             
             do {
@@ -57,7 +57,7 @@ class ExportAllUseCaseTests {
             
             let exportAllUseCase = ExportLevelsUseCase(fileRepository: mockRepository)
 
-            let testLevels = [LevelDefinition(id: uuid(), number: 1)]
+            let testLevels = [LevelDefinition(id: uuid(), number: 1, packId: uuid())]
             let file = LevelFile(definition: LayoutFileDefinition(), levels: testLevels)
             let expectedError = NSError(domain: "TestError", code: 2, userInfo: nil)
 

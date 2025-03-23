@@ -5,63 +5,76 @@ import Dependencies
 
 // Test Suite for FileRepository
 class FileRespositoryTests {
+    
     @Test
     func testSaveLayouts() async throws {
-        let temporaryDirectoryURL = try createTemporaryDirectory()
-        defer { try? removeTemporaryDirectory(at: temporaryDirectoryURL) }
-        
-        let fileRepository = FileRepository(directoryURL: temporaryDirectoryURL)
-        let levels = [
-            LevelDefinition(id: UUID(), number: 1, gridText: "Grid1", attemptedLetters: "abc", numCorrectLetters: 3),
-            LevelDefinition(id: UUID(), number: 2, gridText: "Grid2", attemptedLetters: "xyz", numCorrectLetters: 5)
-        ]
-        
-        // Test saving levels
-
-        do {
-            let file = LevelFile(definition: LayoutFileDefinition(), levels: levels)
-            try await fileRepository.saveLevels(file: file)
+        try await withDependencies  { dependencies in
+            dependencies.uuid = .incrementing
+        } operation: {
             
-            print(temporaryDirectoryURL)
+            @Dependency(\.uuid) var uuid
             
-            // Verify the file was saved
-            let fileName = LevelType.layout.rawValue + ".json"
-            let fileURL = temporaryDirectoryURL.appendingPathComponent(fileName)
-            let fileExists = FileManager.default.fileExists(atPath: fileURL.path)
-            #expect(fileExists == true)
+            let temporaryDirectoryURL = try createTemporaryDirectory()
+            defer { try? removeTemporaryDirectory(at: temporaryDirectoryURL) }
             
-//            let packs = try await fileRepository.listPacks(levelType:LevelType.playable)
-//            print(packs)
+            let fileRepository = FileRepository(directoryURL: temporaryDirectoryURL)
+            let levels = [
+                LevelDefinition(id: uuid(), number: 1, packId: nil, gridText: "Grid1", attemptedLetters: "abc", numCorrectLetters: 3),
+                LevelDefinition(id: uuid(), number: 2, packId: nil, gridText: "Grid2", attemptedLetters: "xyz", numCorrectLetters: 5)
+            ]
             
+            // Test saving levels
+            
+            do {
+                let file = LevelFile(definition: LayoutFileDefinition(), levels: levels)
+                try await fileRepository.saveLevels(file: file)
+                
+                print(temporaryDirectoryURL)
+                
+                // Verify the file was saved
+                let fileName = LevelType.layout.rawValue + ".json"
+                let fileURL = temporaryDirectoryURL.appendingPathComponent(fileName)
+                let fileExists = FileManager.default.fileExists(atPath: fileURL.path)
+                #expect(fileExists == true)
+                
+                //            let packs = try await fileRepository.listPacks(levelType:LevelType.playable)
+                //            print(packs)
+                
+            }
+            catch {
+                #expect(error == nil)
+            }
         }
-        catch {
-            #expect(error == nil)
-        }
-
     }
     
     
     @Test
     func testFetchLayouts() async throws {
-        let temporaryDirectoryURL = try createTemporaryDirectory()
-        defer { try? removeTemporaryDirectory(at: temporaryDirectoryURL) }
-        
-        let fileRepository = FileRepository(directoryURL: temporaryDirectoryURL)
-        
-        // Save some levels first
-        let levels = [
-            LevelDefinition(id: UUID(), number: 1, gridText: "Grid1", attemptedLetters: "abc", numCorrectLetters: 3)
-        ]
-        
-        try await fileRepository.saveLevels(file: LevelFile(definition: LayoutFileDefinition(), levels: levels))
-        
-        // Test fetching levels
-        
-        let fetchedLevelFile = try await fileRepository.fetchLevels(fileDefinition: LayoutFileDefinition())
-        
-        // Verify the fetched levels
-        #expect(fetchedLevelFile.levels.count == 1)
-        #expect(fetchedLevelFile.levels.first?.levelType == .layout)
+        try await withDependencies  { dependencies in
+            dependencies.uuid = .incrementing
+        } operation: {
+            @Dependency(\.uuid) var uuid
+            
+            let temporaryDirectoryURL = try createTemporaryDirectory()
+            defer { try? removeTemporaryDirectory(at: temporaryDirectoryURL) }
+            
+            let fileRepository = FileRepository(directoryURL: temporaryDirectoryURL)
+            
+            // Save some levels first
+            let levels = [
+                LevelDefinition(id: uuid(), number: 1, packId: uuid(), gridText: "Grid1", attemptedLetters: "abc", numCorrectLetters: 3)
+            ]
+            
+            try await fileRepository.saveLevels(file: LevelFile(definition: LayoutFileDefinition(), levels: levels))
+            
+            // Test fetching levels
+            
+            let fetchedLevelFile = try await fileRepository.fetchLevels(fileDefinition: LayoutFileDefinition())
+            
+            // Verify the fetched levels
+            #expect(fetchedLevelFile.levels.count == 1)
+            #expect(fetchedLevelFile.levels.first?.levelType == .layout)
+        }
     }
     
     
@@ -70,16 +83,15 @@ class FileRespositoryTests {
         try await withDependencies  { dependencies in
             dependencies.uuid = .incrementing
         } operation: {
-            
-            
+            @Dependency(\.uuid) var uuid
             
             let temporaryDirectoryURL = try createTemporaryDirectory()
             defer { try? removeTemporaryDirectory(at: temporaryDirectoryURL) }
             
             let fileRepository = FileRepository(directoryURL: temporaryDirectoryURL)
             let levels = [
-                LevelDefinition(id: UUID(), number: 1, gridText: "Grid1", letterMap: "Map1", attemptedLetters: "abc", numCorrectLetters: 3),
-                LevelDefinition(id: UUID(), number: 2, gridText: "Grid2", letterMap: "Map2", attemptedLetters: "xyz", numCorrectLetters: 5)
+                LevelDefinition(id: uuid(), number: 1, packId: uuid(), gridText: "Grid1", letterMap: "Map1", attemptedLetters: "abc", numCorrectLetters: 3),
+                LevelDefinition(id: uuid(), number: 2, packId: uuid(), gridText: "Grid2", letterMap: "Map2", attemptedLetters: "xyz", numCorrectLetters: 5)
             ]
             
             // Test saving levels
@@ -119,7 +131,7 @@ class FileRespositoryTests {
 
 func createTemporaryDirectory() throws -> URL {
     let temporaryDirectoryURL = FileManager.default.temporaryDirectory
-    let temporaryFolderURL = temporaryDirectoryURL.appendingPathComponent(UUID().uuidString)
+    let temporaryFolderURL = temporaryDirectoryURL.appendingPathComponent(UUID().uuidString) // Needs actual random id
     try FileManager.default.createDirectory(at: temporaryFolderURL, withIntermediateDirectories: true)
     return temporaryFolderURL
 }

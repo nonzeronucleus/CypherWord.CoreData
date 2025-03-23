@@ -1,5 +1,6 @@
 import SwiftUI
 import Foundation
+import Dependencies
 
 struct SettingsView: View {
     @EnvironmentObject var settingsViewModel: SettingsViewModel
@@ -30,7 +31,9 @@ struct SettingsView: View {
 
 
 #Preview {
-    let id = UUID()
+    @Dependency(\.uuid) var uuid
+
+    let id = uuid()
     
     SettingsView()
         .environmentObject(SettingsViewModel(parentId: id))

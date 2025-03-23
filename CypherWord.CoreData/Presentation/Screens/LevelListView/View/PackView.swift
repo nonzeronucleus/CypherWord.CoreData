@@ -67,16 +67,18 @@ struct PackView: View {
 
 //
 #Preview("Playable - hide completed") {
+    @Dependency(\.uuid) var uuid
+
     let testLayouts = [
-        LevelDefinition(id: UUID(), number: 1, attemptedLetters: nil),
-        LevelDefinition(id: UUID(), number: 2, attemptedLetters: nil)
+        LevelDefinition(id: uuid(), number: 1, packId: nil, attemptedLetters: nil),
+        LevelDefinition(id: uuid(), number: 2, packId: nil, attemptedLetters: nil)
     ]
     
     let testPlayableLevels = [
-        LevelDefinition(id: UUID(), number: 1, attemptedLetters: nil),
-        LevelDefinition(id: UUID(), number: 2, attemptedLetters: nil, numCorrectLetters: 20),
-        LevelDefinition(id: UUID(), number: 3, attemptedLetters: nil, numCorrectLetters: 26),
-        LevelDefinition(id: UUID(), number: 4, attemptedLetters: nil)
+        LevelDefinition(id: uuid(), number: 1, packId: uuid(), attemptedLetters: nil),
+        LevelDefinition(id: uuid(), number: 2, packId: uuid(), attemptedLetters: nil, numCorrectLetters: 20),
+        LevelDefinition(id: uuid(), number: 3, packId: uuid(), attemptedLetters: nil, numCorrectLetters: 26),
+        LevelDefinition(id: uuid(), number: 4, packId: uuid(), attemptedLetters: nil)
     ]
     
     withDependencies {

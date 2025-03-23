@@ -1,6 +1,6 @@
 import Foundation
 
-struct PackDefinition {
+struct PackDefinition:Identifiable, Equatable, Hashable {
     var id: UUID
-    var number: Int
+    var number: Int?
 }

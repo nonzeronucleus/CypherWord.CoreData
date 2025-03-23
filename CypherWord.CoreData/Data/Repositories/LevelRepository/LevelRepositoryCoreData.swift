@@ -15,17 +15,11 @@ protocol LevelRepositoryProtocol {
     func deleteAllPacks() throws
     
     func fetchLevelByID(id: UUID) async throws -> LevelMO?
-//    func addPlayableLevel(level: LevelDefinition) async throws
-    
     func delete(levelID: UUID) async throws
     func saveLevel(level: LevelDefinition) async throws
     
     func deleteAllLevels(levelType: LevelType) throws
 
-//    func addLayout() async throws
-
-//    func deleteAll(levelType: LevelType) async throws
-    
     func getManifest() async throws -> Manifest
     
     func fetchHighestNumber(levelType: LevelType) throws -> Int
@@ -83,16 +77,6 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         return try findLevel(id: id)
     }
     
-//    @MainActor
-//    func addPlayableLevel(level: LevelDefinition) async throws {
-//        var levelMO = LevelMO(context: container.viewContext)
-//        
-//        levelMO.id = UUID()
-//        levelMO.number = try self.fetchHighestNumberInternal(levelType: .playable) + 1
-//        LevelMapper.toLevelMO(from: level, to: &levelMO)
-//        save()
-//    }
-//    
     @MainActor
     func delete(levelID: UUID) async throws {
         let request: NSFetchRequest<NSFetchRequestResult> = createFetchLevelRequest(resultType: NSFetchRequestResult.self, levelID: levelID)
@@ -105,14 +89,13 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
     
     @MainActor
     func saveLevel(level: LevelDefinition) async throws {
+        @Dependency(\.uuid) var uuid
         var levelMO = try findLevel(id: level.id)
         
         if levelMO == nil {
             levelMO = LevelMO(context: container.viewContext)
-            levelMO?.id = UUID()
+            levelMO?.id = uuid()
             levelMO?.number = try self.fetchHighestNumberInternal(levelType: level.levelType) + 1
-            
-            //                levelMO.id = level.id
         }
         
         if var levelMO = levelMO {
@@ -123,18 +106,6 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
             throw OptionalUnwrappingError.foundNil("Couldn't create LevelMO")
         }
     }
-    
-//    func addLayout() async throws {
-//        let levelMO = LevelMO(context: container.viewContext)
-//        
-//        do {
-//            levelMO.id = UUID()
-//            levelMO.number = try self.fetchHighestNumber(levelType: .layout) + 1
-//            levelMO.gridText = nil
-//            levelMO.letterMap = nil
-//            save()
-//        }
-//    }
     
     @MainActor
     func fetchLevels(levelType: LevelType) async throws -> [LevelDefinition] {
@@ -176,7 +147,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
     @MainActor
     func savePlayableLevels(playableFileDefinition:PlayableLevelFileDefinition, levels:[LevelDefinition]) async throws {
         @Dependency(\.uuid) var uuid
-        
+
         for level in levels {
             if let levelMO = try findLevel(id: level.id) {
 //                print("Current id \(String(describing: levelMO.packId))")

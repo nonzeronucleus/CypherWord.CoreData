@@ -1,5 +1,6 @@
 import SwiftUI
 import Foundation
+import Dependencies
 
 public struct LevelEditView: View {
     @State private var showAlert = false
@@ -93,9 +94,11 @@ public struct LevelEditView: View {
 }
 
 #Preview {
-    let id = UUID()
+    @Dependency(\.uuid) var uuid
+
+    let id = uuid()
     let navigationViewModel = NavigationViewModel(settingsViewModel: SettingsViewModel(parentId: id))
-    let level = LevelDefinition(id: UUID(), number: 1, gridText: " ...|.. .|. ..|. ..|", letterMap: nil, attemptedLetters: nil)
+    let level = LevelDefinition(id: uuid(), number: 1, packId: nil, gridText: " ...|.. .|. ..|. ..|", letterMap: nil, attemptedLetters: nil)
     let viewModel = LevelEditViewModel(levelDefinition: level, navigationViewModel: navigationViewModel)
     
     LevelEditView(viewModel)

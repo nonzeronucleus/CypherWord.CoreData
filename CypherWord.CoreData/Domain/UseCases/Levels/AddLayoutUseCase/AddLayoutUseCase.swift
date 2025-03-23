@@ -9,11 +9,13 @@ protocol AddLayoutUseCaseProtocol {
 class AddLayoutUseCase: LevelsUseCase, AddLayoutUseCaseProtocol {
     func execute() async throws -> [LevelDefinition] {
         @Dependency(\.uuid) var uuid
+        
         let nextNum = try levelRepository.fetchHighestNumber(levelType: .layout) + 1
 
         let layout = LevelDefinition(
             id: uuid(),
             number: nextNum,
+            packId: nil,
             attemptedLetters: ""
         )
         
