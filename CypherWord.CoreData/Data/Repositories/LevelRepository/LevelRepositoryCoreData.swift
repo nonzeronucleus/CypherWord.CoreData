@@ -11,6 +11,8 @@ protocol LevelRepositoryProtocol {
     func commit()
     
     func fetchLevels(levelType: LevelType) async throws -> [LevelDefinition]
+    func fetchPlayableLevels(packNum: Int) async throws -> [LevelDefinition]
+    
     func saveLevels(file:LevelFile) async throws
     func deleteAllPacks() throws
     
@@ -120,6 +122,27 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         }
     }
     
+    
+    @MainActor
+    func fetchPlayableLevels(packNum:Int) async throws -> [LevelDefinition] {
+        do {
+            let manifest = try await getManifest()
+            
+            guard let packDefinition = manifest.getLevelFileDefinition(forNumber: packNum) else {
+                throw NSError(domain: "LevelStorageCoreData", code: 1, userInfo: [NSLocalizedDescriptionKey : "Couldn't find pack \(packNum)"])
+            }
+                
+            let fetchRequest: NSFetchRequest<LevelMO> = createFetchLevelsRequest(resultType: LevelMO.self, levelType: .playable, packId: packDefinition.id)
+            let savedEntities = try container.viewContext.fetch(fetchRequest)
+            
+            let levels = savedEntities.map( {
+                entity in LevelMapper.toLevelDefinition(mo: entity)
+            })
+            return levels
+        }
+    }
+
+    
     func saveLevels(file:LevelFile) async throws {
         if let playableFileDefinition = file.definition as? PlayableLevelFileDefinition {
             try await savePlayableLevels(playableFileDefinition: playableFileDefinition, levels: file.levels)
@@ -217,12 +240,15 @@ class LevelStorageCoreData {
     }
 
     
-    private func createFetchLevelsRequest<T>(resultType: T.Type, levelType: LevelType) -> NSFetchRequest<T> where T: NSFetchRequestResult {
+    private func createFetchLevelsRequest<T>(resultType: T.Type, levelType: LevelType, packId: UUID? = nil) -> NSFetchRequest<T> where T: NSFetchRequestResult {
         let request = NSFetchRequest<T>(entityName: levelEntityName)
         if levelType == .playable {
             request.predicate = NSPredicate(format: "letterMap != nil")
         } else {
             request.predicate = NSPredicate(format: "letterMap == nil")
+        }
+        if let packId {
+            request.predicate = NSPredicate(format: "packId == %@", packId as CVarArg)
         }
         request.sortDescriptors = [NSSortDescriptor(key: "number", ascending: true)]
         return request

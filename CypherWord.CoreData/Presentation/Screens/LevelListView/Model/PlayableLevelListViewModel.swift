@@ -2,18 +2,19 @@ import SwiftUICore
 import Dependencies
 
 class PlayableLevelListViewModel: LevelListViewModel {
-    private var fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol
+    private var fetchPlayableLevelsUseCase: FetchPlayableLevelsUseCaseProtocol
     private var loadManifestUaeCase: LoadManifestUseCaseProtocol
     var manifest: Manifest?
     @Published var packNumber: Int? {
         didSet {
             print("Pack number \(String(describing: packNumber))")
+            reload()
         }
     }
 
     init(navigationViewModel:NavigationViewModel,
          settingsViewModel: SettingsViewModel,
-         fetchPlayableLevelsUseCase: FetchLevelsUseCaseProtocol = FetchPlayableLevelsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
+         fetchPlayableLevelsUseCase: FetchPlayableLevelsUseCaseProtocol = FetchPlayableLevelsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
          loadManifestUseCase: LoadManifestUseCaseProtocol = LoadManifestUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue)
     ){
         self.loadManifestUaeCase = loadManifestUseCase
@@ -68,16 +69,19 @@ class PlayableLevelListViewModel: LevelListViewModel {
     }
 
     override func reload() {
-        Task {
-            do {
-                let levels = try await self.fetchPlayableLevelsUseCase.execute()
-                await MainActor.run {
-                    levelFile.levels = levels
-                    
-                }
-            } catch {
-                await MainActor.run {
-                    self.error = error.localizedDescription  // ✅ Also ensure error updates on main thread
+        if let packNumber {
+            Task {
+                do {
+                    print("Reloading pack \(packNumber)")
+                    let levels = try await self.fetchPlayableLevelsUseCase.execute(packNum: packNumber)
+                    await MainActor.run {
+                        levelFile.levels = levels
+                        
+                    }
+                } catch {
+                    await MainActor.run {
+                        self.error = error.localizedDescription  // ✅ Also ensure error updates on main thread
+                    }
                 }
             }
         }

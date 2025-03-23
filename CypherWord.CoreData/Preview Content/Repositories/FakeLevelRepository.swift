@@ -2,6 +2,15 @@ import Foundation
 import Dependencies
 
 class FakeLevelRepository: LevelRepositoryProtocol {
+    func fetchPlayableLevels(packNum: Int) async throws -> [LevelDefinition] {
+        return testPlayableLevels.map { $0.value }.sorted(by: { level1, level2 in
+            guard let number1 = level1.number else { return false }
+            guard let number2 = level2.number else { return true }
+
+            return (number1 < number2)
+        })
+    }
+    
     func deleteAllPacks() throws {
         fatalError("\(#function) not implemented")
     }
