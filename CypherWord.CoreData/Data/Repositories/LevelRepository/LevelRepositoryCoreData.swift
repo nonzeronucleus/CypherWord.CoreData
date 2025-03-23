@@ -12,21 +12,23 @@ protocol LevelRepositoryProtocol {
     
     func fetchLevels(levelType: LevelType) async throws -> [LevelDefinition]
     func saveLevels(file:LevelFile) async throws
+    func deleteAllPacks() throws
     
     func fetchLevelByID(id: UUID) async throws -> LevelMO?
 //    func addPlayableLevel(level: LevelDefinition) async throws
     
     func delete(levelID: UUID) async throws
     func saveLevel(level: LevelDefinition) async throws
+    
+    func deleteAllLevels(levelType: LevelType) throws
 
 //    func addLayout() async throws
 
-    func deleteAll(levelType: LevelType) async throws
+//    func deleteAll(levelType: LevelType) async throws
     
     func getManifest() async throws -> Manifest
     
     func fetchHighestNumber(levelType: LevelType) throws -> Int
-
 }
 
 
@@ -191,13 +193,13 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
             save()
         }
         
-        try writePackToManifest(playableFileDefinition: playableFileDefinition)
+        try await writePackToManifest(playableFileDefinition: playableFileDefinition)
     }
     
     
     @MainActor
-    func writePackToManifest(playableFileDefinition: PlayableLevelFileDefinition) throws {
-        Task { @MainActor in
+    func writePackToManifest(playableFileDefinition: PlayableLevelFileDefinition) async throws {
+        try await MainActor.run {
             if let packNumber = playableFileDefinition.packNumber {
                 var packMO:PackMO?
                 
@@ -310,25 +312,23 @@ class LevelStorageCoreData {
     }
 
     
-    func deleteAll(levelType: LevelType) throws {
-        try deleteAllLevels(levelType: levelType)
-        if levelType == .playable {
-            try deleteAllPacks()
-        }
-    }
+//    func deleteAll(levelType: LevelType) async throws {
+//        try await deleteAllLevels(levelType: levelType)
+//        if levelType == .playable {
+//            try deleteAllPacks()
+//        }
+//    }
 
     
     func deleteAllLevels(levelType: LevelType) throws {
-        let request: NSFetchRequest<NSFetchRequestResult> = createFetchLevelsRequest(resultType: NSFetchRequestResult.self, levelType: levelType)
-        
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
-
-        do {
-            Task { @MainActor in
-                try container.viewContext.execute(deleteRequest)
-                try container.viewContext.save()
-            }
-        }
+//        try await MainActor.run {
+            let request: NSFetchRequest<NSFetchRequestResult> = createFetchLevelsRequest(resultType: NSFetchRequestResult.self, levelType: levelType)
+            
+            let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+            
+            try container.viewContext.execute(deleteRequest)
+            //                try container.viewContext.save()
+//        }
     }
     
     func deleteAllPacks() throws {
@@ -338,7 +338,7 @@ class LevelStorageCoreData {
 
         do {
             try container.viewContext.execute(deleteRequest)
-            try container.viewContext.save()
+//            try container.viewContext.save()
         }
     }
     

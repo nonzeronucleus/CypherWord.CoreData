@@ -2,6 +2,14 @@ import Foundation
 import Dependencies
 
 class FakeLevelRepository: LevelRepositoryProtocol {
+    func deleteAllPacks() throws {
+        fatalError("\(#function) not implemented")
+    }
+    
+    func deleteAllLevels(levelType: LevelType) throws {
+        fatalError("\(#function) not implemented")
+    }
+    
     func commit() {
         fatalError("\(#function) not implemented")
     }
