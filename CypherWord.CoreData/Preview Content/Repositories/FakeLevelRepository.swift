@@ -3,11 +3,10 @@ import Dependencies
 
 class FakeLevelRepository: LevelRepositoryProtocol {
     func levelExists(level: LevelDefinition) async throws -> Bool {
-        fatalError("\(#function) not implemented")
+        return false
     }
     
     func writePackToManifest(playableFileDefinition: PlayableLevelFileDefinition) async throws {
-        fatalError("\(#function) not implemented")
     }
     
     func fetchPlayableLevels(packNum: Int) async throws -> [LevelDefinition] {
@@ -28,11 +27,9 @@ class FakeLevelRepository: LevelRepositoryProtocol {
     }
     
     func commit() {
-        fatalError("\(#function) not implemented")
     }
     
     func prepareLevelMO(from level: LevelDefinition) throws {
-        fatalError("\(#function) not implemented")
     }
     
     func fetchHighestLevelNumber(levelType: LevelType) throws -> Int {
