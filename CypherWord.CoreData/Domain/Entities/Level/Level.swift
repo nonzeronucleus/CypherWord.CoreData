@@ -6,6 +6,7 @@ struct Level {
     var crossword: Crossword
     var letterMap: CharacterIntMap?
     var attemptedLetters: [Character]
+    var packId: UUID?
     
     var numCorrectLetters: Int {
         get {
@@ -18,6 +19,7 @@ struct Level {
     init(definition: LevelDefinition) {
         self.id = definition.id
         self.number = definition.number
+        self.packId = definition.packId
         let transformer = CrosswordTransformer()
         
         if let gridText = definition.gridText {

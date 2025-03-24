@@ -39,6 +39,7 @@ struct LevelDefinition: Identifiable, Equatable, Hashable {
     init(from level:Level) {
         self.id = level.id
         self.number = level.number
+        self.packId = level.packId
         let crosswordTransformer = CrosswordTransformer()
         
         gridText = crosswordTransformer.transformedValue(level.crossword) as? String

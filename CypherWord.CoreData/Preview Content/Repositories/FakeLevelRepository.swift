@@ -2,6 +2,14 @@ import Foundation
 import Dependencies
 
 class FakeLevelRepository: LevelRepositoryProtocol {
+    func levelExists(level: LevelDefinition) async throws -> Bool {
+        fatalError("\(#function) not implemented")
+    }
+    
+    func writePackToManifest(playableFileDefinition: PlayableLevelFileDefinition) async throws {
+        fatalError("\(#function) not implemented")
+    }
+    
     func fetchPlayableLevels(packNum: Int) async throws -> [LevelDefinition] {
         return testPlayableLevels.map { $0.value }.sorted(by: { level1, level2 in
             guard let number1 = level1.number else { return false }

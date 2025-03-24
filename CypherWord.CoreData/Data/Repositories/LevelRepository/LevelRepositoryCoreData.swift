@@ -9,10 +9,14 @@ protocol LevelRepositoryProtocol {
     func prepareLevelMO(from level:LevelDefinition) async throws
     func commit()
     
+    func writePackToManifest(playableFileDefinition: PlayableLevelFileDefinition) async throws
+    
     func fetchLayouts() async throws -> [LevelDefinition]
     func fetchPlayableLevels(packNum: Int) async throws -> [LevelDefinition]
     
-    func saveLevels(file:LevelFile) async throws
+    func levelExists(level:LevelDefinition) async throws -> Bool
+    
+//    func saveLevels(file:LevelFile) async throws
     func deleteAllPacks() throws
     
     func fetchLevelByID(id: UUID) async throws -> LevelMO?
@@ -27,6 +31,10 @@ protocol LevelRepositoryProtocol {
 
 
 extension LevelStorageCoreData:LevelRepositoryProtocol {
+    func levelExists(level: LevelDefinition) async throws -> Bool {
+        return try findLevel(id: level.id) != nil
+    }
+    
     func commit() {
         do {
             try container.viewContext.save()
@@ -59,6 +67,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
                 levelMO.gridText = level.gridText
                 levelMO.letterMap = level.letterMap
                 levelMO.attemptedLetters = level.attemptedLetters
+                levelMO.packId = level.packId
             }
         }
     }
@@ -121,53 +130,53 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
     }
 
     
-    func saveLevels(file:LevelFile) async throws {
-        if let playableFileDefinition = file.definition as? PlayableLevelFileDefinition {
-            try await savePlayableLevels(playableFileDefinition: playableFileDefinition, levels: file.levels)
-        }
-        else {
-            try await saveLayouts(levels:file.levels)
-        }
-    }
-
-    @MainActor
-    func saveLayouts(levels:[LevelDefinition]) async throws {
-        do {
-            for level in levels {
-                if try findLevel(id: level.id) == nil {
-                    let _ = try LevelMapper.toLevelMO(context: container.viewContext, levelDefinition: level) {
-                        return try fetchHighestNumberInternal(levelType: level.levelType) + 1
-                    }
-
-                    save2()
-                }
-            }
-        }
-    }
-    
-    @MainActor
-    func savePlayableLevels(playableFileDefinition:PlayableLevelFileDefinition, levels:[LevelDefinition]) async throws {
-        @Dependency(\.uuid) var uuid
-
-        for level in levels {
-            if let levelMO = try findLevel(id: level.id) {
-//                print("Current id \(String(describing: levelMO.packId))")
-                levelMO.packId = playableFileDefinition.id
-//                print("Setting pack id to \(playableFileDefinition.id) for level \(level.id)")
-            }
-            else {
-                let levelMO = try LevelMapper.toLevelMO(context: container.viewContext, levelDefinition: level) {
-                    return try fetchHighestNumberInternal(levelType: level.levelType) + 1
-                }
-                levelMO.packId = playableFileDefinition.id
-            }
-            
-            save2()
-        }
-        
-        try await writePackToManifest(playableFileDefinition: playableFileDefinition)
-    }
-    
+//    func saveLevels(file:LevelFile) async throws {
+//        if let playableFileDefinition = file.definition as? PlayableLevelFileDefinition {
+//            try await savePlayableLevels(playableFileDefinition: playableFileDefinition, levels: file.levels)
+//        }
+//        else {
+//            try await saveLayouts(levels:file.levels)
+//        }
+//    }
+//
+//    @MainActor
+//    func saveLayouts(levels:[LevelDefinition]) async throws {
+//        do {
+//            for level in levels {
+//                if try findLevel(id: level.id) == nil {
+//                    let _ = try LevelMapper.toLevelMO(context: container.viewContext, levelDefinition: level) {
+//                        return try fetchHighestNumberInternal(levelType: level.levelType) + 1
+//                    }
+//
+//                    save2()
+//                }
+//            }
+//        }
+//    }
+//    
+//    @MainActor
+//    func savePlayableLevels(playableFileDefinition:PlayableLevelFileDefinition, levels:[LevelDefinition]) async throws {
+//        @Dependency(\.uuid) var uuid
+//
+//        for level in levels {
+//            if let levelMO = try findLevel(id: level.id) {
+////                print("Current id \(String(describing: levelMO.packId))")
+//                levelMO.packId = playableFileDefinition.id
+////                print("Setting pack id to \(playableFileDefinition.id) for level \(level.id)")
+//            }
+//            else {
+//                let levelMO = try LevelMapper.toLevelMO(context: container.viewContext, levelDefinition: level) {
+//                    return try fetchHighestNumberInternal(levelType: level.levelType) + 1
+//                }
+//                levelMO.packId = playableFileDefinition.id
+//            }
+//            
+//            save2()
+//        }
+//        
+//        try await writePackToManifest(playableFileDefinition: playableFileDefinition)
+//    }
+//    
     
     @MainActor
     func writePackToManifest(playableFileDefinition: PlayableLevelFileDefinition) async throws {

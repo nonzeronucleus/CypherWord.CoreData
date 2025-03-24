@@ -20,14 +20,32 @@ class ImportLevelsUseCase : ImportLevelsUseCaseProtocol {
 
     func execute(fileDefinition: any FileDefinitionProtocol) async throws {
         let file = try await fileRepository.fetchLevels(fileDefinition: fileDefinition)
+        let playableFileDefinition = file.definition as? PlayableLevelFileDefinition
+
         
-//        for level in file.levels {
-//            levelRepository.
-//        }
+        for var level in file.levels {
+            
+            if await (try levelRepository.levelExists(level:level)) {
+                // Don't re-import level
+                return
+            }
+            
+            if let playableFileDefinition {
+                level.packId = playableFileDefinition.id
+            }
+            
+            try await levelRepository.prepareLevelMO(from: level)
+        }
         
+        if let playableFileDefinition {
+            try await levelRepository.writePackToManifest(playableFileDefinition: playableFileDefinition)
+        }
+
+        levelRepository.commit()
+
 //        let file = LevelFile(definition: fileDefinition, levels: levels)
         
-        try await levelRepository.saveLevels(file:file)
+//        try await levelRepository.saveLevels(file:file)
     }
 //    func execute(fileDefinition: any FileDefinitionProtocol) async throws {
 //        let levels = try await fileRepository.fetchLevels(fileDefinition: fileDefinition)
