@@ -14,7 +14,7 @@ class AddPlayableLevelUseCase : LevelsUseCase, AddPlayableLevelUseCaseProtocol {
             fatalError("Could not find pack for \(packNum)")
         }
         
-        let nextNum = try levelRepository.fetchHighestNumber(levelType: .playable) + 1
+        let nextNum = try levelRepository.fetchHighestLevelNumber(levelType: .playable) + 1
         
         let level = LevelDefinition(
             id: uuid(),

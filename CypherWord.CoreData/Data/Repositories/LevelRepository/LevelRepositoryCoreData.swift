@@ -7,10 +7,9 @@ import Foundation
 protocol LevelRepositoryProtocol {
     
     func prepareLevelMO(from level:LevelDefinition) async throws
-    
     func commit()
     
-    func fetchLevels(levelType: LevelType) async throws -> [LevelDefinition]
+    func fetchLayouts() async throws -> [LevelDefinition]
     func fetchPlayableLevels(packNum: Int) async throws -> [LevelDefinition]
     
     func saveLevels(file:LevelFile) async throws
@@ -23,8 +22,7 @@ protocol LevelRepositoryProtocol {
     func deleteAllLevels(levelType: LevelType) throws
 
     func getManifest() async throws -> Manifest
-    
-    func fetchHighestNumber(levelType: LevelType) throws -> Int
+    func fetchHighestLevelNumber(levelType: LevelType) throws -> Int
 }
 
 
@@ -39,7 +37,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
     }
     
     
-    func fetchHighestNumber(levelType: LevelType) throws -> Int{
+    func fetchHighestLevelNumber(levelType: LevelType) throws -> Int{
         return try Int(fetchHighestNumberInternal(levelType: levelType))
     }
     
@@ -110,9 +108,9 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
     }
     
     @MainActor
-    func fetchLevels(levelType: LevelType) async throws -> [LevelDefinition] {
+    func fetchLayouts() async throws -> [LevelDefinition] {
         do {
-            let fetchRequest: NSFetchRequest<LevelMO> = createFetchLevelsRequest(resultType: LevelMO.self, levelType: levelType)
+            let fetchRequest: NSFetchRequest<LevelMO> = createFetchLevelsRequest(resultType: LevelMO.self, levelType: .layout)
             let savedEntities = try container.viewContext.fetch(fetchRequest)
             
             let levels = savedEntities.map( {

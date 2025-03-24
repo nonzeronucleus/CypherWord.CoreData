@@ -10,7 +10,7 @@ class AddLayoutUseCase: LevelsUseCase, AddLayoutUseCaseProtocol {
     func execute() async throws -> [LevelDefinition] {
         @Dependency(\.uuid) var uuid
         
-        let nextNum = try levelRepository.fetchHighestNumber(levelType: .layout) + 1
+        let nextNum = try levelRepository.fetchHighestLevelNumber(levelType: .layout) + 1
 
         let layout = LevelDefinition(
             id: uuid(),
@@ -23,7 +23,7 @@ class AddLayoutUseCase: LevelsUseCase, AddLayoutUseCaseProtocol {
         
         levelRepository.commit()
         
-        return try await levelRepository.fetchLevels(levelType: .layout)
+        return try await levelRepository.fetchLayouts()
     }
 }
 

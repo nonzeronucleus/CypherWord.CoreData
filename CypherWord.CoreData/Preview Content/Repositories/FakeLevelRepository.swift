@@ -27,7 +27,7 @@ class FakeLevelRepository: LevelRepositoryProtocol {
         fatalError("\(#function) not implemented")
     }
     
-    func fetchHighestNumber(levelType: LevelType) throws -> Int {
+    func fetchHighestLevelNumber(levelType: LevelType) throws -> Int {
         fatalError("\(#function) not implemented")
     }
     
@@ -80,23 +80,13 @@ class FakeLevelRepository: LevelRepositoryProtocol {
         }
     }
     
-    func fetchLevels(levelType: LevelType) async throws -> [LevelDefinition] {
-        if levelType == .playable {
-            return testPlayableLevels.map { $0.value }.sorted(by: { level1, level2 in
-                guard let number1 = level1.number else { return false }
-                guard let number2 = level2.number else { return true }
-
-                return (number1 < number2)
-            })
-        }
-        else {
-            return testLayouts.map { $0.value }.sorted(by: { level1, level2 in
-                guard let number1 = level1.number else { return false }
-                guard let number2 = level2.number else { return true }
-
-                return (number1 < number2)
-            })
-        }
+    func fetchLayouts() async throws -> [LevelDefinition] {
+        return testLayouts.map { $0.value }.sorted(by: { level1, level2 in
+            guard let number1 = level1.number else { return false }
+            guard let number2 = level2.number else { return true }
+            
+            return (number1 < number2)
+        })
     }
     
     func saveLevels(file: LevelFile) async throws {

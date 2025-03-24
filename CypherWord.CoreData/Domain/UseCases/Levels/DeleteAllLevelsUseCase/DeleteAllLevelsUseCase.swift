@@ -16,6 +16,6 @@ class DeleteAllLevelsUseCase: LevelsUseCase, DeleteAllLevelsUseCaseProtocol {
             try levelRepository.deleteAllPacks()
         }
 
-        return try await levelRepository.fetchLevels(levelType: levelType)
+        return try await levelRepository.fetchLayouts()
     }
 }
