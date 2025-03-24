@@ -21,6 +21,10 @@ class ImportLevelsUseCase : ImportLevelsUseCaseProtocol {
     func execute(fileDefinition: any FileDefinitionProtocol) async throws {
         let file = try await fileRepository.fetchLevels(fileDefinition: fileDefinition)
         
+//        for level in file.levels {
+//            levelRepository.
+//        }
+        
 //        let file = LevelFile(definition: fileDefinition, levels: levels)
         
         try await levelRepository.saveLevels(file:file)

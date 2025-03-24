@@ -17,7 +17,6 @@ protocol LevelRepositoryProtocol {
     
     func fetchLevelByID(id: UUID) async throws -> LevelMO?
     func delete(levelID: UUID) async throws
-    func saveLevel(level: LevelDefinition) async throws
     
     func deleteAllLevels(levelType: LevelType) throws
 
@@ -59,6 +58,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
                 levelMO.number = Int64(number)
                 levelMO.gridText = level.gridText
                 levelMO.letterMap = level.letterMap
+                levelMO.attemptedLetters = level.attemptedLetters
             }
         }
     }
@@ -85,26 +85,6 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         
         try container.viewContext.execute(deleteRequest)
         try container.viewContext.save()
-    }
-    
-    @MainActor
-    func saveLevel(level: LevelDefinition) async throws {
-        @Dependency(\.uuid) var uuid
-        var levelMO = try findLevel(id: level.id)
-        
-        if levelMO == nil {
-            levelMO = LevelMO(context: container.viewContext)
-            levelMO?.id = uuid()
-            levelMO?.number = try self.fetchHighestNumberInternal(levelType: level.levelType) + 1
-        }
-        
-        if var levelMO = levelMO {
-            LevelMapper.toLevelMO(from: level, to: &levelMO)
-            save()
-        }
-        else {
-            throw OptionalUnwrappingError.foundNil("Couldn't create LevelMO")
-        }
     }
     
     @MainActor
@@ -159,7 +139,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
                         return try fetchHighestNumberInternal(levelType: level.levelType) + 1
                     }
 
-                    save()
+                    save2()
                 }
             }
         }
@@ -182,7 +162,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
                 levelMO.packId = playableFileDefinition.id
             }
             
-            save()
+            save2()
         }
         
         try await writePackToManifest(playableFileDefinition: playableFileDefinition)
@@ -205,7 +185,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
                     packMO.number = Int16(packNumber)
                     packMO.id = playableFileDefinition.id
                 }
-                save()
+                save2()
             }
             
             else {
@@ -307,23 +287,12 @@ class LevelStorageCoreData {
     }
 
     
-//    func deleteAll(levelType: LevelType) async throws {
-//        try await deleteAllLevels(levelType: levelType)
-//        if levelType == .playable {
-//            try deleteAllPacks()
-//        }
-//    }
-
-    
     func deleteAllLevels(levelType: LevelType) throws {
-//        try await MainActor.run {
-            let request: NSFetchRequest<NSFetchRequestResult> = createFetchLevelsRequest(resultType: NSFetchRequestResult.self, levelType: levelType)
-            
-            let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
-            
-            try container.viewContext.execute(deleteRequest)
-            //                try container.viewContext.save()
-//        }
+        let request: NSFetchRequest<NSFetchRequestResult> = createFetchLevelsRequest(resultType: NSFetchRequestResult.self, levelType: levelType)
+        
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+        
+        try container.viewContext.execute(deleteRequest)
     }
     
     func deleteAllPacks() throws {
@@ -331,10 +300,7 @@ class LevelStorageCoreData {
         
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
 
-        do {
-            try container.viewContext.execute(deleteRequest)
-//            try container.viewContext.save()
-        }
+        try container.viewContext.execute(deleteRequest)
     }
     
     
@@ -348,7 +314,7 @@ class LevelStorageCoreData {
 
     
     
-    internal func save() {
+    internal func save2() {
         do {
             try container.viewContext.save()
         } catch let error {

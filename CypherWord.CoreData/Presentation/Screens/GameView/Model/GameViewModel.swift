@@ -27,17 +27,17 @@ class GameViewModel: ObservableObject {
         self.navigationViewModel = navigationViewModel
         
         Task {
-            await revealLetter(letter: "X")
-            await revealLetter(letter: "Z")
+            await revealLetter(letter: "X", save:false)
+            await revealLetter(letter: "Z", save:false)
         }
     }
     
     
-    func revealLetter(letter:Character) async {
+    func revealLetter(letter:Character, save:Bool = true) async {
         let val = level.letterMap![letter]
         
         if let val {
-            await setAttemptedValue(idx: val, char: letter)
+            await setAttemptedValue(idx: val, char: letter, save:save)
         }
     }
     
@@ -73,7 +73,7 @@ class GameViewModel: ObservableObject {
     }
     
 //    @MainActor
-    func save() async {
+    func saveLevel() async {
         await MainActor.run {
             isBusy = true
         }
@@ -113,7 +113,7 @@ class GameViewModel: ObservableObject {
         }
     }
     
-    @MainActor private func setAttemptedValue(idx: Int, char:Character) async {
+    @MainActor private func setAttemptedValue(idx: Int, char:Character, save:Bool = true) async {
         let prevNumCorrectLetters = level.numCorrectLetters
         level.attemptedLetters[idx] = char
 
@@ -121,7 +121,9 @@ class GameViewModel: ObservableObject {
             showCompletedDialog = true
         }
         numCorrectLetters = level.numCorrectLetters
-        await save()
+        if save {
+            await saveLevel()
+        }
     }
     
     func checkLetters() {
