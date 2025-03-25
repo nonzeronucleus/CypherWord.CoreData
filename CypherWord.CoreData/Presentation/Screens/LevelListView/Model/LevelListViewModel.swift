@@ -7,7 +7,6 @@ import Combine
 class LevelListViewModel: ObservableObject {
     var settingsViewModel: SettingsViewModel
     
-    var deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol
     var exportPlayableLevelsUseCase: ExportLevelsUseCaseProtocol
     
 //    @Published var allLevels: [LevelDefinition] = []
@@ -26,13 +25,11 @@ class LevelListViewModel: ObservableObject {
     init(navigationViewModel:NavigationViewModel,
          settingsViewModel: SettingsViewModel,
          levelFile: LevelFile,
-         deleteAllLevelsUseCase: DeleteAllLevelsUseCaseProtocol = DeleteAllLevelsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
          exportPlayableLevelsUseCase: ExportLevelsUseCaseProtocol = ExportLevelsUseCase(fileRepository: Dependency(\.fileRepository).wrappedValue)
     ){
         self.navigationViewModel = navigationViewModel
         self.settingsViewModel = settingsViewModel
         self.levelFile = levelFile
-        self.deleteAllLevelsUseCase = deleteAllLevelsUseCase
         self.exportPlayableLevelsUseCase = exportPlayableLevelsUseCase
         
         showCompleted = settingsViewModel.settings.showCompletedLevels

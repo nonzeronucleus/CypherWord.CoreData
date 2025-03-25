@@ -4,6 +4,8 @@ import Dependencies
 class PlayableLevelListViewModel: LevelListViewModel {
     private var fetchPlayableLevelsUseCase: FetchPlayableLevelsUseCaseProtocol
     private var loadManifestUaeCase: LoadManifestUseCaseProtocol
+    private var deleteAllPlayableLevelsUseCase: DeleteAllPlayableLevelsUseCaseProtocol
+
     var manifest: Manifest?
     @Published var packNumber: Int? {
         didSet {
@@ -15,10 +17,12 @@ class PlayableLevelListViewModel: LevelListViewModel {
     init(navigationViewModel:NavigationViewModel,
          settingsViewModel: SettingsViewModel,
          fetchPlayableLevelsUseCase: FetchPlayableLevelsUseCaseProtocol = FetchPlayableLevelsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
+         deleteAllPlayableLevelsUseCase: DeleteAllPlayableLevelsUseCaseProtocol = DeleteAllPlayableLevelsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
          loadManifestUseCase: LoadManifestUseCaseProtocol = LoadManifestUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue)
     ){
         self.loadManifestUaeCase = loadManifestUseCase
         self.fetchPlayableLevelsUseCase = fetchPlayableLevelsUseCase
+        self.deleteAllPlayableLevelsUseCase = deleteAllPlayableLevelsUseCase
         
         self.packNumber = nil
         self.manifest = nil
@@ -91,7 +95,8 @@ class PlayableLevelListViewModel: LevelListViewModel {
     override func deleteAll() {
         Task {
             do {
-                let levels = try await deleteAllLevelsUseCase.execute(levelType: .playable)
+                guard let packNumber else { return }
+                let levels = try await deleteAllPlayableLevelsUseCase.execute(packNum: packNumber)
                 await MainActor.run {
                     levelFile.levels = levels  // ✅ Ensures update happens on the main thread
                 }

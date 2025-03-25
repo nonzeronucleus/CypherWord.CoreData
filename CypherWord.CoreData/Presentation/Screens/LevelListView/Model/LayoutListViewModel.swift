@@ -6,16 +6,19 @@ class LayoutListViewModel: LevelListViewModel {
     private var fetchLayoutsUseCase: FetchLevelsUseCaseProtocol
     private var addLayoutUseCase: AddLayoutUseCaseProtocol
     private var exportLayoutsUseCase: ExportLevelsUseCaseProtocol
-    
+    private var deleteAllLayoutsUseCase: DeleteAllLayoutsUseCaseProtocol
+
     init(navigationViewModel:NavigationViewModel,
          settingsViewModel: SettingsViewModel,
          fetchLayoutsUseCase: FetchLevelsUseCaseProtocol = FetchLayoutsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
          addLayoutUseCase: AddLayoutUseCaseProtocol = AddLayoutUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
+         deleteAllLayoutsUseCase: DeleteAllLayoutsUseCaseProtocol = DeleteAllLayoutsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
          exportLayoutsUseCase:ExportLevelsUseCaseProtocol = ExportLevelsUseCase(fileRepository: Dependency(\.fileRepository).wrappedValue)
     ){
         self.fetchLayoutsUseCase = fetchLayoutsUseCase
         self.addLayoutUseCase = addLayoutUseCase
         self.exportLayoutsUseCase = exportLayoutsUseCase
+        self.deleteAllLayoutsUseCase = deleteAllLayoutsUseCase
 
         super.init(navigationViewModel: navigationViewModel,
                    settingsViewModel: settingsViewModel,
@@ -90,7 +93,7 @@ class LayoutListViewModel: LevelListViewModel {
     override func deleteAll() {
         Task {
             do {
-                let levels = try await deleteAllLevelsUseCase.execute(levelType: .layout)
+                let levels = try await deleteAllLayoutsUseCase.execute()
                 await MainActor.run {
 //                    self.allLevels = levels  // ✅ Ensures update happens on the main thread
                     self.levelFile.levels = levels
