@@ -1,7 +1,7 @@
 import Foundation
 import Dependencies
 
-class FakeLevelRepository: LevelRepositoryProtocol {
+class FakeLevelRepository: LevelRepositoryProtocol, PlayableLevelRepositoryProtocol, LayoutRepositoryProtocol {
     func levelExists(level: LevelDefinition) async throws -> Bool {
         return false
     }

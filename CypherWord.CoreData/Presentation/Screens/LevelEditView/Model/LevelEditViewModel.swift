@@ -33,7 +33,7 @@ class LevelEditViewModel: ObservableObject {
          navigationViewModel:NavigationViewModel,
          saveLevelUseCase: SaveLevelUseCaseProtocol = SaveLevelUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
          deleteLevelUseCase: DeleteLevelUseCaseProtocol = DeleteLevelUseCase(repository: Dependency(\.levelRepository).wrappedValue),
-         addPlayableLevelUseCase: AddPlayableLevelUseCaseProtocol = AddPlayableLevelUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
+         addPlayableLevelUseCase: AddPlayableLevelUseCaseProtocol = AddPlayableLevelUseCase(levelRepository: Dependency(\.playableLevelRepository).wrappedValue),
          resizeGridUseCase: ResizeGridUseCaseProtocol = ResizeGridUseCase()
     ) {
         self.saveLevelUseCase = saveLevelUseCase

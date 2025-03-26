@@ -10,9 +10,9 @@ class LayoutListViewModel: LevelListViewModel {
 
     init(navigationViewModel:NavigationViewModel,
          settingsViewModel: SettingsViewModel,
-         fetchLayoutsUseCase: FetchLevelsUseCaseProtocol = FetchLayoutsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
-         addLayoutUseCase: AddLayoutUseCaseProtocol = AddLayoutUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
-         deleteAllLayoutsUseCase: DeleteAllLayoutsUseCaseProtocol = DeleteAllLayoutsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
+         fetchLayoutsUseCase: FetchLevelsUseCaseProtocol = FetchLayoutsUseCase(levelRepository: Dependency(\.layoutRepository).wrappedValue),
+         addLayoutUseCase: AddLayoutUseCaseProtocol = AddLayoutUseCase(levelRepository: Dependency(\.layoutRepository).wrappedValue),
+         deleteAllLayoutsUseCase: DeleteAllLayoutsUseCaseProtocol = DeleteAllLayoutsUseCase(levelRepository: Dependency(\.layoutRepository).wrappedValue),
          exportLayoutsUseCase:ExportLevelsUseCaseProtocol = ExportLevelsUseCase(fileRepository: Dependency(\.fileRepository).wrappedValue)
     ){
         self.fetchLayoutsUseCase = fetchLayoutsUseCase

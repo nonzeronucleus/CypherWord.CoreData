@@ -3,9 +3,9 @@ protocol LoadManifestUseCaseProtocol {
 }
 
 class LoadManifestUseCase: LoadManifestUseCaseProtocol {
-    var levelRepository: LevelRepositoryProtocol
+    var levelRepository: PlayableLevelRepositoryProtocol
     
-    init(levelRepository: LevelRepositoryProtocol) {
+    init(levelRepository: PlayableLevelRepositoryProtocol) {
         self.levelRepository = levelRepository
     }
     

@@ -6,7 +6,13 @@ protocol AddLayoutUseCaseProtocol {
 }
 
 
-class AddLayoutUseCase: LevelsUseCase, AddLayoutUseCaseProtocol {
+class AddLayoutUseCase: AddLayoutUseCaseProtocol {
+    var levelRepository: LayoutRepositoryProtocol
+    
+    init(levelRepository: LayoutRepositoryProtocol) {
+        self.levelRepository = levelRepository
+    }
+
     func execute() async throws -> [LevelDefinition] {
         @Dependency(\.uuid) var uuid
         

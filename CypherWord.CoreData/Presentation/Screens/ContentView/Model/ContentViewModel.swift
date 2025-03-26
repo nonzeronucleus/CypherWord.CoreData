@@ -10,7 +10,7 @@ final class ContentViewModel: ObservableObject {
     init(
         importLeveslUseCase: ImportLevelsUseCaseProtocol = ImportLevelsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue,
                                                                                fileRepository:  Dependency(\.fileRepository).wrappedValue),
-        loadManifestUseCase:LoadManifestUseCaseProtocol = LoadManifestUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue)
+        loadManifestUseCase:LoadManifestUseCaseProtocol = LoadManifestUseCase(levelRepository: Dependency(\.playableLevelRepository).wrappedValue)
     )
     {
         self.importLeveslUseCase = importLeveslUseCase

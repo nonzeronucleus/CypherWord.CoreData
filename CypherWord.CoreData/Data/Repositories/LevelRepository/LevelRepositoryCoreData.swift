@@ -8,14 +8,8 @@ protocol LevelRepositoryProtocol {
     func commit()
 
     func writePackToManifest(playableFileDefinition: PlayableLevelFileDefinition) async throws
-    func getManifest() async throws -> Manifest
-
-    func fetchLayouts() async throws -> [LevelDefinition]
-    func fetchPlayableLevels(packNum: Int) async throws -> [LevelDefinition]
 
     func levelExists(level:LevelDefinition) async throws -> Bool
-
-    func deleteAllPacks() throws
 
     func fetchLevelByID(id: UUID) async throws -> LevelMO?
     func delete(levelID: UUID) async throws
@@ -25,24 +19,18 @@ protocol LevelRepositoryProtocol {
     func fetchHighestLevelNumber(levelType: LevelType) throws -> Int
 }
 
+protocol PlayableLevelRepositoryProtocol: LevelRepositoryProtocol {
+    func fetchPlayableLevels(packNum: Int) async throws -> [LevelDefinition]
+    func getManifest() async throws -> Manifest
+    func deleteAllPacks() throws
+}
+
+protocol LayoutRepositoryProtocol: LevelRepositoryProtocol {
+    func fetchLayouts() async throws -> [LevelDefinition]
+}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-///////////////////////////////////////////////////////////////////////////
-
-
-extension LevelStorageCoreData:LevelRepositoryProtocol {
+extension LevelStorageCoreData:LevelRepositoryProtocol, PlayableLevelRepositoryProtocol, LayoutRepositoryProtocol {
     func levelExists(level: LevelDefinition) async throws -> Bool {
         return try findLevel(id: level.id) != nil
     }

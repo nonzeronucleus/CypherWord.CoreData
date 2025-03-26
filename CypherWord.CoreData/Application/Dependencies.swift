@@ -9,6 +9,21 @@ extension DependencyValues {
     }
 }
 
+extension DependencyValues {
+    var playableLevelRepository: PlayableLevelRepositoryProtocol {
+        get { self[LevelRepositoryKey.self] as! PlayableLevelRepositoryProtocol }
+        set { self[LevelRepositoryKey.self] = newValue }
+    }
+}
+
+extension DependencyValues {
+    var layoutRepository: LayoutRepositoryProtocol {
+        get { self[LevelRepositoryKey.self] as! LayoutRepositoryProtocol }
+        set { self[LevelRepositoryKey.self] = newValue }
+    }
+}
+
+
 private enum LevelRepositoryKey: DependencyKey {
     static let liveValue: LevelRepositoryProtocol =  LevelStorageCoreData()
     static let previewValue: LevelRepositoryProtocol =  FakeLevelRepository()
