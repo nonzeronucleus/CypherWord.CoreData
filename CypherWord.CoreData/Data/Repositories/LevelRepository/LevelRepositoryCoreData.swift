@@ -28,11 +28,11 @@ protocol LayoutRepositoryProtocol: LevelRepositoryProtocol {
     func fetchLayouts() async throws -> [LevelDefinition]
 }
 
-extension LevelStorageCoreData:LevelRepositoryProtocol, PlayableLevelRepositoryProtocol, LayoutRepositoryProtocol {
+extension LevelStorageCoreData:LevelRepositoryProtocol {
     func levelExists(level: LevelDefinition) async throws -> Bool {
         return try findLevel(id: level.id) != nil
     }
-
+    
     func commit() {
         do {
             try container.viewContext.save()
@@ -40,25 +40,25 @@ extension LevelStorageCoreData:LevelRepositoryProtocol, PlayableLevelRepositoryP
             print("Error saving to Core Data. \(error)")
         }
     }
-
-
+    
+    
     func fetchHighestLevelNumber(levelType: LevelType) throws -> Int{
         return try Int(fetchHighestNumberInternal(levelType: levelType))
     }
-
-
+    
+    
     func prepareLevelMO(from level:LevelDefinition) async throws {
         try await MainActor.run {
             var levelMO = try findLevel(id: level.id)
-
+            
             if levelMO == nil {
                 levelMO = LevelMO(context: container.viewContext)
             }
-
+            
             guard let number = level.number else {
                 throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey : "Level number must be set"])
             }
-
+            
             if let levelMO {
                 levelMO.id = level.id
                 levelMO.number = Int64(number)
@@ -69,64 +69,44 @@ extension LevelStorageCoreData:LevelRepositoryProtocol, PlayableLevelRepositoryP
             }
         }
     }
-
-
-
-
-    @MainActor
-    func getManifest() async throws -> Manifest {
-        let packs = try fetchPacks()
-
-        return Manifest(levels: PackMapper.toFileDefinitions(mos: packs))
-    }
-
-    func fetchLevelByID(id: UUID) async throws -> LevelMO? {
-        return try findLevel(id: id)
-    }
-
+    
     @MainActor
     func delete(levelID: UUID) async throws {
         let request: NSFetchRequest<NSFetchRequestResult> = createFetchLevelRequest(resultType: NSFetchRequestResult.self, levelID: levelID)
+        
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+        
+        try container.viewContext.execute(deleteRequest)
+        try container.viewContext.save()
+    }
+    
+    func deleteAllLevels(levelType: LevelType) throws {
+        let request: NSFetchRequest<NSFetchRequestResult> = createFetchLevelsRequest(resultType: NSFetchRequestResult.self, levelType: levelType)
 
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
 
         try container.viewContext.execute(deleteRequest)
-        try container.viewContext.save()
     }
+}
 
+
+extension LevelStorageCoreData: LayoutRepositoryProtocol {
     @MainActor
     func fetchLayouts() async throws -> [LevelDefinition] {
         do {
             let fetchRequest: NSFetchRequest<LevelMO> = createFetchLevelsRequest(resultType: LevelMO.self, levelType: .layout)
             let savedEntities = try container.viewContext.fetch(fetchRequest)
-
+            
             let levels = savedEntities.map( {
                 entity in LevelMapper.toLevelDefinition(mo: entity)
             })
             return levels
         }
     }
+}
 
 
-    @MainActor
-    func fetchPlayableLevels(packNum:Int) async throws -> [LevelDefinition] {
-        do {
-            let manifest = try await getManifest()
-
-            guard let packDefinition = manifest.getLevelFileDefinition(forNumber: packNum) else {
-                throw NSError(domain: "LevelStorageCoreData", code: 1, userInfo: [NSLocalizedDescriptionKey : "Couldn't find pack \(packNum)"])
-            }
-
-            let fetchRequest: NSFetchRequest<LevelMO> = createFetchLevelsRequest(resultType: LevelMO.self, levelType: .playable, packId: packDefinition.id)
-            let savedEntities = try container.viewContext.fetch(fetchRequest)
-
-            let levels = savedEntities.map( {
-                entity in LevelMapper.toLevelDefinition(mo: entity)
-            })
-            return levels
-        }
-    }
-
+extension LevelStorageCoreData: PlayableLevelRepositoryProtocol {
     @MainActor
     func writePackToManifest(playableFileDefinition: PlayableLevelFileDefinition) async throws {
         try await MainActor.run {
@@ -150,7 +130,46 @@ extension LevelStorageCoreData:LevelRepositoryProtocol, PlayableLevelRepositoryP
             }
         }
     }
+    
+    @MainActor
+    func fetchPlayableLevels(packNum:Int) async throws -> [LevelDefinition] {
+        do {
+            let manifest = try await getManifest()
+            
+            guard let packDefinition = manifest.getLevelFileDefinition(forNumber: packNum) else {
+                throw NSError(domain: "LevelStorageCoreData", code: 1, userInfo: [NSLocalizedDescriptionKey : "Couldn't find pack \(packNum)"])
+            }
+            
+            let fetchRequest: NSFetchRequest<LevelMO> = createFetchLevelsRequest(resultType: LevelMO.self, levelType: .playable, packId: packDefinition.id)
+            let savedEntities = try container.viewContext.fetch(fetchRequest)
+            
+            let levels = savedEntities.map( {
+                entity in LevelMapper.toLevelDefinition(mo: entity)
+            })
+            return levels
+        }
+    }
+    
+    @MainActor
+    func getManifest() async throws -> Manifest {
+        let packs = try fetchPacks()
+        
+        return Manifest(levels: PackMapper.toFileDefinitions(mos: packs))
+    }
+    
+    func fetchLevelByID(id: UUID) async throws -> LevelMO? {
+        return try findLevel(id: id)
+    }
+    
+    func deleteAllPacks() throws {
+        let request: NSFetchRequest<NSFetchRequestResult> = createFetchPacksRequest(resultType: NSFetchRequestResult.self)
+
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+
+        try container.viewContext.execute(deleteRequest)
+    }
 }
+
 
 class LevelStorageCoreData {
     private let levelEntityName: String = "LevelMO"
@@ -170,7 +189,7 @@ class LevelStorageCoreData {
     }()
 
 
-    var dbLocation: URL? {
+    private var dbLocation: URL? {
         return container.persistentStoreCoordinator.persistentStores.first?.url
     }
 
@@ -206,7 +225,7 @@ class LevelStorageCoreData {
     }
 
 
-    internal func fetchHighestNumberInternal(levelType: LevelType) throws -> Int64 {
+    private func fetchHighestNumberInternal(levelType: LevelType) throws -> Int64 {
         // Create a fetch request for dictionaries (so we get a dictionary result, not full managed objects)
         let fetchRequest = NSFetchRequest<NSDictionary>(entityName: "LevelMO")
         fetchRequest.resultType = .dictionaryResultType
@@ -244,25 +263,11 @@ class LevelStorageCoreData {
     }
 
 
-    func deleteAllLevels(levelType: LevelType) throws {
-        let request: NSFetchRequest<NSFetchRequestResult> = createFetchLevelsRequest(resultType: NSFetchRequestResult.self, levelType: levelType)
-
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
-
-        try container.viewContext.execute(deleteRequest)
-    }
-
-    func deleteAllPacks() throws {
-        let request: NSFetchRequest<NSFetchRequestResult> = createFetchPacksRequest(resultType: NSFetchRequestResult.self)
-
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
-
-        try container.viewContext.execute(deleteRequest)
-    }
 
 
 
-    func findLevel(id:UUID) throws -> LevelMO? {
+
+    private func findLevel(id:UUID) throws -> LevelMO? {
         let request: NSFetchRequest<LevelMO> = createFetchLevelRequest(resultType: LevelMO.self, levelID: id)
         let level = try container.viewContext.fetch(request).first
 
@@ -270,7 +275,7 @@ class LevelStorageCoreData {
     }
 
 
-    func fetchPacks() throws -> [PackMO] {
+    private func fetchPacks() throws -> [PackMO] {
         let request: NSFetchRequest<PackMO> = createFetchPacksRequest(resultType: PackMO.self)
         let packs = try container.viewContext.fetch(request)
 
@@ -278,7 +283,7 @@ class LevelStorageCoreData {
     }
 
     @MainActor
-    func fetchPackByNumber(number:Int) throws -> PackMO? {
+    private func fetchPackByNumber(number:Int) throws -> PackMO? {
         let request: NSFetchRequest<PackMO> = createFetchPacksRequest(resultType: PackMO.self)
 
         request.predicate = NSPredicate(format: "number == %@", number as NSNumber)
