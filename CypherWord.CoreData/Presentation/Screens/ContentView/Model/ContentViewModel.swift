@@ -8,7 +8,8 @@ final class ContentViewModel: ObservableObject {
     private var loadManifestUseCase: LoadManifestUseCaseProtocol
     @MainActor
     init(
-        importLeveslUseCase: ImportLevelsUseCaseProtocol = ImportLevelsUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue,
+        importLeveslUseCase: ImportLevelsUseCaseProtocol = ImportLevelsUseCase(playableLevelRepository: Dependency(\.playableLevelRepository).wrappedValue,
+                                                                               layoutRepository: Dependency(\.layoutRepository).wrappedValue,
                                                                                fileRepository:  Dependency(\.fileRepository).wrappedValue),
         loadManifestUseCase:LoadManifestUseCaseProtocol = LoadManifestUseCase(levelRepository: Dependency(\.playableLevelRepository).wrappedValue)
     )
