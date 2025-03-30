@@ -5,6 +5,7 @@ struct NavigationView : View {
     @EnvironmentObject var applicationViewModel: ApplicationViewModel
     @EnvironmentObject var settingsViewModel: SettingsViewModel
     @EnvironmentObject private var viewModel: NavigationViewModel
+    
     @State var selection: LevelType = .playable
     
     var body: some View {
@@ -63,11 +64,12 @@ struct NavigationView : View {
         $0.levelRepository = FakeLevelRepository(testLayouts: testLayouts, testPlayableLevels: testPlayableLevels)
     } operation: {
         let settingsViewModel =  SettingsViewModel(parentId:nil)
-        let navigationView = NavigationViewModel(settingsViewModel:settingsViewModel)
-//        let viewModel = LevelListViewModel()
-        return NavigationView(/*viewModel*/)
+        let stateModel = StateModel()
+        let navigationView = NavigationViewModel(settingsViewModel:settingsViewModel, stateModel: stateModel)
+        return NavigationView()
             .environmentObject(navigationView)
             .environmentObject(settingsViewModel)
+            .environmentObject(StateModel())
     }
 }
 

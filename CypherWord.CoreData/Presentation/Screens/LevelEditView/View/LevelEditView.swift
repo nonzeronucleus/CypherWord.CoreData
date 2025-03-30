@@ -97,7 +97,8 @@ public struct LevelEditView: View {
     @Dependency(\.uuid) var uuid
 
     let id = uuid()
-    let navigationViewModel = NavigationViewModel(settingsViewModel: SettingsViewModel(parentId: id))
+    let stateModel = StateModel()
+    let navigationViewModel = NavigationViewModel(settingsViewModel: SettingsViewModel(parentId: id), stateModel: stateModel)
     let level = LevelDefinition(id: uuid(), number: 1, packId: nil, gridText: " ...|.. .|. ..|. ..|", letterMap: nil, attemptedLetters: nil)
     let viewModel = LevelEditViewModel(levelDefinition: level, navigationViewModel: navigationViewModel)
     

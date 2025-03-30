@@ -2,6 +2,10 @@ import Foundation
 import Dependencies
 
 class FakeLevelRepository: LevelRepositoryProtocol, PlayableLevelRepositoryProtocol, LayoutRepositoryProtocol {
+    func getCurrentPackNum() -> Int {
+        return 1
+    }
+    
     func levelExists(level: LevelDefinition) async throws -> Bool {
         return false
     }

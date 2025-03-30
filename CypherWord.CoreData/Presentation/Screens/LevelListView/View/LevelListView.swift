@@ -173,14 +173,16 @@ struct ProgressBar: View {
         $0.levelRepository = FakeLevelRepository(testLayouts: testLayouts, testPlayableLevels: testPlayableLevels)
     } operation: {
         let settingsViewModel = SettingsViewModel(parentId: nil)
+        let stateModel = StateModel()
         settingsViewModel.settings.showCompletedLevels = false
 
         let viewModel = PlayableLevelListViewModel(
-            navigationViewModel: NavigationViewModel(settingsViewModel: SettingsViewModel(parentId: nil)),
-            settingsViewModel:SettingsViewModel(parentId: nil))
+            navigationViewModel: NavigationViewModel(settingsViewModel: SettingsViewModel(parentId: nil), stateModel: stateModel),
+            settingsViewModel:SettingsViewModel(parentId: nil), stateModel: stateModel)
 
         return LevelListView(viewModel)
             .environmentObject(settingsViewModel)
+            .environmentObject(StateModel())
     }
 }
 

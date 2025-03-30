@@ -78,13 +78,12 @@ extension FileRepository: FileRepositoryProtocol {
 
 extension FileRepository {
     private func writeToFile(fileDefinition: any FileDefinitionProtocol, levels: [LevelDefinition]) async throws {
-        var manifest: [Int:UUID]? = nil
+        
+    }
+    
+    private func writeToLayoutFile(fileDefinition: LayoutFileDefinition, levels: [LevelDefinition]) async throws {
         if levels.isEmpty {
             return
-        }
-        
-        if let playableLevel = fileDefinition as? PlayableLevelFileDefinition {
-            try await manifest = readManifestFile(fileName: playableLevel.manifestFileName)
         }
         
         let levelsToSave = levels.map { level in
@@ -102,18 +101,43 @@ extension FileRepository {
             }
             let jsonData = try JSONEncoder().encode(levelsToSave)
             try jsonData.write(to: url)
+        }
+    }
+    
+    
+    private func writeToPlayableLevelFile(fileDefinition:PlayableLevelFileDefinition, levels: [LevelDefinition]) async throws {
+        var manifest: [Int:UUID]? = nil
+        if levels.isEmpty {
+            return
+        }
+        
+        try await manifest = readManifestFile(fileName: fileDefinition.manifestFileName)
+        
+        let levelsToSave = levels.map { level in
+            var newLevel = level // Create a copy
+            newLevel.attemptedLetters = String(repeating: " ", count: 26)
+            return newLevel
+        }
+        
+        do {
+            let fileName = fileDefinition.getFileName()
+            let url = writeDirectoryURL.appendingPathComponent(fileName)
             
-            if let playableLevel = fileDefinition as? PlayableLevelFileDefinition {
-                guard var manifest else {
-                    throw FileError.manifestMissing("#\(#function) at #\(#line) ")
-                }
-                if let packNumber = playableLevel.packNumber {
-                    manifest[packNumber] = playableLevel.id
-                    try await writeManifestFile(fileName: playableLevel.manifestFileName, manifest: manifest)
-                }
-                else {
-                    fatalError("\(#file) \(#function) at \(#line) - no pack number")
-                }
+            if printLocation {
+                print("\(#file) \(#function) Saving to \(url.description)")
+            }
+            let jsonData = try JSONEncoder().encode(levelsToSave)
+            try jsonData.write(to: url)
+            
+            guard var manifest else {
+                throw FileError.manifestMissing("#\(#function) at #\(#line) ")
+            }
+            if let packNumber = fileDefinition.packNumber {
+                manifest[packNumber] = fileDefinition.id
+                try await writeManifestFile(fileName: fileDefinition.manifestFileName, manifest: manifest)
+            }
+            else {
+                fatalError("\(#file) \(#function) at \(#line) - no pack number")
             }
         }
     }

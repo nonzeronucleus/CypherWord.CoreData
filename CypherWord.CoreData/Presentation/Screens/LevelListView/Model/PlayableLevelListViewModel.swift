@@ -2,40 +2,82 @@ import SwiftUICore
 import Dependencies
 
 class PlayableLevelListViewModel: LevelListViewModel {
-    private var fetchPlayableLevelsUseCase: FetchPlayableLevelsUseCaseProtocol
-    private var loadManifestUaeCase: LoadManifestUseCaseProtocol
-    private var deleteAllPlayableLevelsUseCase: DeleteAllPlayableLevelsUseCaseProtocol
+//    private var loadManifestUaeCase: LoadManifestUseCaseProtocol
+//    private var deleteAllPlayableLevelsUseCase: DeleteAllPlayableLevelsUseCaseProtocol
 
-    var manifest: Manifest?
-    @Published var packNumber: Int? {
-        didSet {
-            print("Pack number \(String(describing: packNumber))")
-            reload()
-        }
+//    var manifest: Manifest?
+    var packNumber: Int = 0
+//    {
+//        didSet {
+//            if (packNumber == stateModel.currentPackNum) { return }
+//            stateModel.currentPackNum = packNumber
+//        }
+//    }
+    
+    func increasePackNum() {
+        stateModel.currentPackNum += 1
+    }
+    
+    func decreasePackNum() {
+        stateModel.currentPackNum -= 1
     }
 
+    
+//    @Published var packNumber: Int? {
+//        didSet {
+//            print("Pack number \(String(describing: packNumber))")
+////            reload()
+//        }
+//    }
+//
     init(navigationViewModel:NavigationViewModel,
          settingsViewModel: SettingsViewModel,
-         fetchPlayableLevelsUseCase: FetchPlayableLevelsUseCaseProtocol = FetchPlayableLevelsUseCase(levelRepository: Dependency(\.playableLevelRepository).wrappedValue),
-         deleteAllPlayableLevelsUseCase: DeleteAllPlayableLevelsUseCaseProtocol = DeleteAllPlayableLevelsUseCase(levelRepository: Dependency(\.playableLevelRepository).wrappedValue),
-         loadManifestUseCase: LoadManifestUseCaseProtocol = LoadManifestUseCase(levelRepository: Dependency(\.playableLevelRepository).wrappedValue)
+         stateModel: StateModel
+//         deleteAllPlayableLevelsUseCase: DeleteAllPlayableLevelsUseCaseProtocol = DeleteAllPlayableLevelsUseCase(levelRepository: Dependency(\.playableLevelRepository).wrappedValue),
+//         loadManifestUseCase: LoadManifestUseCaseProtocol = LoadManifestUseCase(levelRepository: Dependency(\.playableLevelRepository).wrappedValue)
     ){
-        self.loadManifestUaeCase = loadManifestUseCase
-        self.fetchPlayableLevelsUseCase = fetchPlayableLevelsUseCase
-        self.deleteAllPlayableLevelsUseCase = deleteAllPlayableLevelsUseCase
+//        self.loadManifestUaeCase = loadManifestUseCase
+//        self.deleteAllPlayableLevelsUseCase = deleteAllPlayableLevelsUseCase
         
-        self.packNumber = nil
-        self.manifest = nil
+//        self.packNumber = nil
+//        self.manifest = nil
         
         super.init(navigationViewModel: navigationViewModel,
                    settingsViewModel: settingsViewModel,
+                   stateModel: stateModel,
                    levelFile: LevelFile(definition: PlayableLevelFileDefinition(packNumber: nil), levels: []))
 
         Task {
-            let manifest = try await loadManifestUseCase.execute()
-            self.packNumber = manifest.maxLevelNumber
-            self.manifest = manifest
+//            let manifest = try await loadManifestUseCase.execute()
+//            self.packNumber = manifest.maxLevelNumber
+//            self.manifest = manifest
         }
+        
+        updateDisplayableLevels(levels: stateModel.playableLevels, showCompleted: settingsViewModel.settings.showCompletedLevels)
+        
+        stateModel.$playableLevels
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newLevels in
+                if let showCompleted = self?.showCompleted {
+                    self?.updateDisplayableLevels(levels: newLevels, showCompleted: showCompleted)
+                }
+            }
+            .store(in: &cancellables)
+
+        $showCompleted
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newShowCompleted in
+                self?.updateDisplayableLevels(levels: stateModel.playableLevels, showCompleted: newShowCompleted)
+            }
+            .store(in: &cancellables)
+        
+        stateModel.$currentPackNum
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newPackNumber in
+                self?.packNumber = newPackNumber
+            }
+            .store(in: &cancellables)
+
     }
 
     
@@ -67,48 +109,22 @@ class PlayableLevelListViewModel: LevelListViewModel {
     }
     
     var maxLevelNumber: Int {
-        guard let manifest else { return 0 }
-        
-        return manifest.maxLevelNumber
+        stateModel.numPacks
+//        guard let manifest else { return 0 }
+//        
+//        return manifest.maxLevelNumber
     }
 
-    override func reload() {
-        if let packNumber {
-            Task {
-                do {
-                    print("Reloading pack \(packNumber)")
-                    let levels = try await self.fetchPlayableLevelsUseCase.execute(packNum: packNumber)
-                    await MainActor.run {
-                        levelFile.levels = levels
-                        
-                    }
-                } catch {
-                    await MainActor.run {
-                        self.error = error.localizedDescription  // ✅ Also ensure error updates on main thread
-                    }
-                }
-            }
-        }
-    }
-
+//    override func reload() {
+//        stateModel.reloadPlayableLevels()
+//    }
+//
     @MainActor
     override func deleteAll() {
-        Task {
-            do {
-                guard let packNumber else { return }
-                let levels = try await deleteAllPlayableLevelsUseCase.execute(packNum: packNumber)
-                await MainActor.run {
-                    levelFile.levels = levels  // ✅ Ensures update happens on the main thread
-                }
-            } catch {
-                await MainActor.run {
-                    self.error = error.localizedDescription  // ✅ Ensures error updates on main thread
-                }
-            }
-        }
+        stateModel.deleteAllPlayableLevels()
     }
     
-    override func updateDisplayableLevels(levels: [LevelDefinition], showCompleted: Bool) {
+    func updateDisplayableLevels(levels: [LevelDefinition], showCompleted: Bool) {
         objectWillChange.send()
         
         if showCompleted {

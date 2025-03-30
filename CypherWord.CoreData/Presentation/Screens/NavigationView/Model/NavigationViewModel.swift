@@ -11,18 +11,22 @@ enum NavigationDestination {
 class NavigationViewModel: ObservableObject {
     var settingsViewModel: SettingsViewModel
     private var fetchLevelByIDUseCase: FetchLevelByIDUseCaseProtocol
+    private var stateModel: StateModel
     
     @Published var path: NavigationPath = NavigationPath()
     @Published var error: Error?
+    
     var level: LevelDefinition? = nil
     
     
     init(
         settingsViewModel: SettingsViewModel,
+        stateModel: StateModel,
         fetchLevelByIDUseCase: FetchLevelByIDUseCaseProtocol = FetchLevelByIDUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue)
    )
     {
         self.settingsViewModel = settingsViewModel
+        self.stateModel = stateModel
         self.fetchLevelByIDUseCase = fetchLevelByIDUseCase
     }
     
@@ -65,9 +69,9 @@ class NavigationViewModel: ObservableObject {
     func createLevelListViewModel(levelType: LevelType) -> LevelListViewModel {
         switch levelType {
             case .playable:
-                return PlayableLevelListViewModel(navigationViewModel: self, settingsViewModel: settingsViewModel)
+                return PlayableLevelListViewModel(navigationViewModel: self, settingsViewModel: settingsViewModel, stateModel: stateModel)
             case .layout:
-                return LayoutListViewModel(navigationViewModel: self, settingsViewModel: settingsViewModel)
+                return LayoutListViewModel(navigationViewModel: self, settingsViewModel: settingsViewModel, stateModel: stateModel)
         }
 //        LevelListViewModel(levelType: levelType, navigationViewModel: self, settingsViewModel: settingsViewModel)
     }

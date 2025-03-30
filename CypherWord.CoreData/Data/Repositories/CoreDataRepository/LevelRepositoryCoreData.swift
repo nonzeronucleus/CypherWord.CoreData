@@ -22,6 +22,7 @@ protocol PlayableLevelRepositoryProtocol: LevelRepositoryProtocol {
     func fetchPlayableLevels(packNum: Int) async throws -> [LevelDefinition]
     func getManifest() async throws -> Manifest
     func deleteAllPacks() throws
+    func getCurrentPackNum() -> Int
 }
 
 protocol LayoutRepositoryProtocol: LevelRepositoryProtocol {
@@ -66,6 +67,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
                 levelMO.letterMap = level.letterMap
                 levelMO.attemptedLetters = level.attemptedLetters
                 levelMO.packId = level.packId
+                levelMO.numCorrectLetters = Int16(level.numCorrectLetters)
             }
         }
     }
@@ -134,6 +136,7 @@ extension LevelStorageCoreData: PlayableLevelRepositoryProtocol {
     @MainActor
     func fetchPlayableLevels(packNum:Int) async throws -> [LevelDefinition] {
         do {
+            currentPackNum = packNum
             let manifest = try await getManifest()
             
             guard let packDefinition = manifest.getLevelFileDefinition(forNumber: packNum) else {
@@ -148,6 +151,10 @@ extension LevelStorageCoreData: PlayableLevelRepositoryProtocol {
             })
             return levels
         }
+    }
+    
+    func getCurrentPackNum() -> Int {
+        return currentPackNum
     }
     
     @MainActor
@@ -174,6 +181,7 @@ extension LevelStorageCoreData: PlayableLevelRepositoryProtocol {
 class LevelStorageCoreData {
     private let levelEntityName: String = "LevelMO"
     private let packEntityName: String = "PackMO"
+    private var currentPackNum: Int = 1
 
     private lazy var container: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "LevelsContainer")

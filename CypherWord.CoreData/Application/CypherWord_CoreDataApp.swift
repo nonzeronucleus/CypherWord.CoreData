@@ -5,6 +5,7 @@ struct CypherWord_CoreDataApp: App {
     @StateObject var applicationViewModel = ApplicationViewModel()
     @StateObject var navigationViewModel: NavigationViewModel
     @StateObject var settingsViewModel: SettingsViewModel
+    @StateObject var stateModel: StateModel
 
     init() {
         // Register default settings
@@ -18,6 +19,7 @@ struct CypherWord_CoreDataApp: App {
         _applicationViewModel = StateObject(wrappedValue: appViewModel)
         _navigationViewModel = StateObject(wrappedValue: appViewModel.navigationViewModel)
         _settingsViewModel = StateObject(wrappedValue: appViewModel.settingsViewModel)
+        _stateModel = StateObject(wrappedValue: appViewModel.stateModel)
     }
     
     var body: some Scene {
@@ -26,6 +28,7 @@ struct CypherWord_CoreDataApp: App {
                 .environmentObject(applicationViewModel)
                 .environmentObject(navigationViewModel)
                 .environmentObject(settingsViewModel)
+                .environmentObject(stateModel)
         }
     }
 }

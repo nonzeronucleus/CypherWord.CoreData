@@ -2,7 +2,7 @@ import Foundation
 import Dependencies
 
 protocol AddPlayableLevelUseCaseProtocol {
-    func execute(layout: LevelDefinition, packNum: Int) async throws
+    func execute(layout: LevelDefinition) async throws
 }
 
 
@@ -13,11 +13,12 @@ class AddPlayableLevelUseCase : AddPlayableLevelUseCaseProtocol {
         self.levelRepository = levelRepository
     }
 
-    func execute(layout: LevelDefinition, packNum: Int) async throws {
+    func execute(layout: LevelDefinition) async throws {
         @Dependency(\.uuid) var uuid
         let manifest = try await levelRepository.getManifest()
-        guard let pack = manifest.getLevelFileDefinition(forNumber: packNum) else {
-            fatalError("Could not find pack for \(packNum)")
+        let cureentPackNum = levelRepository.getCurrentPackNum()
+        guard let pack = manifest.getLevelFileDefinition(forNumber: cureentPackNum) else {
+            fatalError("Could not find pack for \(cureentPackNum)")
         }
         
         let nextNum = try levelRepository.fetchHighestLevelNumber(levelType: .playable) + 1

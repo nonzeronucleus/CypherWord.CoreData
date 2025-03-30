@@ -30,10 +30,8 @@ struct LevelDefinition: Identifiable, Equatable, Hashable {
         self.number = number
         self.gridText = gridText
         self.letterMap = letterMap
-//        self.fileDefinition = DummyFileDefinition()
         self.attemptedLetters = attemptedLetters ?? String(repeating: " ", count: 26)
         self.numCorrectLetters = numCorrectLetters
-//        self.fileDefinition = (letterMap == nil) ? LayoutFileDefinition() : PlayableLevelFileDefinition(packNumber: 1)
     }
     
     init(from level:Level) {

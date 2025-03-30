@@ -72,14 +72,22 @@ class GameViewModel: ObservableObject {
         }
     }
     
-//    @MainActor
+    @MainActor
     func saveLevel() async {
+        if isBusy {
+            print("Busy")
+            return
+        }
+
+        print("Start")
+
         await MainActor.run {
             isBusy = true
         }
         do {
             try await saveProgress()
             await MainActor.run {
+                print("End")
                 isBusy = false
             }
         }
@@ -96,7 +104,6 @@ class GameViewModel: ObservableObject {
     private func saveProgress() async throws {
         let levelDefinition = LevelDefinition(from: level)
         try await saveLevelUseCase.execute(level: levelDefinition)
-        isBusy = false
     }
     
     
