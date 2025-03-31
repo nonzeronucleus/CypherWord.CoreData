@@ -22,4 +22,16 @@ class Manifest {
     var maxLevelNumber:Int {
         return fileDefinitions.keys.max() ?? 0
     }
+    
+    func getNextPack(currentPack: PlayableLevelFileDefinition) -> PlayableLevelFileDefinition? {
+        guard let currentPackNumber = currentPack.packNumber else { return nil }
+        let nextPackNumber = currentPackNumber + 1
+        return getLevelFileDefinition(forNumber: nextPackNumber)
+    }
+    
+    func getPreviousPack(currentPack: PlayableLevelFileDefinition) -> PlayableLevelFileDefinition? {
+        guard let currentPackNumber = currentPack.packNumber else { return nil }
+        let nextPackNumber = currentPackNumber - 1
+        return getLevelFileDefinition(forNumber: nextPackNumber)
+    }
 }

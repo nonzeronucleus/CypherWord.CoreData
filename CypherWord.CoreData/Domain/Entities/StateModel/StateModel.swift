@@ -21,15 +21,14 @@ class StateModel: ObservableObject {
         self.deleteAllLayoutsUseCase = deleteAllLayoutsUseCase
         self.deleteAllPlayableLevelsUseCase = deleteAllPlayableLevelsUseCase
         
+        self.currentPack = nil
+        
+        loadManifest()
+                
         reloadAll()
     }
-    
-    @Published var currentPackNum: Int = 1 {
-        didSet {
-            print("currentPackNum didSet")
-            loadPlayableLevels()
-        }
-    }
+
+    @Published var currentPack: PlayableLevelFileDefinition?
     
     @Published var playableLevels: [LevelDefinition] = []
     @Published var layouts: [LevelDefinition] = []
@@ -42,7 +41,7 @@ class StateModel: ObservableObject {
     
     func reloadAll() {
         print("Reload all")
-        loadManifest()
+//        loadManifest()
         loadLayouts()
         loadPlayableLevels()
     }
@@ -105,15 +104,49 @@ extension StateModel {
                 let manifest = try await loadManifestUaeCase.execute()
                 await MainActor.run {
                     self.manifest = manifest
+                    if let firstLevel = manifest.getLevelFileDefinition(forNumber: 1) {
+                        currentPack = firstLevel
+                        reloadAll()
+                    }
                 }
             }
         }
     }
     
+    func loadCurrentPackLevels() {
+        
+    }
+    
+    func loadNextPack() {
+        guard let currentPack else { return }
+        
+        guard let nextPack = manifest.getNextPack(currentPack: currentPack) else { return }
+        
+        self.currentPack = nextPack
+        loadPlayableLevels()
+    }
+    
+    func loadPreviousPack() {
+        guard let currentPack else { return }
+        
+        guard let nextPack = manifest.getPreviousPack(currentPack: currentPack) else { return }
+        
+        self.currentPack = nextPack
+        loadPlayableLevels()
+    }
+    
     private func loadPlayableLevels() {
+        guard let currentPack = currentPack else {
+            return
+        }
+        
+        guard let currentPackNum = currentPack.packNumber else {
+            print("Current Pack not yet set")
+            return
+        }
+        
         Task {
             do {
-                print("Loading playable levels")
                 let playableLevels = try await fetchPlayableLevelsUseCase.execute(packNum: currentPackNum)
                 
                 await MainActor.run {
@@ -127,6 +160,15 @@ extension StateModel {
     }
     
     func deleteAllPlayableLevelsInternal() {
+        guard let currentPack = currentPack else {
+            return
+        }
+
+        guard let currentPackNum = currentPack.packNumber else {
+            print("Current Pack not yet set")
+            return
+        }
+
         Task {
             do {
                 let playableLevels = try await deleteAllPlayableLevelsUseCase.execute(packNum: currentPackNum)

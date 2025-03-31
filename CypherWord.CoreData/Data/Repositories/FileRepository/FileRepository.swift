@@ -24,7 +24,7 @@ class FileRepository {
     private let writeDirectoryURL: URL
     private let readDirectoryURL: URL
     private let manifestFilename = "manifest.json"
-    var printLocation: Bool = false
+    var printLocation: Bool = true
 
     init(fileManager: FileManager = .default, directoryURL: URL? = nil) {
         self.fileManager = fileManager

@@ -9,7 +9,7 @@ class LevelListViewModel: ObservableObject {
     var exportPlayableLevelsUseCase: ExportLevelsUseCaseProtocol
     var stateModel: StateModel
     
-    @Published var levelFile: LevelFile
+//    @Published var levelFile: LevelFile
     @Published var displayableLevels: [LevelDefinition] = []
     @Published var error:String?
     @Published private(set) var selectedLevel: LevelDefinition?
@@ -24,13 +24,13 @@ class LevelListViewModel: ObservableObject {
     init(navigationViewModel:NavigationViewModel,
          settingsViewModel: SettingsViewModel,
          stateModel: StateModel,
-         levelFile: LevelFile,
+//         levelFile: LevelFile,
          exportPlayableLevelsUseCase: ExportLevelsUseCaseProtocol = ExportLevelsUseCase(fileRepository: Dependency(\.fileRepository).wrappedValue)
     ){
         self.navigationViewModel = navigationViewModel
         self.settingsViewModel = settingsViewModel
         self.stateModel = stateModel
-        self.levelFile = levelFile
+//        self.levelFile = levelFile
         self.exportPlayableLevelsUseCase = exportPlayableLevelsUseCase
         
         showCompleted = settingsViewModel.settings.showCompletedLevels
@@ -82,7 +82,7 @@ class LevelListViewModel: ObservableObject {
 //    }
 //    
     func exportAll() {
-        self.displayableLevels = stateModel.layouts
+//        self.displayableLevels = stateModel.layouts
 
 //        isBusy = true
 //        

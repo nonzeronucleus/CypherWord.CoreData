@@ -19,7 +19,7 @@ struct PackView: View {
             : viewModel.maxLevelNumber
         
         HStack {
-            var packNumber = viewModel.packNumber
+            let packNumber = viewModel.packNumber
             
             // Left Button (Decrease Level)
             Button(action: {
@@ -28,7 +28,7 @@ struct PackView: View {
 //                    packNumber -= 1
                 }
                 
-                viewModel.packNumber = packNumber
+//                viewModel.packNumber = packNumber
             }) {
                 Image(systemName: "chevron.left.circle.fill")
                     .font(.system(size: 24))
@@ -49,7 +49,7 @@ struct PackView: View {
                     viewModel.increasePackNum()
 //                    packNumber += 1
                 }
-                viewModel.packNumber = packNumber
+//                viewModel.packNumber = packNumber
             }) {
                 Image(systemName: "chevron.right.circle.fill")
                     .font(.system(size: 24))

@@ -2,57 +2,34 @@ import SwiftUICore
 import Dependencies
 
 class PlayableLevelListViewModel: LevelListViewModel {
-//    private var loadManifestUaeCase: LoadManifestUseCaseProtocol
-//    private var deleteAllPlayableLevelsUseCase: DeleteAllPlayableLevelsUseCaseProtocol
+    var packNumber: Int {
+        get {
+            guard let currentPack = stateModel.currentPack else {
+                return 0
+            }
 
-//    var manifest: Manifest?
-    var packNumber: Int = 0
-//    {
-//        didSet {
-//            if (packNumber == stateModel.currentPackNum) { return }
-//            stateModel.currentPackNum = packNumber
-//        }
-//    }
+            return currentPack.packNumber ?? 0
+        }
+    }
     
     func increasePackNum() {
-        stateModel.currentPackNum += 1
+        stateModel.loadNextPack()
     }
     
     func decreasePackNum() {
-        stateModel.currentPackNum -= 1
+        stateModel.loadPreviousPack()
     }
 
     
-//    @Published var packNumber: Int? {
-//        didSet {
-//            print("Pack number \(String(describing: packNumber))")
-////            reload()
-//        }
-//    }
-//
     init(navigationViewModel:NavigationViewModel,
          settingsViewModel: SettingsViewModel,
          stateModel: StateModel
-//         deleteAllPlayableLevelsUseCase: DeleteAllPlayableLevelsUseCaseProtocol = DeleteAllPlayableLevelsUseCase(levelRepository: Dependency(\.playableLevelRepository).wrappedValue),
-//         loadManifestUseCase: LoadManifestUseCaseProtocol = LoadManifestUseCase(levelRepository: Dependency(\.playableLevelRepository).wrappedValue)
     ){
-//        self.loadManifestUaeCase = loadManifestUseCase
-//        self.deleteAllPlayableLevelsUseCase = deleteAllPlayableLevelsUseCase
-        
-//        self.packNumber = nil
-//        self.manifest = nil
         
         super.init(navigationViewModel: navigationViewModel,
                    settingsViewModel: settingsViewModel,
-                   stateModel: stateModel,
-                   levelFile: LevelFile(definition: PlayableLevelFileDefinition(packNumber: nil), levels: []))
+                   stateModel: stateModel)
 
-        Task {
-//            let manifest = try await loadManifestUseCase.execute()
-//            self.packNumber = manifest.maxLevelNumber
-//            self.manifest = manifest
-        }
-        
         updateDisplayableLevels(levels: stateModel.playableLevels, showCompleted: settingsViewModel.settings.showCompletedLevels)
         
         stateModel.$playableLevels
@@ -70,14 +47,6 @@ class PlayableLevelListViewModel: LevelListViewModel {
                 self?.updateDisplayableLevels(levels: stateModel.playableLevels, showCompleted: newShowCompleted)
             }
             .store(in: &cancellables)
-        
-        stateModel.$currentPackNum
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] newPackNumber in
-                self?.packNumber = newPackNumber
-            }
-            .store(in: &cancellables)
-
     }
 
     
@@ -110,15 +79,8 @@ class PlayableLevelListViewModel: LevelListViewModel {
     
     var maxLevelNumber: Int {
         stateModel.numPacks
-//        guard let manifest else { return 0 }
-//        
-//        return manifest.maxLevelNumber
     }
 
-//    override func reload() {
-//        stateModel.reloadPlayableLevels()
-//    }
-//
     @MainActor
     override func deleteAll() {
         stateModel.deleteAllPlayableLevels()
@@ -135,6 +97,35 @@ class PlayableLevelListViewModel: LevelListViewModel {
                 return level.percentComplete < 1
             }
         }
+    }
+    
+    override func exportAll() {
+        print("Need to implement \(#function) in \(#file)")
+        // TODO -  Get file definion for current pack
+        // Then add levels and save
+        
+//        let levelFile = stateModel.currentPack 
+        
+        
+//        self.displayableLevels = stateModel.layouts
+
+//        isBusy = true
+//
+//        Task {
+//            do {
+//                try await exportPlayableLevelsUseCase.execute(file: levelFile)
+//                await MainActor.run {
+//
+//                    isBusy = false
+//                }
+//            } catch {
+//                await MainActor.run {
+//
+//                    self.error = error.localizedDescription
+//                    isBusy = false
+//                }
+//            }
+//        }
     }
     
     override var tag: LevelType {

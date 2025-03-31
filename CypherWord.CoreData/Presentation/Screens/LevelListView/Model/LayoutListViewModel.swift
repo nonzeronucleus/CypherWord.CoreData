@@ -19,8 +19,7 @@ class LayoutListViewModel: LevelListViewModel {
 
         super.init(navigationViewModel: navigationViewModel,
                    settingsViewModel: settingsViewModel,
-                   stateModel: stateModel,
-                   levelFile: LevelFile(definition: LayoutFileDefinition(), levels: []))
+                   stateModel: stateModel)
         
         self.displayableLevels = stateModel.layouts
         
@@ -50,14 +49,9 @@ class LayoutListViewModel: LevelListViewModel {
         get { true }
     }
     
-//    @MainActor
-//    override func reload() {
-//        stateModel.reloadAll()
-//    }
-//    
     func addLayout() {
         Task {
-            levelFile.levels = try await addLayoutUseCase.execute()
+//            levelFile.levels = try await addLayoutUseCase.execute()
         }
     }
     
