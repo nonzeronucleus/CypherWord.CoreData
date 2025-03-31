@@ -100,32 +100,31 @@ class PlayableLevelListViewModel: LevelListViewModel {
     }
     
     override func exportAll() {
-        print("Need to implement \(#function) in \(#file)")
-        // TODO -  Get file definion for current pack
-        // Then add levels and save
+
         
-//        let levelFile = stateModel.currentPack 
+        let currentPack = stateModel.currentPack
         
+        let levelFile = LevelFile(definition: currentPack, levels: stateModel.playableLevels)
         
 //        self.displayableLevels = stateModel.layouts
 
-//        isBusy = true
-//
-//        Task {
-//            do {
-//                try await exportPlayableLevelsUseCase.execute(file: levelFile)
-//                await MainActor.run {
-//
-//                    isBusy = false
-//                }
-//            } catch {
-//                await MainActor.run {
-//
-//                    self.error = error.localizedDescription
-//                    isBusy = false
-//                }
-//            }
-//        }
+        isBusy = true
+
+        Task {
+            do {
+                try await exportPlayableLevelsUseCase.execute(file: levelFile)
+                await MainActor.run {
+
+                    isBusy = false
+                }
+            } catch {
+                await MainActor.run {
+
+                    self.error = error.localizedDescription
+                    isBusy = false
+                }
+            }
+        }
     }
     
     override var tag: LevelType {

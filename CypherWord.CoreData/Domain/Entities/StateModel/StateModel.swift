@@ -7,6 +7,14 @@ class StateModel: ObservableObject {
     private var loadManifestUaeCase: LoadManifestUseCaseProtocol
     private var deleteAllLayoutsUseCase: DeleteAllLayoutsUseCaseProtocol
     private var deleteAllPlayableLevelsUseCase: DeleteAllPlayableLevelsUseCaseProtocol
+
+    @Published var currentPack: PlayableLevelFileDefinition?
+    
+    @Published var playableLevels: [LevelDefinition] = []
+    @Published var layouts: [LevelDefinition] = []
+    var manifest: Manifest = Manifest(levels: [])
+    
+
     
     init(
         fetchLayoutsUseCase: FetchLevelsUseCaseProtocol = FetchLayoutsUseCase(levelRepository: Dependency(\.layoutRepository).wrappedValue),
@@ -27,21 +35,11 @@ class StateModel: ObservableObject {
                 
         reloadAll()
     }
-
-    @Published var currentPack: PlayableLevelFileDefinition?
-    
-    @Published var playableLevels: [LevelDefinition] = []
-    @Published var layouts: [LevelDefinition] = []
-    var manifest: Manifest = Manifest(levels: [])
-    
     func reloadPlayableLevels() {
-        print("reloadPlayableLevels")
         loadPlayableLevels()
     }
     
     func reloadAll() {
-        print("Reload all")
-//        loadManifest()
         loadLayouts()
         loadPlayableLevels()
     }
