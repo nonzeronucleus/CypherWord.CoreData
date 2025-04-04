@@ -4,138 +4,136 @@ import Dependencies
 @testable import CypherWord_CoreData
 
 struct AddPlayableLevelUseCaseTests {
-    // MARK: - Test Runner
-    
-    @Test func runAllTests() async {
-        await withDependencies {
-            $0.uuid = .incrementing
-        } operation: {
-            await testExecuteSuccessfullyCreatesLevelExistingPack()
-            await testExecuteSuccessfullyCreatesLevelNewPack()
-            await testGeneratesNewUUIDForLevel()
-            await testHandlesNilPackNumber()
-        }
-    }
-    
     // MARK: - Test Cases
     
     
-    private func testExecuteSuccessfullyCreatesLevelExistingPack() async {
-        @Dependency(\.uuid) var uuid
-        
-        // Arrange
-        let mockRepo = MockPlayableLevelRepository(packExists: true)
-        mockRepo.fetchHighestLevelNumberResult = .success(5)
-        mockRepo.getManifestResult = .success(Manifest(levels: []))
-        
-        let sut = AddPlayableLevelUseCase(levelRepository: mockRepo)
-        
-        let testPack = PackDefinition(
-            id: uuid(),  // 000...00
-            packNumber: 1
-        )
-        
-        let layout = LevelDefinition(
-            id: uuid(),  // 000...01
-            number: 0,
-            packId: uuid(),  // 000...02
-            gridText: "ABC\nDEF",
-            letterMap: ["A":1, "B":2, "C":3].toJSONString(),
-            attemptedLetters: String(repeating: " ", count: 26),
-            numCorrectLetters: 0
-        )
-        
-        // Act
-        try! await sut.execute(packDefinition: testPack, layout: layout)
-        
-        // Assert
-        #expect(mockRepo.prepareLevelMOCalled)
-        #expect(mockRepo.commitCalled)
-        #expect(mockRepo.writePackCalled == false)
-        
-        if let createdLevel = mockRepo.receivedLevel {
-            #expect(createdLevel.number == 6)  // 5 + 1
-            #expect(createdLevel.packId == testPack.id)
-        } else {
-            Issue.record("Expected LevelDefinition to be received by mock")
+    @Test func testExecuteSuccessfullyCreatesLevelExistingPack() async {
+        await withDependencies {
+            $0.uuid = .incrementing
+        } operation: {
+            @Dependency(\.uuid) var uuid
+            
+            // Arrange
+            let mockRepo = MockPlayableLevelRepository(numExistingLevels: 5)
+            //        mockRepo.fetchHighestLevelNumberResult = .success(5)
+            mockRepo.getManifestResult = .success(Manifest(levels: []))
+            
+            let sut = AddPlayableLevelUseCase(levelRepository: mockRepo)
+            
+            let testPack = PackDefinition(
+                id: uuid(),  // 000...00
+                packNumber: 1
+            )
+            
+            let layout = LevelDefinition(
+                id: uuid(),  // 000...01
+                number: 0,
+                packId: uuid(),  // 000...02
+                gridText: "ABC\nDEF",
+                letterMap: ["A":1, "B":2, "C":3].toJSONString(),
+                attemptedLetters: String(repeating: " ", count: 26),
+                numCorrectLetters: 0
+            )
+            
+            // Act
+            try! await sut.execute(packDefinition: testPack, layout: layout)
+            
+            // Assert
+            #expect(mockRepo.prepareLevelMOCalled)
+            #expect(mockRepo.commitCalled)
+            #expect(mockRepo.writePackCalled == false)
+            
+            if let createdLevel = mockRepo.receivedLevel {
+                #expect(createdLevel.number == 6)  // 5 + 1
+                #expect(createdLevel.packId == testPack.id)
+            } else {
+                Issue.record("Expected LevelDefinition to be received by mock")
+            }
         }
     }
     
-    private func testExecuteSuccessfullyCreatesLevelNewPack() async {
-        @Dependency(\.uuid) var uuid
-        
-        // Arrange
-        let mockRepo = MockPlayableLevelRepository(packExists: false)
-        mockRepo.fetchHighestLevelNumberResult = .success(5)
-        mockRepo.getManifestResult = .success(Manifest(levels: []))
-        
-        let sut = AddPlayableLevelUseCase(levelRepository: mockRepo)
-        
-        let testPack = PackDefinition(
-            id: uuid(),  // 000...00
-            packNumber: 2
-        )
-        
-        let layout = LevelDefinition(
-            id: uuid(),  // 000...01
-            number: 0,
-            packId: uuid(),  // 000...02
-            gridText: "ABC\nDEF",
-            letterMap: ["A":1, "B":2, "C":3].toJSONString(),
-            attemptedLetters: String(repeating: " ", count: 26),
-            numCorrectLetters: 0
-        )
-        
-        // Act
-        try! await sut.execute(packDefinition: testPack, layout: layout)
-        
-        // Assert
-        #expect(mockRepo.prepareLevelMOCalled)
-        #expect(mockRepo.commitCalled)
-        #expect(mockRepo.writePackCalled)
-        
-        if let createdLevel = mockRepo.receivedLevel {
-            #expect(createdLevel.number == 6)  // 5 + 1
-            #expect(createdLevel.packId == testPack.id)
-        } else {
-            Issue.record("Expected LevelDefinition to be received by mock")
+    @Test func testExecuteSuccessfullyCreatesLevelNewPack() async {
+        await withDependencies {
+            $0.uuid = .incrementing
+        } operation: {
+            
+            @Dependency(\.uuid) var uuid
+            
+            // Arrange
+            let mockRepo = MockPlayableLevelRepository(numExistingLevels: 0)
+            let sut = AddPlayableLevelUseCase(levelRepository: mockRepo)
+            
+            let testPack = PackDefinition(
+                id: uuid(),  // 000...00
+                packNumber: 2
+            )
+            
+            let layout = LevelDefinition(
+                id: uuid(),  // 000...01
+                number: 0,
+                packId: uuid(),  // 000...02
+                gridText: "ABC\nDEF",
+                letterMap: ["A":1, "B":2, "C":3].toJSONString(),
+                attemptedLetters: String(repeating: " ", count: 26),
+                numCorrectLetters: 0
+            )
+            
+            // Act
+            try! await sut.execute(packDefinition: testPack, layout: layout)
+            
+            // Assert
+            #expect(mockRepo.prepareLevelMOCalled)
+            #expect(mockRepo.commitCalled)
+            #expect(mockRepo.writePackCalled)
+            
+            if let createdLevel = mockRepo.receivedLevel {
+                #expect(createdLevel.number == 1)  // 5 + 1
+                #expect(createdLevel.packId == testPack.id)
+            } else {
+                Issue.record("Expected LevelDefinition to be received by mock")
+            }
         }
     }
     
-    private func testGeneratesNewUUIDForLevel() async {
-        @Dependency(\.uuid) var uuid
-        
-        // Arrange
-        let mockRepo = MockPlayableLevelRepository(packExists: true)
-        let sut = AddPlayableLevelUseCase(levelRepository: mockRepo)
-        
-        let testPack = PackDefinition(
-            id: uuid(),  // 000...00
-            packNumber: 1
-        )
-        
-        let layout = LevelDefinition(
-            id: uuid(),  // 000...01
-            number: 0,
-            packId: uuid(),  // 000...02
-            gridText: "ABC",
-            letterMap: ["A":1].toJSONString(),
-            attemptedLetters: String(repeating: " ", count: 26),
-            numCorrectLetters: 0
-        )
-        
-        // Act
-        try! await sut.execute(packDefinition: testPack, layout: layout)
-        
-        // Assert
-        if let createdLevel = mockRepo.receivedLevel {
-            #expect(createdLevel.id.uuidString == "00000000-0000-0000-0000-00000000000B") // Next UUID
-        } else {
-            Issue.record("Expected LevelDefinition to be received by mock")
+    @Test func testGeneratesNewUUIDForLevel() async {
+        await withDependencies {
+            $0.uuid = .incrementing
+        } operation: {
+            
+            @Dependency(\.uuid) var uuid
+            
+            // Arrange
+            let mockRepo = MockPlayableLevelRepository(numExistingLevels: 5)
+            let sut = AddPlayableLevelUseCase(levelRepository: mockRepo)
+            
+            let testPack = PackDefinition(
+                id: uuid(),  // 000...00
+                packNumber: 1
+            )
+            
+            let layout = LevelDefinition(
+                id: uuid(),  // 000...01
+                number: 0,
+                packId: uuid(),  // 000...02
+                gridText: "ABC",
+                letterMap: ["A":1].toJSONString(),
+                attemptedLetters: String(repeating: " ", count: 26),
+                numCorrectLetters: 0
+            )
+            
+            // Act
+            try! await sut.execute(packDefinition: testPack, layout: layout)
+            
+            // Assert
+            if let createdLevel = mockRepo.receivedLevel {
+                #expect(createdLevel.id.uuidString == "00000000-0000-0000-0000-000000000003") // Next UUID
+            } else {
+                Issue.record("Expected LevelDefinition to be received by mock")
+            }
         }
     }
     
-    private func testHandlesNilPackNumber() async {
+    @Test func testHandlesNilPackNumber() async {
         withDependencies {
             $0.uuid = .incrementing
         } operation: {
@@ -146,51 +144,54 @@ struct AddPlayableLevelUseCaseTests {
         }
     }
     
-//    private func testGeneratesCorrectFilename() async {
-//        @Dependency(\.uuid) var uuid
-//        
-//        // Arrange
-//        let mockRepo = MockPlayableLevelRepository()
-//        mockRepo.currentPackNum = 3
-//        let sut = AddPlayableLevelUseCase(levelRepository: mockRepo)
-//        
-//        let testPack = PackDefinition(
-//            id: uuid(),
-//            packNumber: 3
-//        )
-//        
-//        let layout = LevelDefinition(
-//            id: uuid(),
-//            number: 0,
-//            packId: uuid(),
-//            gridText: "ABC",
-//            letterMap: ["A":1].toJSONString(),
-//            attemptedLetters: String(repeating: " ", count: 26),
-//            numCorrectLetters: 0
-//        )
-//        
-//        // Act
-//        try! await sut.execute(packDefinition: testPack, layout: layout)
-//        
-//        // Assert
-////        #expect(mockRepo.writePackCalled, "writePackToManifest should be called")
-//        
-//        if let fileDef = mockRepo.receivedPlayableFileDefinition {
-//            #expect(fileDef.getFileName() == "Games.3.json")
-//        } else {
-//            Issue.record("Expected PlayableLevelFileDefinition but none was received")
-//        }
-//    }
+    //    private func testGeneratesCorrectFilename() async {
+    //        @Dependency(\.uuid) var uuid
+    //
+    //        // Arrange
+    //        let mockRepo = MockPlayableLevelRepository()
+    //        mockRepo.currentPackNum = 3
+    //        let sut = AddPlayableLevelUseCase(levelRepository: mockRepo)
+    //
+    //        let testPack = PackDefinition(
+    //            id: uuid(),
+    //            packNumber: 3
+    //        )
+    //
+    //        let layout = LevelDefinition(
+    //            id: uuid(),
+    //            number: 0,
+    //            packId: uuid(),
+    //            gridText: "ABC",
+    //            letterMap: ["A":1].toJSONString(),
+    //            attemptedLetters: String(repeating: " ", count: 26),
+    //            numCorrectLetters: 0
+    //        )
+    //
+    //        // Act
+    //        try! await sut.execute(packDefinition: testPack, layout: layout)
+    //
+    //        // Assert
+    ////        #expect(mockRepo.writePackCalled, "writePackToManifest should be called")
+    //
+    //        if let fileDef = mockRepo.receivedPlayableFileDefinition {
+    //            #expect(fileDef.getFileName() == "Games.3.json")
+    //        } else {
+    //            Issue.record("Expected PlayableLevelFileDefinition but none was received")
+    //        }
+    //    }
     
     // MARK: - Mock Repository
+}
+
+extension AddPlayableLevelUseCaseTests {
     
     final class MockPlayableLevelRepository: PlayableLevelRepositoryProtocol {
         func packExists(packDefinition: CypherWord_CoreData.PackDefinition) async -> Bool {
-            return packExists
+            return numExistingLevels > 0
         }
         
-        init(packExists:Bool) {
-            self.packExists = packExists
+        init(numExistingLevels: Int) {
+            self.numExistingLevels = numExistingLevels
         }
         
         // Results
@@ -207,7 +208,7 @@ struct AddPlayableLevelUseCaseTests {
         
         // State
         var currentPackNum: Int = 1
-        var packExists:Bool
+        var numExistingLevels: Int
         
         // Tracking
         private(set) var prepareLevelMOCalled = false
@@ -233,7 +234,8 @@ struct AddPlayableLevelUseCaseTests {
         }
         
         func fetchHighestLevelNumber(levelType: LevelType) throws -> Int {
-            try fetchHighestLevelNumberResult.get()
+            return numExistingLevels
+//            try fetchHighestLevelNumberResult.get()
         }
         
         func writePackToManifest(packDefinition: PackDefinition) async throws {
