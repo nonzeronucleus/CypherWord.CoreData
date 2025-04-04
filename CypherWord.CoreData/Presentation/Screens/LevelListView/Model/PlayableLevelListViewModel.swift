@@ -100,11 +100,9 @@ class PlayableLevelListViewModel: LevelListViewModel {
     }
     
     override func exportAll() {
-
+        guard let currentPack = stateModel.currentPack else { return }
         
-        let currentPack = stateModel.currentPack
-        
-        let levelFile = LevelFile(definition: currentPack, levels: stateModel.playableLevels)
+        let levelFile = LevelFile(definition: PlayableLevelFileDefinition(packDefintion: currentPack), levels: stateModel.playableLevels)
         
 //        self.displayableLevels = stateModel.layouts
 

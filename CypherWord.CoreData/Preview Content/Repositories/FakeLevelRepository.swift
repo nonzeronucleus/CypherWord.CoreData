@@ -2,6 +2,14 @@ import Foundation
 import Dependencies
 
 class FakeLevelRepository: LevelRepositoryProtocol, PlayableLevelRepositoryProtocol, LayoutRepositoryProtocol {
+    func packExists(packDefinition: PackDefinition) async -> Bool {
+        return true
+    }
+    
+    func writePackToManifest(packDefinition: PackDefinition) async throws {
+        
+    }
+    
     func getCurrentPackNum() -> Int {
         return 1
     }
@@ -44,8 +52,8 @@ class FakeLevelRepository: LevelRepositoryProtocol, PlayableLevelRepositoryProto
         @Dependency(\.uuid) var uuid
 
         return Manifest(levels: [
-            PlayableLevelFileDefinition(packNumber: 1, id: uuid()),
-            PlayableLevelFileDefinition(packNumber: 2, id: uuid())
+            PackDefinition(id: uuid(), packNumber: 1),
+            PackDefinition(id: uuid(), packNumber: 2)
         ])
     }
     

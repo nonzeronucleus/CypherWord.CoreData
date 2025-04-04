@@ -2,7 +2,7 @@ import Foundation
 import Dependencies
 
 protocol AddPlayableLevelUseCaseProtocol {
-    func execute(layout: LevelDefinition) async throws
+    func execute(packDefinition: PackDefinition, layout: LevelDefinition) async throws
 }
 
 
@@ -13,26 +13,32 @@ class AddPlayableLevelUseCase : AddPlayableLevelUseCaseProtocol {
         self.levelRepository = levelRepository
     }
 
-    func execute(layout: LevelDefinition) async throws {
+    func execute(packDefinition: PackDefinition, layout: LevelDefinition) async throws {
         @Dependency(\.uuid) var uuid
-        let manifest = try await levelRepository.getManifest()
-        let cureentPackNum = levelRepository.getCurrentPackNum()
-        guard let pack = manifest.getLevelFileDefinition(forNumber: cureentPackNum) else {
-            fatalError("Could not find pack for \(cureentPackNum)")
-        }
         
         let nextNum = try levelRepository.fetchHighestLevelNumber(levelType: .playable) + 1
         
         let level = LevelDefinition(
             id: uuid(),
             number: nextNum,
-            packId: pack.id,
+            packId: packDefinition.id,
             gridText: layout.gridText,
             letterMap: layout.letterMap
         )
         
         try await levelRepository.prepareLevelMO(from: level)
+        
+        if await !levelRepository.packExists(packDefinition: packDefinition) {
+            try await levelRepository.writePackToManifest(packDefinition: packDefinition)
+        }
     
         levelRepository.commit()
     }
 }
+
+
+//        let manifest = try await levelRepository.getManifest()
+//        let currentPackNum = levelRepository.getCurrentPackNum()
+//        guard let pack = manifest.getLevelFileDefinition(forNumber: currentPackNum) else {
+//            fatalError("Could not find pack for \(currentPackNum)")
+//        }

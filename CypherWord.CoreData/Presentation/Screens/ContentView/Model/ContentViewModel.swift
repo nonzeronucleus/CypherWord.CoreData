@@ -34,9 +34,10 @@ final class ContentViewModel: ObservableObject {
             do {
                 let manifest = try await loadManifestUseCase.execute()
                 try await importLeveslUseCase.execute(fileDefinition: LayoutFileDefinition())
-                guard let playableFile = manifest.getLevelFileDefinition(forNumber: 1) else {
+                guard let packDefinition = manifest.getLevelFileDefinition(forNumber: 1) else {
                     fatalError("Can't load manifest")
                 }
+                let playableFile = PlayableLevelFileDefinition(packDefintion: packDefinition)
                 try await importLeveslUseCase.execute(fileDefinition: playableFile)
                 await MainActor.run {
                     isInitialized = true

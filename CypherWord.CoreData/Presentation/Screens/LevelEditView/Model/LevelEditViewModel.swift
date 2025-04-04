@@ -23,6 +23,7 @@ class LevelEditViewModel: ObservableObject {
     @Published private(set) var error:String?
     @Published var isBusy: Bool = false
     @Published var showAlert: Bool = false
+    @Published var stateModel: StateModel
     
     var currentState = EditState.clean
     
@@ -31,6 +32,7 @@ class LevelEditViewModel: ObservableObject {
 
     init(levelDefinition:LevelDefinition,
          navigationViewModel:NavigationViewModel,
+         stateModel: StateModel,
          saveLevelUseCase: SaveLevelUseCaseProtocol = SaveLevelUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue),
          deleteLevelUseCase: DeleteLevelUseCaseProtocol = DeleteLevelUseCase(repository: Dependency(\.levelRepository).wrappedValue),
          addPlayableLevelUseCase: AddPlayableLevelUseCaseProtocol = AddPlayableLevelUseCase(levelRepository: Dependency(\.playableLevelRepository).wrappedValue),
@@ -41,6 +43,7 @@ class LevelEditViewModel: ObservableObject {
         self.addPlayableLevelUseCase = addPlayableLevelUseCase
         self.navigationViewModel = navigationViewModel
         self.resizeGridUseCase = resizeGridUseCase
+        self.stateModel = stateModel
 
         let level = Level(definition: levelDefinition)
         self.level = level
@@ -146,8 +149,11 @@ class LevelEditViewModel: ObservableObject {
             let levelDefinition = LevelDefinition(from: level)
             
             do {
+                print("Saving")
+                if let currentPack = stateModel.currentPack {
+                    try await addPlayableLevelUseCase.execute(packDefinition:currentPack, layout: levelDefinition)
+                }
                 isBusy = false
-                try await addPlayableLevelUseCase.execute(layout: levelDefinition)
             }
             catch {
                 isBusy = false

@@ -8,8 +8,9 @@ class StateModel: ObservableObject {
     private var deleteAllLayoutsUseCase: DeleteAllLayoutsUseCaseProtocol
     private var deleteAllPlayableLevelsUseCase: DeleteAllPlayableLevelsUseCaseProtocol
 
-    @Published var currentPack: PlayableLevelFileDefinition?
-    
+//    @Published var currentPack: PlayableLevelFileDefinition?
+    @Published var currentPack: PackDefinition?
+
     @Published var playableLevels: [LevelDefinition] = []
     @Published var layouts: [LevelDefinition] = []
     var manifest: Manifest = Manifest(levels: [])

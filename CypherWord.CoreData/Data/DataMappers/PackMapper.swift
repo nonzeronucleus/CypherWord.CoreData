@@ -1,9 +1,9 @@
 class PackMapper {
-    static func toFileDefinition(mo: PackMO) -> PlayableLevelFileDefinition {
-        PlayableLevelFileDefinition(packNumber: Int(mo.number), id: mo.id)
+    static func toFileDefinition(mo: PackMO) -> PackDefinition {
+        PackDefinition(id: mo.id, packNumber: Int(mo.number))
     }
 
-    static func toFileDefinitions(mos: [PackMO]) -> [PlayableLevelFileDefinition] {
+    static func toFileDefinitions(mos: [PackMO]) -> [PackDefinition] {
         mos.map(toFileDefinition)
     }
 }

@@ -62,7 +62,7 @@ class NavigationViewModel: ObservableObject {
         guard let level else {
             fatalError(#function + ": level not set")
         }
-        return LevelEditViewModel(levelDefinition: level, navigationViewModel: self)
+        return LevelEditViewModel(levelDefinition: level, navigationViewModel: self, stateModel: stateModel)
     }
     
     @MainActor

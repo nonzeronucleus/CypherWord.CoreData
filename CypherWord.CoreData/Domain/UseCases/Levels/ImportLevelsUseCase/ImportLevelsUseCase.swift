@@ -39,7 +39,7 @@ class ImportLevelsUseCase : ImportLevelsUseCaseProtocol {
             try await playableLevelRepository.prepareLevelMO(from: level)
         }
         
-        try await playableLevelRepository.writePackToManifest(playableFileDefinition: fileDefinition)
+        try await playableLevelRepository.writePackToManifest(packDefinition: fileDefinition.packDefinition)
 
         playableLevelRepository.commit()
     }

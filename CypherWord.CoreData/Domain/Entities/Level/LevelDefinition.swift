@@ -16,7 +16,6 @@ struct LevelDefinition: Identifiable, Equatable, Hashable {
     var attemptedLetters: String
     var numCorrectLetters: Int
     var packId: UUID?
-//    var fileDefinition: any FileDefinitionProtocol
     
     var levelType: LevelType {
         get {
@@ -46,20 +45,9 @@ struct LevelDefinition: Identifiable, Equatable, Hashable {
         }
         self.attemptedLetters = String(level.attemptedLetters)
         self.numCorrectLetters = level.numCorrectLetters
-//        self.fileDefinition = DummyFileDefinition()
-//        self.fileDefinition = (letterMap == nil) ? LayoutFileDefinition() : PlayableLevelFileDefinition(packNumber: 1)
+
     }
-//    
-//    init(from decoder: any Decoder) throws {
-//        let container = try decoder.container(keyedBy: CodingKeys.self)
-//        self.id = try container.decode(UUID.self, forKey: .id)
-//        self.number = try container.decodeIfPresent(Int.self, forKey: .number)
-//        self.gridText = try container.decodeIfPresent(String.self, forKey: .gridText)
-//        self.letterMap = try container.decodeIfPresent(String.self, forKey: .letterMap)
-//        self.attemptedLetters = try container.decode(String.self, forKey: .attemptedLetters)
-//        self.numCorrectLetters = 0
-//    }
-//    
+    
     var name: String {
         if let number = number {
             return "Level \(number)"

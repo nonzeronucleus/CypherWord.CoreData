@@ -15,10 +15,11 @@ protocol LevelRepositoryProtocol {
     func deleteAllLevels(levelType: LevelType) throws
 
     func fetchHighestLevelNumber(levelType: LevelType) throws -> Int
+    func packExists(packDefinition:PackDefinition) async -> Bool
 }
 
 protocol PlayableLevelRepositoryProtocol: LevelRepositoryProtocol {
-    func writePackToManifest(playableFileDefinition: PlayableLevelFileDefinition) async throws
+    func writePackToManifest(packDefinition: PackDefinition) async throws
     func fetchPlayableLevels(packNum: Int) async throws -> [LevelDefinition]
     func getManifest() async throws -> Manifest
     func deleteAllPacks() throws
@@ -109,10 +110,21 @@ extension LevelStorageCoreData: LayoutRepositoryProtocol {
 
 
 extension LevelStorageCoreData: PlayableLevelRepositoryProtocol {
+    func packExists(packDefinition:PackDefinition) async -> Bool {
+        do {
+            let packMO: PackMO? = try await fetchPackById(id: packDefinition.id)
+            return packMO != nil
+        }
+        catch {
+            return false
+        }
+    }
+    
+    
     @MainActor
-    func writePackToManifest(playableFileDefinition: PlayableLevelFileDefinition) async throws {
+    func writePackToManifest(packDefinition: PackDefinition) async throws {
         try await MainActor.run {
-            if let packNumber = playableFileDefinition.packNumber {
+            if let packNumber = packDefinition.packNumber {
                 var packMO:PackMO?
 
                 packMO = try fetchPackByNumber(number: packNumber)
@@ -123,7 +135,7 @@ extension LevelStorageCoreData: PlayableLevelRepositoryProtocol {
 
                 if let packMO {
                     packMO.number = Int16(packNumber)
-                    packMO.id = playableFileDefinition.id
+                    packMO.id = packDefinition.id
                 }
             }
 
@@ -182,26 +194,26 @@ class LevelStorageCoreData {
     private let levelEntityName: String = "LevelMO"
     private let packEntityName: String = "PackMO"
     private var currentPackNum: Int = 1
-
+    
     private lazy var container: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "LevelsContainer")
-
+        
         container.loadPersistentStores { _, error in
             if let error = error as NSError? {
                 // TODO: - Log to Crashlytics
                 assertionFailure("CoreDataStorage Unresolved error \(error), \(error.userInfo)")
             }
         }
-
+        
         return container
     }()
-
-
+    
+    
     private var dbLocation: URL? {
         return container.persistentStoreCoordinator.persistentStores.first?.url
     }
-
-
+    
+    
     private func createFetchLevelsRequest<T>(resultType: T.Type, levelType: LevelType, packId: UUID? = nil) -> NSFetchRequest<T> where T: NSFetchRequestResult {
         let request = NSFetchRequest<T>(entityName: levelEntityName)
         if levelType == .playable {
@@ -215,32 +227,32 @@ class LevelStorageCoreData {
         request.sortDescriptors = [NSSortDescriptor(key: "number", ascending: true)]
         return request
     }
-
-
+    
+    
     private func createFetchLevelRequest<T>(resultType: T.Type, levelID: UUID) -> NSFetchRequest<T> where T: NSFetchRequestResult {
         let request = NSFetchRequest<T>(entityName: levelEntityName)
         request.predicate = NSPredicate(format: "id == %@", levelID as CVarArg)
-
+        
         return request
     }
-
-
+    
+    
     private func createFetchPacksRequest<T>(resultType: T.Type) -> NSFetchRequest<T> where T: NSFetchRequestResult {
         let request = NSFetchRequest<T>(entityName: packEntityName)
-//        request.predicate = NSPredicate(format: "id == %@", levelID as CVarArg)
-
+        //        request.predicate = NSPredicate(format: "id == %@", levelID as CVarArg)
+        
         return request
     }
-
-
+    
+    
     private func fetchHighestNumberInternal(levelType: LevelType) throws -> Int64 {
         // Create a fetch request for dictionaries (so we get a dictionary result, not full managed objects)
         let fetchRequest = NSFetchRequest<NSDictionary>(entityName: "LevelMO")
         fetchRequest.resultType = .dictionaryResultType
-
+        
         // Create an expression for the key path "number"
         let keyPathExpression = NSExpression(forKeyPath: "number")
-
+        
         // Add a predicate to filter for objects where letterMap is nil.
         if levelType == .playable {
             fetchRequest.predicate = NSPredicate(format: "letterMap != nil")
@@ -249,16 +261,16 @@ class LevelStorageCoreData {
         }
         // Create an expression that calculates the maximum value for the key path
         let maxExpression = NSExpression(forFunction: "max:", arguments: [keyPathExpression])
-
+        
         // Create an expression description that holds the result of the max() function
         let expressionDescription = NSExpressionDescription()
         expressionDescription.name = "maxNumber"
         expressionDescription.expression = maxExpression
         expressionDescription.expressionResultType = .integer64AttributeType
-
+        
         // Set the properties to fetch (only the computed maximum value)
         fetchRequest.propertiesToFetch = [expressionDescription]
-
+        
         do {
             // Execute the fetch request
             if let resultDict = try container.viewContext.fetch(fetchRequest).first,
@@ -266,35 +278,46 @@ class LevelStorageCoreData {
                 return maxNumber
             }
         }
-
+        
         return 0
     }
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
     private func findLevel(id:UUID) throws -> LevelMO? {
         let request: NSFetchRequest<LevelMO> = createFetchLevelRequest(resultType: LevelMO.self, levelID: id)
         let level = try container.viewContext.fetch(request).first
-
+        
         return level
     }
-
-
+    
+    
     private func fetchPacks() throws -> [PackMO] {
         let request: NSFetchRequest<PackMO> = createFetchPacksRequest(resultType: PackMO.self)
         let packs = try container.viewContext.fetch(request)
-
+        
         return packs
     }
-
+    
     @MainActor
     private func fetchPackByNumber(number:Int) throws -> PackMO? {
         let request: NSFetchRequest<PackMO> = createFetchPacksRequest(resultType: PackMO.self)
-
+        
         request.predicate = NSPredicate(format: "number == %@", number as NSNumber)
+        
+        let pack = try container.viewContext.fetch(request).first
+        
+        return pack
+    }
+    
+    @MainActor
+    private func fetchPackById(id:UUID) throws -> PackMO? {
+        let request: NSFetchRequest<PackMO> = createFetchPacksRequest(resultType: PackMO.self)
+
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
 
         let pack = try container.viewContext.fetch(request).first
 

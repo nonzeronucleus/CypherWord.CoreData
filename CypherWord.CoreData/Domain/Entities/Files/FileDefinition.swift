@@ -28,8 +28,18 @@ class LayoutFileDefinition : FileDefinitionProtocol, Codable {
 }
 
 class PlayableLevelFileDefinition : FileDefinitionProtocol {
-    let packNumber: Int?
-    let id: UUID
+    let packDefinition: PackDefinition
+    var id:UUID {
+        get {
+            return packDefinition.id
+        }
+    }
+    
+    var packNumber:Int? {
+        get {
+            return packDefinition.packNumber
+        }
+    }
     
     static func == (lhs: PlayableLevelFileDefinition, rhs: PlayableLevelFileDefinition) -> Bool {
         return lhs.id == rhs.id
@@ -39,24 +49,28 @@ class PlayableLevelFileDefinition : FileDefinitionProtocol {
         guard let id = packMO.id else {
             fatalError("Missing id for packMO \(packMO)")
         }
-        self.id = id
-        packNumber  = Int(packMO.number)
+        let packNumber  = Int(packMO.number)
+        packDefinition = PackDefinition(id: id, packNumber: packNumber)
+    }
+    
+    init(packDefintion: PackDefinition) {
+        self.packDefinition = packDefintion
     }
     
 
     
     init(packNumber: Int?, id: UUID? = nil) {
-        if let id = id {
-            self.id = id
-        } else {
+        var id = id
+        
+        if id == nil {
             @Dependency(\.uuid) var uuid
-            self.id = uuid()
+            id = uuid()
         }
-        self.packNumber = packNumber
+        packDefinition = PackDefinition(id: id, packNumber: packNumber)
     }
     
     func getFileName() -> String {
-        guard let packNumber else {
+        guard let packNumber = packDefinition.packNumber else {
             fatalError(#function)
         }
         return "Games.\(packNumber).json"
