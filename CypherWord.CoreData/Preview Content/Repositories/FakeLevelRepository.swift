@@ -2,6 +2,10 @@ import Foundation
 import Dependencies
 
 class FakeLevelRepository: LevelRepositoryProtocol, PlayableLevelRepositoryProtocol, LayoutRepositoryProtocol {
+    func fetchHighestLevelNumber(levelType: LevelType, packId: UUID?) throws -> Int {
+        return 1
+    }
+    
     func packExists(packDefinition: PackDefinition) async -> Bool {
         return true
     }
@@ -44,10 +48,7 @@ class FakeLevelRepository: LevelRepositoryProtocol, PlayableLevelRepositoryProto
     func prepareLevelMO(from level: LevelDefinition) throws {
     }
     
-    func fetchHighestLevelNumber(levelType: LevelType) throws -> Int {
-        fatalError("\(#function) not implemented")
-    }
-    
+
     func getManifest() async throws -> Manifest {
         @Dependency(\.uuid) var uuid
 

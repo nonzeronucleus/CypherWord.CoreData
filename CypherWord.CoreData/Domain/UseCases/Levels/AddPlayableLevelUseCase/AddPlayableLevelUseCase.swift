@@ -16,7 +16,7 @@ class AddPlayableLevelUseCase : AddPlayableLevelUseCaseProtocol {
     func execute(packDefinition: PackDefinition, layout: LevelDefinition) async throws {
         @Dependency(\.uuid) var uuid
         
-        let nextNum = try levelRepository.fetchHighestLevelNumber(levelType: .playable) + 1
+        let nextNum = try levelRepository.fetchHighestLevelNumber(levelType: .playable, packId: packDefinition.id) + 1
         
         let level = LevelDefinition(
             id: uuid(),

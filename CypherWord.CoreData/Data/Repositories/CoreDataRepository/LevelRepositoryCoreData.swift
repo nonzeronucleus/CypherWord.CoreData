@@ -14,7 +14,8 @@ protocol LevelRepositoryProtocol {
 
     func deleteAllLevels(levelType: LevelType) throws
 
-    func fetchHighestLevelNumber(levelType: LevelType) throws -> Int
+//    func fetchHighestLevelNumber(levelType: LevelType) throws -> Int
+    func fetchHighestLevelNumber(levelType: LevelType, packId: UUID?) throws -> Int
     func packExists(packDefinition:PackDefinition) async -> Bool
 }
 
@@ -35,6 +36,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         return try findLevel(id: level.id) != nil
     }
     
+    
     func commit() {
         do {
             try container.viewContext.save()
@@ -44,8 +46,8 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
     }
     
     
-    func fetchHighestLevelNumber(levelType: LevelType) throws -> Int{
-        return try Int(fetchHighestNumberInternal(levelType: levelType))
+    func fetchHighestLevelNumber(levelType: LevelType, packId: UUID?) throws -> Int{
+        return try Int(fetchHighestNumberInternal(levelType: levelType, packId: packId))
     }
     
     
@@ -73,6 +75,7 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         }
     }
     
+    
     @MainActor
     func delete(levelID: UUID) async throws {
         let request: NSFetchRequest<NSFetchRequestResult> = createFetchLevelRequest(resultType: NSFetchRequestResult.self, levelID: levelID)
@@ -82,6 +85,8 @@ extension LevelStorageCoreData:LevelRepositoryProtocol {
         try container.viewContext.execute(deleteRequest)
         try container.viewContext.save()
     }
+    
+    
     
     func deleteAllLevels(levelType: LevelType) throws {
         let request: NSFetchRequest<NSFetchRequestResult> = createFetchLevelsRequest(resultType: NSFetchRequestResult.self, levelType: levelType)
@@ -145,6 +150,7 @@ extension LevelStorageCoreData: PlayableLevelRepositoryProtocol {
         }
     }
     
+    
     @MainActor
     func fetchPlayableLevels(packNum:Int) async throws -> [LevelDefinition] {
         do {
@@ -164,6 +170,7 @@ extension LevelStorageCoreData: PlayableLevelRepositoryProtocol {
             return levels
         }
     }
+    
     
     func getCurrentPackNum() -> Int {
         return currentPackNum
@@ -245,7 +252,7 @@ class LevelStorageCoreData {
     }
     
     
-    private func fetchHighestNumberInternal(levelType: LevelType) throws -> Int64 {
+    private func fetchHighestNumberInternal(levelType: LevelType, packId: UUID?) throws -> Int64 {
         // Create a fetch request for dictionaries (so we get a dictionary result, not full managed objects)
         let fetchRequest = NSFetchRequest<NSDictionary>(entityName: "LevelMO")
         fetchRequest.resultType = .dictionaryResultType
@@ -256,6 +263,9 @@ class LevelStorageCoreData {
         // Add a predicate to filter for objects where letterMap is nil.
         if levelType == .playable {
             fetchRequest.predicate = NSPredicate(format: "letterMap != nil")
+            if let packId {
+                fetchRequest.predicate = NSPredicate(format: "packId == %@", packId as CVarArg)
+            }
         } else {
             fetchRequest.predicate = NSPredicate(format: "letterMap == nil")
         }
