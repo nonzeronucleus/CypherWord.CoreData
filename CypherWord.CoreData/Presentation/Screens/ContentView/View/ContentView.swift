@@ -1,10 +1,11 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject var model = ContentViewModel()
+    @ObservedObject var model: ContentViewModel
     @State var selection:LevelType = .playable
 
-    init () {
+    init (model: ContentViewModel) {
+        self.model = model
     }
 
     var body: some View {
@@ -33,5 +34,5 @@ struct StartupLoadingView: View {
 }
 
 #Preview {
-    ContentView()
+    ContentView(model: ContentViewModel(stateModel: StateModel()))
 }

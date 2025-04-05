@@ -7,7 +7,7 @@ enum NavigationDestination {
     case settings
 }
 
-@MainActor
+//@MainActor
 class NavigationViewModel: ObservableObject {
     var settingsViewModel: SettingsViewModel
     private var fetchLevelByIDUseCase: FetchLevelByIDUseCaseProtocol
@@ -50,12 +50,12 @@ class NavigationViewModel: ObservableObject {
         path = NavigationPath()
     }
 
-    @MainActor
+//    @MainActor
     func createGameViewModel() -> GameViewModel {
         guard let level else {
             fatalError(#function + ": level not set")
         }
-        return GameViewModel(level: level, navigationViewModel: self)
+        return GameViewModel(stateModel: stateModel, level: level, navigationViewModel: self)
     }
 
     func createLayoutViewModel() -> LevelEditViewModel {
@@ -65,7 +65,7 @@ class NavigationViewModel: ObservableObject {
         return LevelEditViewModel(levelDefinition: level, navigationViewModel: self, stateModel: stateModel)
     }
     
-    @MainActor
+//    @MainActor
     func createLevelListViewModel(levelType: LevelType) -> LevelListViewModel {
         switch levelType {
             case .playable:

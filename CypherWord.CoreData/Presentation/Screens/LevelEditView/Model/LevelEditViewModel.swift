@@ -2,7 +2,7 @@ import Foundation
 import SwiftUICore
 import Dependencies
 
-@MainActor
+//@MainActor
 class LevelEditViewModel: ObservableObject {
     enum EditState {
         case clean
@@ -85,7 +85,7 @@ class LevelEditViewModel: ObservableObject {
         currentState = .clean
     }
 
-    @MainActor
+//    @MainActor
     func delete() {
         isBusy = true
         
@@ -101,7 +101,7 @@ class LevelEditViewModel: ObservableObject {
     }
  
     
-    @MainActor
+//    @MainActor
     func save(then onComplete: @escaping (() -> Void) = {}) {
         isBusy = true
         
@@ -125,7 +125,7 @@ class LevelEditViewModel: ObservableObject {
         }
     }
     
-    @MainActor
+//    @MainActor
     private func saveLayout() {
         var levelDefinition = LevelDefinition(from: level)
         levelDefinition.letterMap = nil
@@ -163,7 +163,7 @@ class LevelEditViewModel: ObservableObject {
     }
 
 
-    @MainActor
+//    @MainActor
     func populate() {
         print("if not clean, ask about saving")
         
@@ -203,12 +203,13 @@ class LevelEditViewModel: ObservableObject {
         }
     }
     
-    @MainActor
+//    @MainActor
     func handleSaveChangesButtonTap() {
         save(then: goBack)
     }
     
     func goBack() {
+        stateModel.reloadAll()
         navigationViewModel.goBack()
     }
 
@@ -216,7 +217,7 @@ class LevelEditViewModel: ObservableObject {
     
     
     // Call this function from your UI button
-    @MainActor
+//    @MainActor
     func cancel() {
         if let populateTask = populateTask {
             populateTask.cancel()
@@ -224,7 +225,7 @@ class LevelEditViewModel: ObservableObject {
         isBusy = false // Update UI to remove spinner
     }
     
-    @MainActor
+//    @MainActor
     func resize(newSize: Int) {
         guard size != newSize else { return }
 

@@ -15,13 +15,16 @@ class GameViewModel: ObservableObject {
     @Published var checking: Bool = false
     @Published var showCompletedDialog: Bool = false
     @Published var numCorrectLetters: Int = 0
+    @Published var stateModel: StateModel
     
     private let navigationViewModel: NavigationViewModel?
 
-    init(level:LevelDefinition,
+    init(stateModel:StateModel,
+         level:LevelDefinition,
          navigationViewModel:NavigationViewModel? = nil,
          saveLevelUseCase: SaveLevelUseCaseProtocol = SaveLevelUseCase(levelRepository: Dependency(\.levelRepository).wrappedValue)
     ) {
+        self.stateModel = stateModel
         self.saveLevelUseCase = saveLevelUseCase
         self.level = Level(definition: level)
         self.navigationViewModel = navigationViewModel
@@ -72,14 +75,12 @@ class GameViewModel: ObservableObject {
         }
     }
     
-    @MainActor
+//    @MainActor
     func saveLevel() async {
         if isBusy {
             print("Busy")
             return
         }
-
-        print("Start")
 
         await MainActor.run {
             isBusy = true
@@ -87,7 +88,6 @@ class GameViewModel: ObservableObject {
         do {
             try await saveProgress()
             await MainActor.run {
-                print("End")
                 isBusy = false
             }
         }
@@ -100,14 +100,18 @@ class GameViewModel: ObservableObject {
     }
 
     
-    @MainActor
+//    @MainActor
     private func saveProgress() async throws {
         let levelDefinition = LevelDefinition(from: level)
         try await saveLevelUseCase.execute(level: levelDefinition)
+        print("Before")
+        stateModel.reloadAll()
+        print("After")
     }
     
     
-    @MainActor func onDeletePressed() {
+//    @MainActor
+    func onDeletePressed() {
         if completed {
             return
         }
@@ -152,9 +156,7 @@ class GameViewModel: ObservableObject {
     
     func handleBackButtonTap() {
         if let navigationViewModel {
-            Task {
-                await navigationViewModel.goBack()
-            }
+            navigationViewModel.goBack()
         }
     }
     

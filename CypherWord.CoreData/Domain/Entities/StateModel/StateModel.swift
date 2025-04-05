@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 import Dependencies
 
 class StateModel: ObservableObject {
@@ -7,6 +8,7 @@ class StateModel: ObservableObject {
     private var loadManifestUaeCase: LoadManifestUseCaseProtocol
     private var deleteAllLayoutsUseCase: DeleteAllLayoutsUseCaseProtocol
     private var deleteAllPlayableLevelsUseCase: DeleteAllPlayableLevelsUseCaseProtocol
+    var cancellables = Set<AnyCancellable>()
 
 //    @Published var currentPack: PlayableLevelFileDefinition?
     @Published var currentPack: PackDefinition?
@@ -31,6 +33,13 @@ class StateModel: ObservableObject {
         self.deleteAllPlayableLevelsUseCase = deleteAllPlayableLevelsUseCase
         
         self.currentPack = nil
+        
+        $currentPack
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newLevels in
+                self?.reloadPlayableLevels()
+            }
+            .store(in: &cancellables)
         
         loadManifest()
                 
@@ -65,7 +74,7 @@ class StateModel: ObservableObject {
 
 extension StateModel {
     private func loadLayouts() {
-        Task {
+        Task { //@MainActor in
             do {
                 let layouts = try await fetchLayoutsUseCase.execute()
                 await MainActor.run {
@@ -78,7 +87,7 @@ extension StateModel {
     }
     
     private func deleteAllLayoutsInternal() {
-        Task {
+        Task { //@MainActor in
             do {
                 let layouts = try await deleteAllLayoutsUseCase.execute()
                 await MainActor.run {
@@ -97,7 +106,7 @@ extension StateModel {
 
 extension StateModel {
     private func loadManifest() {
-        Task {
+        Task { //@MainActor in
             do {
                 print("Loading manifest")
                 let manifest = try await loadManifestUaeCase.execute()
@@ -105,7 +114,7 @@ extension StateModel {
                     self.manifest = manifest
                     if let firstLevel = manifest.getLevelFileDefinition(forNumber: 1) {
                         currentPack = firstLevel
-                        reloadAll()
+//                        reloadAll()
                     }
                 }
             }
@@ -134,29 +143,76 @@ extension StateModel {
         loadPlayableLevels()
     }
     
+//    private func loadPlayableLevels() {
+//        guard let currentPack = currentPack else {
+//            return
+//        }
+//        
+//        guard let currentPackNum = currentPack.packNumber else {
+//            print("Current Pack not yet set")
+//            return
+//        }
+//        do {
+//            let playableLevels = try await fetchPlayableLevelsUseCase.execute(packNum: currentPackNum)
+//            
+//            await MainActor.run {
+//                self.playableLevels = playableLevels  // ✅ Runs on Main Thread
+//                print("Full")
+//
+//            }
+//        }
+//        catch {
+//            print("Error fetching playable levels: \(error)")
+//        }
+//    }
+    
     private func loadPlayableLevels() {
-        guard let currentPack = currentPack else {
-            return
-        }
-        
+        guard let currentPack = currentPack else { return }
         guard let currentPackNum = currentPack.packNumber else {
             print("Current Pack not yet set")
             return
         }
         
+        // Create a semaphore to make it synchronous
+//        let semaphore = DispatchSemaphore(value: 0)
+        
         Task {
             do {
                 let playableLevels = try await fetchPlayableLevelsUseCase.execute(packNum: currentPackNum)
-                
+                print("\(#file), \(#function), \(#line)")
+
                 await MainActor.run {
-                    self.playableLevels = playableLevels  // ✅ Runs on Main Thread
+                    print("\(#file), \(#function), \(#line)")
+                    self.playableLevels = playableLevels
+                    print("Full")
+//                    semaphore.signal()
                 }
-            }
-            catch {
-                print("Error fetching playable levels: \(error)")
+                print("\(#file), \(#function), \(#line)")
+            } catch {
+                print("\(#file), \(#function), \(#line)")
+//                semaphore.signal()
             }
         }
+        print("\(#file), \(#function), \(#line)")
+
+//        semaphore.wait() // Wait for the async operation to complete
     }
+        
+//        Task { @MainActor in
+//            do {
+//                let playableLevels = try await fetchPlayableLevelsUseCase.execute(packNum: currentPackNum)
+//                
+//                await MainActor.run {
+//                    self.playableLevels = playableLevels  // ✅ Runs on Main Thread
+//                    print("Full")
+//
+//                }
+//            }
+//            catch {
+//                print("Error fetching playable levels: \(error)")
+//            }
+//        }
+//    }
     
     func deleteAllPlayableLevelsInternal() {
         guard let currentPack = currentPack else {
@@ -168,7 +224,7 @@ extension StateModel {
             return
         }
 
-        Task {
+        Task { @MainActor in
             do {
                 let playableLevels = try await deleteAllPlayableLevelsUseCase.execute(packNum: currentPackNum)
                 await MainActor.run {

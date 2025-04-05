@@ -3,7 +3,7 @@ import SwiftUI
 import Dependencies
 import Combine
 
-@MainActor
+//@MainActor
 class LevelListViewModel: ObservableObject {
     var settingsViewModel: SettingsViewModel
     var exportPlayableLevelsUseCase: ExportLevelsUseCaseProtocol
@@ -20,7 +20,7 @@ class LevelListViewModel: ObservableObject {
     private var navigationViewModel: NavigationViewModel?
     var cancellables = Set<AnyCancellable>()
     
-    @MainActor
+//    @MainActor
     init(navigationViewModel:NavigationViewModel,
          settingsViewModel: SettingsViewModel,
          stateModel: StateModel,

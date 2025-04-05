@@ -35,6 +35,7 @@ class PlayableLevelListViewModel: LevelListViewModel {
         stateModel.$playableLevels
             .receive(on: DispatchQueue.main)
             .sink { [weak self] newLevels in
+                print("Loaded new playable levels \(newLevels.count)")
                 if let showCompleted = self?.showCompleted {
                     self?.updateDisplayableLevels(levels: newLevels, showCompleted: showCompleted)
                 }
@@ -81,9 +82,10 @@ class PlayableLevelListViewModel: LevelListViewModel {
         stateModel.numPacks
     }
 
-    @MainActor
+//    @MainActor
     override func deleteAll() {
         stateModel.deleteAllPlayableLevels()
+        stateModel.reloadAll()
     }
     
     func updateDisplayableLevels(levels: [LevelDefinition], showCompleted: Bool) {
